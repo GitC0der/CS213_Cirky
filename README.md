@@ -1,12 +1,17 @@
-##CS213 Human-Computer Interaction Project##
-#Space Ghost Sheep#
-This project is a Unity-based C# physical game where three little robots,
-so-called Cellulo robots, are used. Two represent dogs and are player-
-controlled, whereas the third is meant to be a sheep. Both players compete
-against each other in the aim to push the sheep into a green hole in the
-middle of the field and whoever is closest to it, gets points. But beware:
-At any point the sheep may turn into a ghost and start hunting you!
+##CS213 Human-Computer Interaction Project Milestone 3##
+Once upon a time, Cirky the Cellulo robot decided to leave its home on planet
+Curlos, tired of spending all its time inside in front of a computer. Absorbing
+the rays from two distant burning stars it suddenly glimpsed a sparkling item
+out of the corner of its sensors. Bemused and intrigued, it cautiously
+approached the shiny object only to realise that it was a gem. Cirky was so
+excited that it barely noticed Ghost, a serious-looking Cellulo robot, modified
+to act as a permanent pain in the back drive of anyone in its vicinity, rushing
+towards it, ready to take it down with one swift strike.
 
-A WebGL version of the game is available here: https://hkhodr.github.io/spacesheep/
+This project is a Unity-based C# physical game where three little robots,
+so-called Cellulo robots, are used. One represent the player-controlled entity
+"Cirky", whereas the other two are meant to be a ghosts hunting the latter.
+Cirky's aim is to get as many points and to to survive as long as possible
+in the allotted time frame.
 
 This project is part of a course in EPFL, all right to their respective owner
