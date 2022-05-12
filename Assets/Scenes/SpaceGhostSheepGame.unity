@@ -3651,6 +3651,24 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1304219562}
   m_CullTransparentMesh: 1
+--- !u!1 &1307398703 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3040563576298773591, guid: d44936f6062330e28ab4d37456de1881, type: 3}
+  m_PrefabInstance: {fileID: 1333136709}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1307398704
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1307398703}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1c4cd19ae224986b44a52190be757ed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  weight: 1
 --- !u!1001 &1333136709
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3668,7 +3686,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4214186027875092558, guid: d44936f6062330e28ab4d37456de1881, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 8.157
+      value: 10.5
       objectReference: {fileID: 0}
     - target: {fileID: 4214186027875092558, guid: d44936f6062330e28ab4d37456de1881, type: 3}
       propertyPath: m_LocalPosition.y
@@ -5041,7 +5059,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1919711328}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 20586cd6eff2b4d1287a556bea3690e4, type: 3}
+  m_Script: {fileID: 11500000, guid: e91905b14a59bc24aa3082497b5ba30e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!4 &1919711330

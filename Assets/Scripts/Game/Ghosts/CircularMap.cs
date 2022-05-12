@@ -1,6 +1,7 @@
 ﻿using static Utils;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Diagnostics;
 
@@ -9,15 +10,15 @@ public class CircularMap
     private const float MARGIN = 1.0f;    // "Wiggle room" to prevent collision between a Cellulo and map borders or other cellulos
     private const float EPSILON = 1e-4f;   // Tolerance regarding floating point values equality
 
+    private Vector2 _center;
     private IList<MapRing> _rings = new List<MapRing>();
-    private ISet<CelluloAgent> _cellulos = new HashSet<CelluloAgent>();
     private ISet<Passageway> _passages = new HashSet<Passageway>();
 
     public CircularMap(Vector2 center, float smallestDiameter, ICollection<Passageway> passages, ICollection<CelluloAgent> cellulos)
     {
-        if (smallestDiameter <= 2 * MARGIN)
+        if (smallestDiameter <= 5 * MARGIN)
         {
-            return;
+            throw new ArgumentException("Physical map too small to accomodate circular map");
         }
         float currentRadius = 2 * MARGIN;
         while (currentRadius + MARGIN <= smallestDiameter)
@@ -26,18 +27,19 @@ public class CircularMap
             currentRadius += 2 * MARGIN;
         }
 
-        foreach (CelluloAgent agent in cellulos)
-        {
-            if (agent != null) _cellulos.Add(agent);
-        }
-        
+        _center = _rings[0].Position();
+
         foreach (Passageway passageway in passages)
         {
             if (passageway != null) _passages.Add(passageway);
         }
     }
 
-    public void AddPassage(Vector2 target)
+    public void AddNewPassage(int firstRingIndex, Vector2 target)
+    {
+        _passages.Add(Passageway.FromMap(this, firstRingIndex, target));
+    }
+    public void AddNewPassage(Vector2 target)
     {
         bool isOnSomeRing = false;
         foreach (MapRing ring in _rings)
@@ -65,12 +67,12 @@ public class CircularMap
         
         foreach (MapRing ring in _rings)
         {
-            if (ring.DistanceFrom(position) < first.DistanceFrom(position))
+            if (ring.DistanceFromCenter(position) < first.DistanceFromCenter(position))
             {
                 second = first;
                 first = ring;
             }
-            else if (ring.DistanceFrom(position) < second.DistanceFrom(position))
+            else if (ring.DistanceFromCenter(position) < second.DistanceFromCenter(position))
             {
                 second = ring;
             }
@@ -79,13 +81,37 @@ public class CircularMap
         return new List<MapRing> { first, second };
     }
 
-    public ISet<MapRing> Rings() => new HashSet<MapRing>(_rings);
+    public IList<Vector2> PassagesOnRing(MapRing ring)
+    {
+        IList<Vector2> list = new List<Vector2>();
+        foreach (Passageway p in _passages)
+        {
+            if (p.SmallRing().Equals(ring)) list.Add(p.SmallPoint());
+            if (p.LargeRing().Equals(ring)) list.Add(p.LargePoint());
+        }
+
+        return list;
+        /*
+        IList<Passageway> list = new List<Passageway>(_passages);
+        return list.TakeWhile(p => p.SmallRing().Equals(ring) || p.LargeRing().Equals(ring)) as IList<Passageway>;
+        */
+    }
+
+    public List<MapRing> Rings()
+    {
+        List<MapRing> list = new List<MapRing>(_rings).OrderBy(ring => ring.Radius()).ToList();
+        //List<MapRing> list = new List<MapRing>(_rings);
+        //list.Sort((r1,r2) => r1.Radius().CompareTo(r2.Radius()));
+        return list;
+    }
 
     public ISet<Passageway> Passages() => new HashSet<Passageway>(_passages);
-    
+
+    public Vector2 Center() => _center;
+
     public override string ToString()
     {
-        return $"CircularMap[rings = {ListToString(_rings)}";
+        return $"CircularMap[rings = {ListToString(_rings)}, \npassages = {ListToString(_passages)}";
     }
     
     public class Passageway
@@ -94,11 +120,21 @@ public class CircularMap
         private readonly MapRing _largeRing;
         private readonly Vector2 _smallPoint;
         private readonly Vector2 _largePoint;
-
-        // The passageway is assumed to radiate from the center of the rings
+        public static Passageway FromMap(CircularMap map, int firstRingIndex, Vector2 position)
+        {
+            if (map._rings.Count <= 1)
+            {
+                //throw new ArgumentException("Not enough rings to create passageway");
+            }
+            if (!(0 <= firstRingIndex && firstRingIndex < map.Rings().Count)) throw new ArgumentException($"Index must be between 0 and {map.Rings().Count} (number of rings - 1)");
+            return new Passageway(map.Rings()[firstRingIndex], map.Rings()[firstRingIndex + 1], position);
+        }
+        
+        /** The passageway is assumed to radiate from the center of the rings */
         public Passageway(MapRing ring1, MapRing ring2, Vector2 position)
         {
             if (ring1 == null || ring2 == null) throw new ArgumentException("Rings must NOT be null!");
+            if (ring1.Equals(ring2)) throw new ArgumentException("Rings must be different from each other!");
             if (Math.Abs(Vector2.Distance(position, ring1.Position())) < EPSILON)
             {
                 throw new ArgumentException("Position too close to ring centers. Try to find another position");
@@ -173,7 +209,14 @@ public class CircularMap
     {
         private readonly float _radius;
         private readonly Vector2 _center;
-        
+
+        public MapRing(CircularMap map, int ringIndex)
+        {
+            if (!(0 <= ringIndex && ringIndex < map.Rings().Count)) throw new ArgumentException($"Index must be between 0 and {map.Rings().Count} (number of rings - 1)");
+            _radius = map.Rings()[ringIndex]._radius;
+            if (_radius <= 0) throw new ArgumentException($"Negative radius. There is something wrong with {map.Rings()[ringIndex]}");
+            _center = map.Rings()[0]._center;
+        }
         public MapRing(float radius, Vector2 center)
         {
             if (radius <= 0) throw new ArgumentException("Radius can't be null or negative!");
@@ -181,18 +224,23 @@ public class CircularMap
             _center = center;
         }
 
-        public float DistanceFrom(Vector2 point)
+        public float DistanceFromCenter(Vector2 point)
         {
             return (_center - point).magnitude;
         }
 
+        public float DistanceBetween(Vector2 pos1, Vector2 pos2)
+        {
+            return _radius * Math.Abs(Vector2.Angle(pos1 - _center, pos2 - _center));
+        }
+
         public bool IsOn(Vector2 point)
         {
-            return Math.Abs(DistanceFrom(point) - _radius) <= EPSILON;
+            return Math.Abs(DistanceFromCenter(point) - _radius) <= EPSILON;
         }
 
         /// <summary>
-        ///     Finds the point on the ring that has a given from the horizontal line
+        ///     Finds the point on the ring that has a given angle from the horizontal line
         /// </summary>
         /// <param name="angle">Angle from the horizontal line (trignonmetric direction, i.e. counter-clockwise)</param>
         /// <returns>A point on the ring that has a given angle from the horizontal line</returns>
@@ -207,8 +255,12 @@ public class CircularMap
 
         public Vector2 Direction(Vector2 currentPos, bool isClockWise)
         {
-            if (!IsOn(currentPos)) throw new ArgumentException("Current position must be on ring!");
-            Vector2 direction = Vector2.Perpendicular((currentPos - _center).normalized);
+            if (!IsOn(currentPos))
+            {
+                //throw new ArgumentException("Current position must be on ring!");
+            }
+            //Vector2 direction = PointAt(Vector2.Perpendicular((currentPos - _center).normalized));
+            Vector2 direction = PointAt(Vector2.Angle(Vector2.right, Vector2.Perpendicular((currentPos - _center).normalized)));
             return isClockWise ? direction: -direction;
         }
         
@@ -218,7 +270,7 @@ public class CircularMap
             if (obj == null || GetType() != obj.GetType()) return false;
             var other = (MapRing)obj;
 
-            return _center == other._center && AreSame(_radius, other._radius);
+            return AreSame(_center, other._center) && AreSame(_radius, other._radius);
         }
 
         public override string ToString()

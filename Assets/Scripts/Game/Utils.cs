@@ -30,10 +30,13 @@ public static class Utils
         string s = "{";
         foreach (T element in collection)
         {
-            s += ", " + element;
+            s += element + ", ";
         }
 
-        s.Remove(s.Length - 1, 1);
+        s.Remove(s.Length - 2, 2);
         return s + "}";
     }
+
+    public static Vector2 ToVector2(Vector3 vector) => new Vector2(vector.x, vector.y);
+    public static Vector3 ToVector3(Vector2 vector, float height) => new Vector3(vector.x, height, vector.y);
 }

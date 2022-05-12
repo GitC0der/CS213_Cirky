@@ -9,6 +9,7 @@ TagManager:
   - Vibrate
   - Sheep
   - Gem
+  - Ghost
   layers:
   - Default
   - TransparentFX

@@ -109,7 +109,7 @@ public class Players : MonoBehaviour {
         public void AddScore(int n)
         {
             Score += n;
-            Debug.Log("Added " + n + " points to " + _name +", total score is: " + Score);
+            //Debug.Log("Added " + n + " points to " + _name +", total score is: " + Score);
 
             // Update the displayed score
             for (int i = 0; i < n; ++i) ScoreManager.instance.AddPoint(name);
@@ -123,7 +123,7 @@ public class Players : MonoBehaviour {
          public void RemoveScore(int n)
         {
             Score -= n;
-            Debug.Log("Removed " + n + " points from " + _name +", total score is: " + Score);
+            //Debug.Log("Removed " + n + " points from " + _name +", total score is: " + Score);
 
             // Update the displayed score
             for (int i = 0; i < n; ++i) ScoreManager.instance.RemovePoint(name);
@@ -165,7 +165,7 @@ public class Players : MonoBehaviour {
     public int AddPlayer(GameObject player, string name)
     {
         _players.Add(new Player(player, 0, name));
-        Debug.Log("Added player " + name);
+        //Debug.Log("Added player " + name);
         return 0;
     }
 

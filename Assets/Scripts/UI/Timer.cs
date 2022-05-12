@@ -45,6 +45,6 @@ public class Timer : MonoBehaviour
     public void setTime(float max)
     {
         maxTime = max;
-        Debug.Log("Set game duration to " + maxTime);
+        //Debug.Log("Set game duration to " + maxTime);
     }
 }
