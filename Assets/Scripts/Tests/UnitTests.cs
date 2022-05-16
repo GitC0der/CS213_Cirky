@@ -1,33 +1,94 @@
+using System;
 using static Utils;
 using static CircularMap;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 /**
  *  The Unity Test Framework was way too hard to set up so this ugly solution is used.
  */
 public class UnitTests : MonoBehaviour
 {
+    CircularMap map = new CircularMap(new Vector2(3, 3), 9.1f, new List<Passageway>(), new List<CelluloAgent>());
+
     private void LaunchTests()
     {
-        //MapRingTests();
-        //PassagesOnRingTest();
-        FindExistingNode_Works();
+        //Utils_MinElement_Works();
+        PriorityQueue_Works();
+    }
+
+    private void PriorityQueue_Works()
+    {
+        PriorityList<int> list = new PriorityList<int>(new List<int>{2, 7, -3, 9, 11, -15 }, 
+            e => Math.Abs(e));
+        Debug.Log(list);
+        Assert.AreEqual(2, list.Peek());
+        list.Remove();
+        Debug.Log(list);
+        Assert.AreEqual(-3, list.Peek());
+        list.Remove();
+        Debug.Log(list);
+        Assert.AreEqual(7, list.Peek());
+    }
+    private void Utils_MinElement_Works()
+    {
+        List<int> list = new List<int> { 2, -5, -7, 3, 6 };
+        Func<int, float> function = i => (float)Math.Pow(i / 4.0, 2);
+        Assert.AreEqual(2, MinElement(list, function));
+        Assert.AreEqual(2, MinElement(2, -5, function));
+
+        MapRing expected = new MapRing(3, new Vector2(1, 2));
+        MapRing false1 = new MapRing(2, new Vector2(13, 15));
+        List<MapRing> ringList = new List<MapRing> { expected, 
+            false1, new MapRing(5, new Vector2(21,7)) };
+        Func<MapRing, float> ringFunction = r => Vector2.Distance(r.Position(), new Vector2(3, 6));
+        Assert.AreEqual(expected, MinElement(ringList, ringFunction));
+        Assert.AreEqual(expected, MinElement(expected, false1, ringFunction));
+    }
+
+    private void CircularMap_ClosestRings_Works()
+    {
+        MapRing expected1A = new MapRing(map, 0);
+        MapRing expected1B = new MapRing(map, 1);
+        MapRing expected2A = new MapRing(map, 2);
+        MapRing expected2B = new MapRing(map, 3);
+        IList<MapRing> actual1 = map.ClosestRings(new Vector2(2.3f, 1));
+        IList<MapRing> actual2 = map.ClosestRings(map.Center() + new Vector2(1,-1).normalized * 6.5f);
+
+        Debug.Log($"Expected1A = {expected1A} | actual1 = {ListToString(actual1)}");
+        Debug.Log($"Expected1B = {expected1B} | actual1 = {ListToString(actual1)}");
+        Debug.Log($"Expected2A = {expected2A} | actual2 = {ListToString(actual2)}");
+        Debug.Log($"Expected2B = {expected2B} | actual2 = {ListToString(actual2)}");
+    }
+
+    private void MapRing_Direction_Works()
+    {
+        MapRing ring = new MapRing(5, new Vector2(1, 1));
+        Vector2 direction1 = ring.Direction(new Vector2(1,6), true);
+        Vector2 direction2 = ring.Direction(new Vector2(1,6), false);
+        Vector2 direction3 = ring.Direction(new Vector2(3.5f,3.5f), true);
+        Vector2 direction4 = ring.Direction(new Vector2(6,1), true);
+        Debug.Log($"Direction1 is {direction1} : should be parallel to (1,0)");
+        Debug.Log($"Direction2 is {direction2} : should be parallel to (-1,0)");
+        Debug.Log($"Direction3 is {direction3} : should be parallel to (1,-1)");
+        Debug.Log($"Direction4 is {direction4} : should be parallel to (0,-1)");
     }
 
     private void FindExistingNode_Works()
     {
         var direction1 = new Vector2(1, 4);
         var direction2 = new Vector2(-1, -1);
-        CircularMap map = new CircularMap(new Vector2(3, 3), 9.1f, new List<Passageway>(), new List<CelluloAgent>());
         map.AddNewPassage(0, direction1);
         map.AddNewPassage(0, direction2);
         map.AddNewPassage(1, direction1);
         map.AddNewPassage(2, direction2);
         map.AddNewPassage(2, direction1);
+        Debug.Log(map);
         Pathfinder pf = new Pathfinder(map);
         Debug.Log(pf);
+        
     }
 
     private void MapRingTests()

@@ -29,7 +29,8 @@ public class SteeringAgent : MonoBehaviour
 
     protected virtual void FixedUpdate(){
         steering = new Steering();
-        foreach(AgentBehaviour behaviour in behaviours){
+        foreach(AgentBehaviour behaviour in behaviours)
+        {
             if (blendWeight)
                 SetSteering(behaviour.GetSteering(), behaviour.weight);
             else
@@ -50,6 +51,20 @@ public class SteeringAgent : MonoBehaviour
         rotation = steering.angular == 0.0f ? 0.0f : rotation;
         velocity = steering.linear.sqrMagnitude == 0.0f ? Vector3.zero : velocity;
     }
+    
+    public void SetMovement(Vector3 newVelocity, float newAngle)
+    {
+        velocity = newVelocity;
+        rotation = newAngle;
+        velocity = Vector3.ClampMagnitude(velocity, maxSpeed);
+        rotation = rotation > maxRotation ? maxRotation : rotation;
+        
+        rotation = newAngle == 0.0f ? 0.0f : rotation;
+        velocity = newVelocity.sqrMagnitude == 0.0f ? Vector3.zero : velocity;
+    }
+
+    public Vector3 GetVelocity() => velocity;
+    
     public void SetSteering(Steering steering)
     {
         this.steering = steering;

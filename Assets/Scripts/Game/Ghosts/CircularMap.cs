@@ -52,6 +52,45 @@ public class CircularMap
         _passages.Add(new Passageway(borders[0], borders[1], target));
     }
 
+    public Vector2 FindClosestPoint(Vector2 target)
+    {
+        Vector2 closest = new Vector2(0,0);
+        float distance = float.MaxValue;
+        foreach (MapRing ring in _rings)
+        {
+            float newDistance = ring.DistanceTo(target);
+            if (newDistance < distance)
+            {
+                closest = ring.ClosestTo(target);
+                distance = newDistance;
+            }
+        }
+        foreach (Passageway passage in _passages)
+        {
+            float newDistance = passage.DistanceTo(target);
+            if (newDistance < distance)
+            {
+                closest = passage.ClosestTo(target);
+                distance = newDistance;
+            } 
+        }
+
+        return closest;
+    }
+
+    public IPathway FindClosestPathway(Vector2 target)
+    {
+        Func<IPathway, float> sorter = p => p.DistanceTo(target);
+        IPathway closestRing = MinElement(_rings, sorter);
+        IPathway closestPassage = MinElement(_passages, sorter);
+        return MinElement(closestRing, closestPassage, sorter);
+    }
+
+    public bool IsCloseEnough(Vector2 target, float minDistance)
+    {
+        return Vector2.Distance(FindClosestPoint(target), target) <= minDistance;
+    }
+
     public IList<MapRing> ClosestRings(Vector2 position)
     {
         if (_rings.Count <= 1)
@@ -60,25 +99,11 @@ public class CircularMap
         }  
         if (_rings.Count == 2)
         {
-            return new List<MapRing> { _rings[0], _rings[1] };
+            return _rings[0].Radius() < _rings[1].Radius() ? new List<MapRing> { _rings[0], _rings[1] } : new List<MapRing> { _rings[1], _rings[0] };
         }
-        MapRing first = _rings[0];
-        MapRing second = _rings[1];
         
-        foreach (MapRing ring in _rings)
-        {
-            if (ring.DistanceFromCenter(position) < first.DistanceFromCenter(position))
-            {
-                second = first;
-                first = ring;
-            }
-            else if (ring.DistanceFromCenter(position) < second.DistanceFromCenter(position))
-            {
-                second = ring;
-            }
-        }
-
-        return new List<MapRing> { first, second };
+        List<MapRing> sorted = _rings.OrderBy(r => Math.Abs(r.DistanceTo(position))).ToList();
+        return new List<MapRing> {sorted[0], sorted[1]};
     }
 
     public IList<Vector2> PassagesOnRing(MapRing ring)
@@ -111,10 +136,29 @@ public class CircularMap
 
     public override string ToString()
     {
-        return $"CircularMap[rings = {ListToString(_rings)}, \npassages = {ListToString(_passages)}";
+        return $"CircularMap [rings = {ListToString(_rings)}, \npassages = {ListToString(_passages)}";
     }
     
-    public class Passageway
+    public interface IPathway
+    {
+        public Vector2 ClosestTo(Vector2 target);
+
+        public float DistanceTo(Vector2 target);
+
+        public float DistanceBetween(Vector2 pointA, Vector2 pointB);
+
+        public Vector2 Orientate(Vector2 position, Vector2 target, bool forceDetour);
+
+        // TODO: Uncomment this when Unity is updated to newest version
+        /*
+        public bool IsCloseEnoughTo(Vector2 target, float minDistance)
+        {
+            return DistanceTo(target) < minDistance;
+        } 
+        */
+    }
+    
+    public class Passageway : IPathway
     {
         private readonly MapRing _smallRing;
         private readonly MapRing _largeRing;
@@ -171,17 +215,44 @@ public class CircularMap
 
         public float Length() => Vector2.Distance(_smallPoint, _largePoint);
 
+        public Vector2 ClosestTo(Vector2 target)
+        {
+            return _smallPoint + Projection(target, _largePoint - _smallPoint);
+        }
+        
+        public float DistanceBetween(Vector2 pointA, Vector2 pointB)
+        {
+            return Vector2.Distance(ClosestTo(pointA), ClosestTo(pointB));
+        }
+
+        public float DistanceTo(Vector2 target)
+        {
+            if (!IsOn(target))
+            {
+                return Math.Min(Vector2.Distance(target, _smallPoint), Vector2.Distance(target, _largePoint));
+            }
+            return Vector2.Distance(ClosestTo(target), target);
+        }
+
         public bool IsOn(Vector2 position)
         {
             return Math.Abs(Vector2.Distance(position, _smallPoint) + Vector2.Distance(position, _largePoint) 
                             - Length()) < EPSILON;
         }
-        
+
+        public Vector2 Orientate(Vector2 position, Vector2 target, bool forceDetour)
+        {
+            Vector2 orientation = (_largePoint - _smallPoint).normalized;
+            return Vector2.Dot(target - position, orientation) > 0 ? orientation : -orientation;
+        }
+
+        /*
         public Vector2 Direction(Vector2 currentPos, Vector2 nextPos)
         {
             if (!IsOn(currentPos)) throw new ArgumentException("Current position must be on the passageway!");
             return (nextPos - currentPos).normalized;
         }
+        **/
 
         private Vector2 Projection(Vector2 vector, Vector2 axis)
         {
@@ -201,11 +272,12 @@ public class CircularMap
 
         public override string ToString()
         {
-            return $"Passageway[point1 = {_smallPoint}, point2 = {_largePoint}]";
+            return $"Passageway [From {_smallPoint}, to {_largePoint}]";
         }
+        
     }
 
-    public class MapRing
+    public class MapRing : IPathway
     {
         private readonly float _radius;
         private readonly Vector2 _center;
@@ -213,7 +285,8 @@ public class CircularMap
         public MapRing(CircularMap map, int ringIndex)
         {
             if (!(0 <= ringIndex && ringIndex < map.Rings().Count)) throw new ArgumentException($"Index must be between 0 and {map.Rings().Count} (number of rings - 1)");
-            _radius = map.Rings()[ringIndex]._radius;
+            _radius = map.Rings().OrderBy(r => r._radius).ToList()[ringIndex]._radius;
+      
             if (_radius <= 0) throw new ArgumentException($"Negative radius. There is something wrong with {map.Rings()[ringIndex]}");
             _center = map.Rings()[0]._center;
         }
@@ -229,9 +302,9 @@ public class CircularMap
             return (_center - point).magnitude;
         }
 
-        public float DistanceBetween(Vector2 pos1, Vector2 pos2)
+        public float DistanceBetween(Vector2 pointA, Vector2 pointB)
         {
-            return _radius * Math.Abs(Vector2.Angle(pos1 - _center, pos2 - _center));
+            return _radius * Math.Abs(Vector2.Angle(pointA - _center, pointB - _center));
         }
 
         public bool IsOn(Vector2 point)
@@ -248,10 +321,17 @@ public class CircularMap
         {
             return new Vector2((float)(_radius * Math.Cos(angle)), (float)(_radius * Math.Sin(angle)));
         }
-
+        
         public float Radius() => _radius;
 
         public Vector2 Position() => _center;
+
+        public Vector2 Orientate(Vector2 position, Vector2 target, bool forceDetour)
+        {
+            bool isClockwise = !forceDetour || Vector2.Angle(position - _center, target - _center) < 180;
+            return Direction(position, isClockwise);
+        }
+
 
         public Vector2 Direction(Vector2 currentPos, bool isClockWise)
         {
@@ -259,9 +339,33 @@ public class CircularMap
             {
                 //throw new ArgumentException("Current position must be on ring!");
             }
-            //Vector2 direction = PointAt(Vector2.Perpendicular((currentPos - _center).normalized));
-            Vector2 direction = PointAt(Vector2.Angle(Vector2.right, Vector2.Perpendicular((currentPos - _center).normalized)));
+
+            //Vector3 w = new Vector3(0, 1,0);
+            //Vector3 r = ToVector3(currentPos - _center, 0);
+            //w = w * (10/r.magnitude);
+            //Vector3 direction = Vector3.Cross(w, r);
+            /*
+            Vector3 w = new Vector3(0, 0, 1);
+            Vector3 r = new Vector3((currentPos - _center).x, (currentPos - _center).y, 0).normalized * _radius;
+            w = w * 2;
+            Vector3 cross = Vector3.Cross(w, r);
+            Vector3 direction3 = new Vector3(cross.x, 0, cross.y);
+            Vector2 direction = ToVector2(direction3);   
+            */   
+            
+            Vector2 direction = -Vector2.Perpendicular(currentPos - _center).normalized;
+            
             return isClockWise ? direction: -direction;
+        }
+
+        public Vector2 ClosestTo(Vector2 target)
+        {
+            return PointAt(Vector2.Angle(Vector2.right, target - _center));
+        }
+
+        public float DistanceTo(Vector2 target)
+        {
+            return Math.Abs(DistanceFromCenter(target) - _radius);
         }
         
         public override bool Equals(object obj)
@@ -275,7 +379,7 @@ public class CircularMap
 
         public override string ToString()
         {
-            return $"MapRing[center = {_center}, radius = {_radius,1:F2}]";
+            return $"MapRing [center = {_center}, radius = {_radius,1:F2}]";
         }
         
     }
