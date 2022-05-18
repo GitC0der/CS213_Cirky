@@ -1,5 +1,6 @@
 ﻿using static CircularMap;
 using static Utils;
+using static Pathfinder;
 using UnityEngine;
 using UnityEngine.Assertions.Comparers;
 
@@ -9,6 +10,8 @@ using UnityEngine.Assertions.Comparers;
 public class GhostBehavior : AgentBehaviour
 {
     private bool _isFleeing;
+    private Pathfinder pathfinder;
+    
     public new void Awake()
     {
         base.Awake();

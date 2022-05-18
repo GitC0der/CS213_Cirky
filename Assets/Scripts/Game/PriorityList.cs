@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor.SceneManagement;
@@ -9,13 +10,19 @@ using static Utils;
 /// <summary>
 ///     A sorted list. This name was chosen since SortedLit was already taken (by something that
 /// doesn't really look like a sorted list). This implementation is not efficient, but that won't be any source of
-/// problems in this project
+/// problem in this project
 /// </summary>
 /// <typeparam name="TElement">The type of elements contained in the queue</typeparam>
-public class PriorityList<TElement>
+public class PriorityList<TElement> : IEnumerable<TElement>
 {
     private List<TElement> _elements;
     private Func<TElement, float> _sorter;
+
+    public PriorityList(Func<TElement, float> sorter)
+    {
+        _elements = new List<TElement>();
+        _sorter = sorter;
+    }
 
     public PriorityList(ICollection<TElement> collection, Func<TElement, float> sorter)
     {
@@ -45,14 +52,26 @@ public class PriorityList<TElement>
         SortQueue();
     }
 
+    public bool IsEmpty() => _elements.Count == 0;
+
     private void SortQueue()
     {
         _elements = _elements.OrderBy(e => _sorter(e)).ToList();
         _elements.RemoveAll(IsNull);
     }
 
+    public IEnumerator<TElement> GetEnumerator()
+    {
+        return _elements.GetEnumerator();
+    }
+
     public override string ToString()
     {
-        return $"Queue [elements: {ListToString(_elements)}]";
+        return $"PriorityList [elements: {ListToString(_elements)}]";
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
     }
 }

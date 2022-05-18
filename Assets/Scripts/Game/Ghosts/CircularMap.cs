@@ -14,7 +14,9 @@ public class CircularMap
     private IList<MapRing> _rings = new List<MapRing>();
     private ISet<Passageway> _passages = new HashSet<Passageway>();
 
-    public CircularMap(Vector2 center, float smallestDiameter, ICollection<Passageway> passages, ICollection<CelluloAgent> cellulos)
+    public CircularMap(Vector2 center, float smallestDiameter) : this(center, smallestDiameter, new HashSet<Passageway>()) {}
+
+    public CircularMap(Vector2 center, float smallestDiameter, ICollection<Passageway> passages)
     {
         if (smallestDiameter <= 5 * MARGIN)
         {
@@ -86,9 +88,9 @@ public class CircularMap
         return MinElement(closestRing, closestPassage, sorter);
     }
 
-    public bool IsCloseEnough(Vector2 target, float minDistance)
+    public bool IsCloseEnough(Vector2 position, float minDistance)
     {
-        return Vector2.Distance(FindClosestPoint(target), target) <= minDistance;
+        return Vector2.Distance(FindClosestPoint(position), position) <= minDistance;
     }
 
     public IList<MapRing> ClosestRings(Vector2 position)
@@ -145,9 +147,9 @@ public class CircularMap
 
         public float DistanceTo(Vector2 target);
 
-        public float DistanceBetween(Vector2 pointA, Vector2 pointB);
+        public float DistanceBetween(Vector2 pointA, Vector2 pointB, bool forceDetour = false);
 
-        public Vector2 Orientate(Vector2 position, Vector2 target, bool forceDetour);
+        public Vector2 Orientate(Vector2 position, Vector2 target, Vector2 currentDirection);
 
         // TODO: Uncomment this when Unity is updated to newest version
         /*
@@ -220,7 +222,7 @@ public class CircularMap
             return _smallPoint + Projection(target, _largePoint - _smallPoint);
         }
         
-        public float DistanceBetween(Vector2 pointA, Vector2 pointB)
+        public float DistanceBetween(Vector2 pointA, Vector2 pointB, bool forceDetour = false)
         {
             return Vector2.Distance(ClosestTo(pointA), ClosestTo(pointB));
         }
@@ -240,8 +242,9 @@ public class CircularMap
                             - Length()) < EPSILON;
         }
 
-        public Vector2 Orientate(Vector2 position, Vector2 target, bool forceDetour)
+        public Vector2 Orientate(Vector2 position, Vector2 target, Vector2 currentDirection)
         {
+            //TODO : Implement this
             Vector2 orientation = (_largePoint - _smallPoint).normalized;
             return Vector2.Dot(target - position, orientation) > 0 ? orientation : -orientation;
         }
@@ -302,9 +305,12 @@ public class CircularMap
             return (_center - point).magnitude;
         }
 
-        public float DistanceBetween(Vector2 pointA, Vector2 pointB)
+        public float DistanceBetween(Vector2 pointA, Vector2 pointB, bool forceDetour = false)
         {
-            return _radius * Math.Abs(Vector2.Angle(pointA - _center, pointB - _center));
+            bool isClockwise = !forceDetour || Vector2.Angle(pointA - _center, pointB - _center) < 90;
+            float angle = Math.Abs(Vector2.Angle(pointA - _center, pointB - _center));
+            angle = isClockwise ? angle : 360 - angle;
+            return (float)(Math.PI * angle * _radius / 180.0);
         }
 
         public bool IsOn(Vector2 point)
@@ -326,9 +332,12 @@ public class CircularMap
 
         public Vector2 Position() => _center;
 
-        public Vector2 Orientate(Vector2 position, Vector2 target, bool forceDetour)
+        public Vector2 Orientate(Vector2 position, Vector2 target, Vector2 currentDirection)
         {
-            bool isClockwise = !forceDetour || Vector2.Angle(position - _center, target - _center) < 180;
+            // TODO : Implement this
+            //bool isClockwise = !forceDetour || Vector2.Angle(position - _center, target - _center) < 180;
+            //return Direction(position, isClockwise);
+            bool isClockwise = Vector2.Angle(currentDirection, Direction(position, true)) < 90;
             return Direction(position, isClockwise);
         }
 

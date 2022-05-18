@@ -66,6 +66,15 @@ public static class Utils
         return EqualityComparer<TElement>.Default.Equals(element, default(TElement));
     }
 
+    public static TValue GetFrom<TKey, TValue>(Dictionary<TKey, TValue> dictionnary, TKey key)
+    {
+        //if (!dictionnary.Contains<>(key)) throw new ArgumentException("Dictionnary does not contain key");
+        TValue value;
+        dictionnary.TryGetValue(key, out value);
+        return value;
+    }
+    
     public static Vector2 ToVector2(Vector3 vector) => new Vector2(vector.x, vector.z);
     public static Vector3 ToVector3(Vector2 vector, float height) => new Vector3(vector.x, height, vector.y);
+    
 }

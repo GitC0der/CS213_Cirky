@@ -11,14 +11,62 @@ using UnityEngine.Assertions;
  */
 public class UnitTests : MonoBehaviour
 {
-    CircularMap map = new CircularMap(new Vector2(3, 3), 9.1f, new List<Passageway>(), new List<CelluloAgent>());
+    CircularMap map = new CircularMap(new Vector2(3, 3), 9.1f);
 
     private void LaunchTests()
     {
         //Utils_MinElement_Works();
-        PriorityQueue_Works();
+        //PriorityQueue_Works();
+        //MapRing_DistanceBetween_Works();
+        //List_AddRange_Works();
+        AngleTests();
     }
 
+    private void AngleTests()
+    {
+        Vector2 v1 = new Vector2(0, 1);
+        Vector2 v2 = new Vector2(1,1);
+        Vector2 v3 = new Vector2(-1, 0);
+        Assert.AreEqual(45, Vector2.Angle(v1,v2));
+        Assert.AreEqual(45, Vector2.Angle(v2, v1));
+        Assert.AreEqual(135, Vector2.Angle(v2,v3));
+        Assert.AreEqual(135, Vector2.Angle(v3,v2));
+        
+        Debug.Log($"Angle between {v1} and {v2} is {Vector2.SignedAngle(v1,v2)}");
+        Debug.Log($"Angle between {v2} and {v1} is {Vector2.SignedAngle(v2,v1)}");
+        Debug.Log($"Angle between {v2} and {v3} is {Vector2.SignedAngle(v2,v3)}");
+        Debug.Log($"Angle between {v3} and {v2} is {Vector2.SignedAngle(v3,v2)}");
+        Debug.Log($"Angle between {v1} and {v3} is {Vector2.SignedAngle(v1,v3)}");
+        Debug.Log($"Angle between {v3} and {v1} is {Vector2.SignedAngle(v3,v1)}");
+    }
+
+    private void List_AddRange_Works()
+    {
+        List<int> initial = new List<int> { 3, 8 };
+        List<int> added = new List<int> { -5, 17 };
+        initial.AddRange(added);
+        Debug.Log($"Expected = {ListToString(new List<int> {3,8,-5,17})} | Actual = {ListToString(initial)}");
+    }
+
+    private void MapRing_DistanceBetween_Works()
+    {
+        float radius = 5;
+        Vector2 center = new Vector2(2, 2);
+        MapRing ring = new MapRing(radius, center);
+        float distance1A = ring.DistanceBetween(new Vector2(2, 7), new Vector2(7, 2), false);
+        float distance2A = ring.DistanceBetween(new Vector2(2, 7), new Vector2(7, 2), true);
+        float distance1B = ring.DistanceBetween(new Vector2(7, 2), new Vector2(2, 7), false);
+        float distance2B = ring.DistanceBetween(new Vector2(7, 2), new Vector2(2, 7), true);
+        Assert.AreApproximatelyEqual((float)(Math.PI*radius/2.0), distance1A);
+        Assert.AreApproximatelyEqual((float)(3*Math.PI*radius/2.0), distance2A);
+        Assert.AreApproximatelyEqual((float)(Math.PI*radius/2.0), distance1B);
+        Assert.AreApproximatelyEqual((float)(3*Math.PI*radius/2.0), distance2B);
+        
+        Debug.Log($"{ring.DistanceBetween(new Vector2(5,5), new Vector2(1,-5), false)}");
+        Debug.Log($"{ring.DistanceBetween(new Vector2(5,5), new Vector2(1,-5), true)}");
+        Debug.Log($"{ring.DistanceBetween(new Vector2(1,-5), new Vector2(5,5), false)}");
+        Debug.Log($"{ring.DistanceBetween(new Vector2(1,-5), new Vector2(5,5), true)}");
+    }
     private void PriorityQueue_Works()
     {
         PriorityList<int> list = new PriorityList<int>(new List<int>{2, 7, -3, 9, 11, -15 }, 
@@ -106,7 +154,7 @@ public class UnitTests : MonoBehaviour
         CircularMap.Passageway passage1 = new CircularMap.Passageway(ring1, ring2, new Vector2(1, 2));
         CircularMap.Passageway passage2 = new CircularMap.Passageway(ring1, ring2, new Vector2(1, -0.5f));
         CircularMap.Passageway falsePassage = new CircularMap.Passageway(ring1, falseRing, new Vector2(2,3));
-        CircularMap map = new CircularMap(center, 12, new List<CircularMap.Passageway> {passage1, passage2, falsePassage}, new List<CelluloAgent>());
+        CircularMap map = new CircularMap(center, 12, new List<CircularMap.Passageway> {passage1, passage2, falsePassage});
         Debug.Log(ListToString(map.PassagesOnRing(ring1)));
         Debug.Log(ListToString(map.PassagesOnRing(falseRing)));
     }
