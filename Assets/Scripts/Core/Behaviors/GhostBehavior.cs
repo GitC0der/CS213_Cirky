@@ -27,7 +27,7 @@ public class GhostBehavior : AgentBehaviour
         _pathfinder = new Pathfinder(_map);
         _target = _map.Center() + new Vector2(0,4);
         //PathfinderUtils.DrawGraph(_pathfinder);
-        _pathfinder.ComputePath(ToVector2(transform.localPosition), _target);
+        //_pathfinder.ComputePath(ToVector2(transform.localPosition), _target);
     }
     
     // Update is called once per frame
@@ -46,7 +46,7 @@ public class GhostBehavior : AgentBehaviour
         //steering.linear = Vector3.ClampMagnitude(1000*transform.TransformDirection(direction), agent.maxAccel);
 
         //steering.linear = Vector3.ClampMagnitude(10000*(direction - agent.GetVelocity()), agent.maxAccel);
-        steering.linear = Vector3.ClampMagnitude(10000*(2.5f*direction - agent.GetVelocity()), agent.maxAccel);
+        steering.linear = Vector3.ClampMagnitude(10000*(2.37f*direction - agent.GetVelocity()), agent.maxAccel);
         //steering.linear = transform.TransformDirection(Vector3.ClampMagnitude(steering.linear, agent.maxAccel));
         //steering.linear = (agent.maxAccel*1000/steering.linear.magnitude)*steering.linear;
         //steering.linear = transform.parent.TransformDirection(Vector3.ClampMagnitude(steering.linear, agent.maxAccel));
