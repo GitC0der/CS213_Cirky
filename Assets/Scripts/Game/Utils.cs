@@ -73,6 +73,9 @@ public static class Utils
         dictionnary.TryGetValue(key, out value);
         return value;
     }
+
+    public static float ToRadians(float degrees) => (float)(degrees * Math.PI / 180);
+    public static float ToDegrees(float radians) => (float)(radians * 180 / Math.PI);
     
     public static Vector2 ToVector2(Vector3 vector) => new Vector2(vector.x, vector.z);
     public static Vector3 ToVector3(Vector2 vector, float height) => new Vector3(vector.x, height, vector.y);

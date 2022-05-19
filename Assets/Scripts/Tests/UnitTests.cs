@@ -1,6 +1,7 @@
 using System;
 using static Utils;
 using static CircularMap;
+using static Pathfinder;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,11 +16,54 @@ public class UnitTests : MonoBehaviour
 
     private void LaunchTests()
     {
-        //Utils_MinElement_Works();
-        //PriorityQueue_Works();
-        //MapRing_DistanceBetween_Works();
-        //List_AddRange_Works();
-        AngleTests();
+        //FindExistingNode_Works();
+        //MapGeneration_Tests();
+        //Pathfinder_OtherNode_Works();
+        //Pathfinder_Connect_Works();
+    }
+
+    private void NeighborsAdd_Test()
+    {
+        Node node1 = new Node(new Vector2(3, 7));
+        Debug.Log($"Node1 is {node1}");
+        Node node2 = new Node(new Vector2(-2, 4));
+        node1.Neighbors().Add(node2);
+        Debug.Log($"Node1 is {node1}");
+        Debug.Log($"Node2 is {node2}");
+    }
+
+    private void Pathfinder_OtherNode_Works()
+    {
+        MapRing ring = new MapRing(3, new Vector2(-1,6));
+        Edge edge = new Edge(new Node(new Vector2(-1,9)), new Node(new Vector2(2,6)), 3, ring);
+        Debug.Log($"Node1 = {edge.Node1()}");
+        Debug.Log($"Node2 = {edge.Node2()}");
+        Debug.Log($"OtherNode of node1 is {edge.OtherNode(edge.Node1())}");
+        Debug.Log($"OtherNode of node2 is {edge.OtherNode(edge.Node2())}");
+    }
+    private void Pathfinder_Connect_Works()
+    {
+        Node node1 = new Node(new Vector2(4, 7));
+        Node node2 = new Node(new Vector2(-2,3));
+        Debug.Log($"Node1 not connected is {node1}");
+        Debug.Log($"Node2 not connected is {node2}");
+        MapRing ring = new MapRing(5, new Vector2(6,6));
+        node1.Connect(node2, ring.DistanceBetween(node1.Position(), node2.Position()), ring);
+        Debug.Log($"Node1 connected is {node1}");
+        Debug.Log($"Node2 connected is {node2}");
+        node2.Connect(node1, 12, ring);
+        Debug.Log($"Node1 after failed connection is {node1}");
+        Debug.Log($"Node2 after failed connection is {node2}");
+    }
+
+    private void MapGeneration_Tests()
+    {
+        CircularMap map = new CircularMap(new Vector2(3, 5), 2);
+        Debug.Log($"Empty map is {map}");
+        map.AddNewPassage(0, new Vector2(0,1));
+        Debug.Log($"Passage should go from (3,7) to (3,9), actually is {map}");
+        map.AddNewPassage(new Vector2(6,5));
+        Debug.Log($"Passage should go from (5,5) to (7,5), actually is {map}");
     }
 
     private void AngleTests()
@@ -91,7 +135,7 @@ public class UnitTests : MonoBehaviour
         MapRing false1 = new MapRing(2, new Vector2(13, 15));
         List<MapRing> ringList = new List<MapRing> { expected, 
             false1, new MapRing(5, new Vector2(21,7)) };
-        Func<MapRing, float> ringFunction = r => Vector2.Distance(r.Position(), new Vector2(3, 6));
+        Func<MapRing, float> ringFunction = r => Vector2.Distance(r.Center(), new Vector2(3, 6));
         Assert.AreEqual(expected, MinElement(ringList, ringFunction));
         Assert.AreEqual(expected, MinElement(expected, false1, ringFunction));
     }

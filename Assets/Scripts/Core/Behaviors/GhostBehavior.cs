@@ -10,16 +10,24 @@ using UnityEngine.Assertions.Comparers;
 public class GhostBehavior : AgentBehaviour
 {
     private bool _isFleeing;
-    private Pathfinder pathfinder;
+    private Pathfinder _pathfinder;
+    private Vector2 _target;
+    private CircularMap _map;  //TODO : Change this
     
     public new void Awake()
     {
         base.Awake();
     }
 
-    public void Start() {
+    public void Start()
+    {
         tag = "Ghost";
         _isFleeing = false;
+        _map = GenerateMap();
+        _pathfinder = new Pathfinder(_map);
+        _target = _map.Center() + new Vector2(0,4);
+        //PathfinderUtils.DrawGraph(_pathfinder);
+        _pathfinder.ComputePath(ToVector2(transform.localPosition), _target);
     }
     
     // Update is called once per frame
@@ -31,19 +39,13 @@ public class GhostBehavior : AgentBehaviour
     public override Steering GetSteering()
     {
         Vector2 center = new Vector2(7,-5);
-        Vector3 center3 = new Vector3(7,0,-5);
         MapRing ring = new MapRing(3, center);
-        Vector2 direction = ring.Direction(ToVector2(transform.localPosition), true).normalized;
-        //Vector3 direction3 = ToVector3(direction, 0);
-        Vector3 direction3 = transform.parent.TransformDirection(ToVector3(ring.Direction(ToVector2(transform.localPosition), true), 0).normalized);
-        float distance = (ToVector2(transform.localPosition) - center).magnitude;
-        
+        //Vector3 direction = transform.parent.TransformDirection(ToVector3(ring.Direction(ToVector2(transform.localPosition), true), 0).normalized);
+        Vector3 direction = ToVector3(_pathfinder.Orientation(ToVector2(transform.localPosition), new Vector2(0,4)), 0);
         Steering steering = new Steering();
         //steering.linear = transform.TransformDirection(direction3);
-        //Debug.Log($"Local is {transform.localPosition}, global is {transform.position}, center is {center}");
-        
-        //steering.linear = 10000*(distance*direction3 - agent.GetVelocity());
-        steering.linear = Vector3.ClampMagnitude(10000*(2.5f*direction3 - agent.GetVelocity()), agent.maxAccel);
+
+        steering.linear = Vector3.ClampMagnitude(10000*(2.5f*direction - agent.GetVelocity()), agent.maxAccel);
         
         //steering.linear = transform.TransformDirection(Vector3.ClampMagnitude(steering.linear, agent.maxAccel));
         //steering.linear = (agent.maxAccel*1000/steering.linear.magnitude)*steering.linear;
@@ -52,5 +54,13 @@ public class GhostBehavior : AgentBehaviour
         
         //Debug.Log($"Direction is {direction}, Steering is {steering.linear} and distance is {distance}");
         return steering;
+    }
+
+    private CircularMap GenerateMap()
+    {
+        CircularMap map = new CircularMap(new Vector2(7.15f, -5), 5.5f);
+        map.AddNewPassage(0, new Vector2(0,1));
+        map.AddNewPassage(0, new Vector2(1,0));
+        return map;
     }
 }
