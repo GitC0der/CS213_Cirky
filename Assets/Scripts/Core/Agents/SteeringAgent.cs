@@ -17,7 +17,9 @@ public class SteeringAgent : MonoBehaviour
     protected float rotation;
     protected Vector3 velocity;
     protected Steering steering;
-    private AgentBehaviour[] behaviours; 
+    private AgentBehaviour[] behaviours;
+
+    private float _deltaTime;
 
     protected virtual void Start()
     {
@@ -45,12 +47,15 @@ public class SteeringAgent : MonoBehaviour
     {
         velocity += steering.linear * Time.deltaTime;
         rotation += steering.angular * Time.deltaTime;
+        float _deltaTime = Time.deltaTime;
         velocity = Vector3.ClampMagnitude(velocity, maxSpeed);
         rotation = rotation > maxRotation ? maxRotation : rotation;
         
         rotation = steering.angular == 0.0f ? 0.0f : rotation;
         velocity = steering.linear.sqrMagnitude == 0.0f ? Vector3.zero : velocity;
     }
+
+    public float DeltaTime() => _deltaTime;
     
     public void SetMovement(Vector3 newVelocity, float newAngle)
     {

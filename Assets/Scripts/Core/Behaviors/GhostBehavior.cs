@@ -40,19 +40,20 @@ public class GhostBehavior : AgentBehaviour
     {
         Vector2 center = new Vector2(7,-5);
         MapRing ring = new MapRing(3, center);
-        //Vector3 direction = transform.parent.TransformDirection(ToVector3(ring.Direction(ToVector2(transform.localPosition), true), 0).normalized);
-        Vector3 direction = ToVector3(_pathfinder.Orientation(ToVector2(transform.localPosition), new Vector2(0,4)), 0);
+        Vector3 direction = transform.parent.TransformDirection(ToVector3(ring.Direction(ToVector2(transform.localPosition), true), 0).normalized);
+        //Vector3 direction = ToVector3(_pathfinder.Orientation(ToVector2(transform.localPosition), new Vector2(0,4)), 0);
         Steering steering = new Steering();
-        //steering.linear = transform.TransformDirection(direction3);
+        //steering.linear = Vector3.ClampMagnitude(1000*transform.TransformDirection(direction), agent.maxAccel);
 
+        //steering.linear = Vector3.ClampMagnitude(10000*(direction - agent.GetVelocity()), agent.maxAccel);
         steering.linear = Vector3.ClampMagnitude(10000*(2.5f*direction - agent.GetVelocity()), agent.maxAccel);
-        
         //steering.linear = transform.TransformDirection(Vector3.ClampMagnitude(steering.linear, agent.maxAccel));
         //steering.linear = (agent.maxAccel*1000/steering.linear.magnitude)*steering.linear;
         //steering.linear = transform.parent.TransformDirection(Vector3.ClampMagnitude(steering.linear, agent.maxAccel));
         //steering.linear = Vector3.ClampMagnitude(direction3, agent.maxAccel);
+        float distance = Vector2.Distance(ToVector2(transform.localPosition), center);
         
-        //Debug.Log($"Direction is {direction}, Steering is {steering.linear} and distance is {distance}");
+        Debug.Log($"Direction is {direction}, Steering is {steering.linear} and distance is {distance}");
         return steering;
     }
 
