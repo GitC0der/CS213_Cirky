@@ -11,15 +11,16 @@ public class PathfinderUtils
 {
     public static string DrawGraph(Pathfinder pathfinder)
     {
+        if (pathfinder.Nodes().Count == 0) return "Graph[EMPTY]";
         List<Node> nodes = pathfinder.Nodes().OrderBy(n => Vector2.Distance(n.Position(), pathfinder.Map().Center())).ToList();
-        
+
         float radius = Vector2.Distance(nodes[0].Position(), pathfinder.Map().Center());
-        string str = "";
+        string str = $"\nRing with radius {radius} : ";
         int ringID = 0;
         foreach (Node node in nodes)
         {
             float newRadius = Vector2.Distance(node.Position(), pathfinder.Map().Center());
-            if (Mathf.Abs(newRadius - radius) < float.Epsilon)
+            if (newRadius > radius + MARGIN)
             {
                 radius = newRadius;
                 ++ringID;
@@ -27,10 +28,11 @@ public class PathfinderUtils
                 str += $"\nRing with radius {radius} : ";
             }
 
-            str = str + node.ToSimpleString() + ", ";
+            str = str + "\n  " + node + ", ";
         }
+        
         str = str.Remove(str.Length - 2, 2);
-        return $"Graph [{str}]";
+        return $"Graph [{str}\n]";
 
     }
 }

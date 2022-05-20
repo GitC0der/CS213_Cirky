@@ -56,8 +56,8 @@ public class PriorityList<TElement> : IEnumerable<TElement>
 
     private void SortQueue()
     {
-        _elements = _elements.OrderBy(e => _sorter(e)).ToList();
         _elements.RemoveAll(IsNull);
+        _elements = _elements.OrderBy(e => _sorter(e)).ToList();
     }
 
     public IEnumerator<TElement> GetEnumerator()

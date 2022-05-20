@@ -20,7 +20,7 @@ public class UnitTests : MonoBehaviour
         //MapGeneration_Tests();
         //Pathfinder_OtherNode_Works();
         //Pathfinder_Connect_Works();
-        MapRing_Direction_Works();
+        //MapRing_Direction_Works();
     }
 
     private void NeighborsAdd_Test()

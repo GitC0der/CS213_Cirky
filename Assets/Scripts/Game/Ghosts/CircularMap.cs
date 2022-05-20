@@ -7,13 +7,18 @@ using UnityEngine.Diagnostics;
 
 public class CircularMap
 {
-    private const float MARGIN = 1.0f;    // "Wiggle room" to prevent collision between a Cellulo and map borders or other cellulos
+    public const float MARGIN = 1.0f;    // "Wiggle room" to prevent collision between a Cellulo and map borders or other cellulos
     private const float EPSILON = 1e-4f;   // Tolerance regarding floating point values equality
 
     private Vector2 _center;
     private IList<MapRing> _rings = new List<MapRing>();
     private ISet<Passageway> _passages = new HashSet<Passageway>();
 
+    public CircularMap(Vector2 center)
+    {
+        _center = center;
+    }
+    
     public CircularMap(Vector2 center, int ringsCount)
     {
         if (ringsCount < 1) throw new ArgumentException("There must be at least 1 ring");
@@ -46,12 +51,20 @@ public class CircularMap
         }
     }
 
-    public void AddNewPassage(int firstRingIndex, Vector2 direction)
+    public MapRing AddRing(float radius)
+    {
+        MapRing ring = new MapRing(radius, _center);
+        _rings.Add(ring);
+        _rings = _rings.OrderBy(r => r.Radius()).ToList();
+        return ring;
+    }
+
+    public Passageway AddNewPassage(int firstRingIndex, Vector2 direction)
     {
         //_passages.Add(Passageway.FromMap(this, firstRingIndex, direction));
-        AddNewPassage(_center + (MARGIN + 2*MARGIN*(firstRingIndex + 1))*direction.normalized);
+        return AddNewPassage(_center + (MARGIN + 2*MARGIN*(firstRingIndex + 1))*direction.normalized);
     }
-    public void AddNewPassage(Vector2 target)
+    public Passageway AddNewPassage(Vector2 target)
     {
         bool isOnSomeRing = false;
         foreach (MapRing ring in _rings)
@@ -61,7 +74,9 @@ public class CircularMap
         if (isOnSomeRing) throw new ArgumentException("Target too ambiguous. Try placing marker further from rings");
 
         IList<MapRing> borders = ClosestRings(target);
-        _passages.Add(new Passageway(borders[0], borders[1], target));
+        Passageway passage = new Passageway(borders[0], borders[1], target);
+        _passages.Add(passage);
+        return passage;
     }
 
     public Vector2 FindClosestPoint(Vector2 target)
@@ -160,6 +175,8 @@ public class CircularMap
         public float DistanceBetween(Vector2 pointA, Vector2 pointB, bool forceDetour = false);
 
         public Vector2 Orientate(Vector2 position, Vector2 target, Vector2 currentDirection);
+
+        public bool IsOn(Vector2 point);
 
         // TODO: Uncomment this when Unity is updated to newest version
         /*
