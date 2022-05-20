@@ -192,7 +192,7 @@ public class CircularMap
             //TODO : Change to direction instead of position
             if (ring1 == null || ring2 == null) throw new ArgumentException("Rings must NOT be null!");
             if (ring1.Equals(ring2)) throw new ArgumentException("Rings must be different from each other!");
-            if (Math.Abs(Vector2.Distance(position, ring1.Center()) - ring1.Radius()) < EPSILON)
+            if (Mathf.Abs(Vector2.Distance(position, ring1.Center()) - ring1.Radius()) < EPSILON)
             {
                 throw new ArgumentException("Position too close to the rings. Try to find another position");
             }
@@ -242,14 +242,14 @@ public class CircularMap
         {
             if (!IsOn(target))
             {
-                return Math.Min(Vector2.Distance(target, _smallPoint), Vector2.Distance(target, _largePoint));
+                return Mathf.Min(Vector2.Distance(target, _smallPoint), Vector2.Distance(target, _largePoint));
             }
             return Vector2.Distance(ClosestTo(target), target);
         }
 
         public bool IsOn(Vector2 position)
         {
-            return Math.Abs(Vector2.Distance(position, _smallPoint) + Vector2.Distance(position, _largePoint) 
+            return Mathf.Abs(Vector2.Distance(position, _smallPoint) + Vector2.Distance(position, _largePoint) 
                             - Length()) < EPSILON;
         }
 
@@ -319,14 +319,14 @@ public class CircularMap
         public float DistanceBetween(Vector2 pointA, Vector2 pointB, bool forceDetour = false)
         {
             bool isClockwise = !forceDetour || Vector2.Angle(pointA - _center, pointB - _center) < 90;
-            float angle = Math.Abs(Vector2.Angle(pointA - _center, pointB - _center));
+            float angle = Mathf.Abs(Vector2.Angle(pointA - _center, pointB - _center));
             angle = isClockwise ? angle : 360 - angle;
-            return (float)Math.Abs(Math.PI * angle * _radius / 180.0);
+            return (float)Mathf.Abs(Mathf.PI * angle * _radius / 180f);
         }
 
         public bool IsOn(Vector2 point)
         {
-            return Math.Abs(DistanceFromCenter(point) - _radius) <= EPSILON;
+            return Mathf.Abs(DistanceFromCenter(point) - _radius) <= EPSILON;
         }
 
         /// <summary>
@@ -336,7 +336,7 @@ public class CircularMap
         /// <returns>A point on the ring that has a given angle from the horizontal line</returns>
         public Vector2 PointAt(float angle)
         {
-            return new Vector2((float)(_center.x + _radius * Math.Cos(ToRadians(angle))), (float)(_center.y + _radius * Math.Sin(ToRadians(angle))));
+            return new Vector2((float)(_center.x + _radius * Mathf.Cos(ToRadians(angle))), (float)(_center.y + _radius * Mathf.Sin(ToRadians(angle))));
         }
         
         public float Radius() => _radius;
@@ -385,7 +385,7 @@ public class CircularMap
 
         public float DistanceFromPath(Vector2 target)
         {
-            return Math.Abs(DistanceFromCenter(target) - _radius);
+            return Mathf.Abs(DistanceFromCenter(target) - _radius);
         }
         
         public override bool Equals(object obj)
