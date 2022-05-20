@@ -163,10 +163,15 @@ public class UnitTests : MonoBehaviour
         Vector2 direction2 = ring.Direction(new Vector2(1,6), false);
         Vector2 direction3 = ring.Direction(new Vector2(3.5f,3.5f), true);
         Vector2 direction4 = ring.Direction(new Vector2(6,1), true);
-        Debug.Log($"Direction1 is {direction1} : should be parallel to (1,0)");
-        Debug.Log($"Direction2 is {direction2} : should be parallel to (-1,0)");
-        Debug.Log($"Direction3 is {direction3} : should be parallel to (1,-1)");
-        Debug.Log($"Direction4 is {direction4} : should be parallel to (0,-1)");
+
+        Vector2 expected1 = new Vector2(1, 0).normalized;
+        Vector2 expected2 = new Vector2(-1, 0).normalized;
+        Vector2 expected3 = new Vector2(1, -1).normalized;
+        Vector2 expected4 = new Vector2(0, -1).normalized;
+        Assert.AreEqual(direction1, expected1, $"Direction1 is {direction1} : should be parallel to {expected1}");
+        Assert.AreEqual(direction2, expected2, $"Direction1 is {direction2} : should be parallel to {expected2}");
+        Assert.AreEqual(direction3, expected3, $"Direction1 is {direction3} : should be parallel to {expected3}");
+        Assert.AreEqual(direction4, expected4, $"Direction1 is {direction4} : should be parallel to {expected4}");
     }
 
     private void FindExistingNode_Works()
