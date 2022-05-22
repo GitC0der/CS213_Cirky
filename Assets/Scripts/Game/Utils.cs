@@ -74,6 +74,14 @@ public static class Utils
         return value;
     }
 
+    /// Returns the angle between a given vector and the horizontal right. The output angle is counter-clockwise and
+    /// between in [0,360[. For e.g, the vector (1,0) will have an angle of 0, (-1,0) will be 180, and (0,-1) will be 270
+    public static float Angle(Vector2 vector)
+    {
+        float angle = Vector2.SignedAngle(Vector2.right, vector);
+        return angle >= 0 ? angle : angle + 360;
+    }
+
     public static float ToRadians(float degrees) => (float)(degrees * Math.PI / 180);
     public static float ToDegrees(float radians) => (float)(radians * 180 / Math.PI);
     

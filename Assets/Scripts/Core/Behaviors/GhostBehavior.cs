@@ -26,8 +26,7 @@ public class GhostBehavior : AgentBehaviour
         _map = GenerateMap();
         _pathfinder = new Pathfinder(_map);
         //_target = _map.Center() + new Vector2(0,4);
-        _target = _map.Rings()[0].PointAt(135);
-        //PathfinderUtils.DrawGraph(_pathfinder);
+        _target = _map.Rings()[2].PointAt(130);
         _pathfinder.ComputePath(ToVector2(transform.localPosition), _target);
     }
     
@@ -42,29 +41,35 @@ public class GhostBehavior : AgentBehaviour
         Vector2 center = new Vector2(7,-5);
         MapRing ring = new MapRing(3, center);
         //Vector3 direction = transform.parent.TransformDirection(ToVector3(ring.Direction(ToVector2(transform.localPosition), true), 0).normalized);
-        Vector3 direction = ToVector3(_pathfinder.Orientation(ToVector2(transform.localPosition), new Vector2(0,4)), 0);
+        Vector3 direction = ToVector3(_pathfinder.Orientation(ToVector2(transform.localPosition), _target), 0);
         Steering steering = new Steering();
-        steering.linear = Vector3.ClampMagnitude(1000*transform.TransformDirection(direction), agent.maxAccel);
+        //steering.linear = Vector3.ClampMagnitude(1000*transform.TransformDirection(direction), agent.maxAccel);
 
         //steering.linear = Vector3.ClampMagnitude(10000*(direction - agent.GetVelocity()), agent.maxAccel);
-        //steering.linear = Vector3.ClampMagnitude(10000*(2.5f*direction - agent.GetVelocity()), agent.maxAccel);
+        steering.linear = Vector3.ClampMagnitude(10000*(2.5f*direction - agent.GetVelocity()), agent.maxAccel);
         //steering.linear = transform.TransformDirection(Vector3.ClampMagnitude(steering.linear, agent.maxAccel));
         //steering.linear = (agent.maxAccel*1000/steering.linear.magnitude)*steering.linear;
         //steering.linear = transform.parent.TransformDirection(Vector3.ClampMagnitude(steering.linear, agent.maxAccel));
         //steering.linear = Vector3.ClampMagnitude(direction3, agent.maxAccel);
         float distance = Vector2.Distance(ToVector2(transform.localPosition), center);
         
-        Debug.Log($"Direction is {direction}, Steering is {steering.linear} and distance is {distance}");
+        //Debug.Log($"Direction is {direction}, Steering is {steering.linear} and distance is {distance}");
         return steering;
     }
 
     private CircularMap GenerateMap()
     {
-        //CircularMap map = new CircularMap(new Vector2(7.15f, -5), 5.5f);
-        //DEBUGGING : Ghost position = (9.3, 0, -6)
-        CircularMap map = new CircularMap(new Vector2(7.15f, -5), 2);
-        map.AddNewPassage(0, new Vector2(0,1));
-        map.AddNewPassage(0, new Vector2(1,0));
+        //DEBUGGING : Ghost position = (9.14, 0, -6)
+        //          : Target position = (6.94, 0, -4.50)
+        CircularMap map = new CircularMap(new Vector2(7.18f, -5.16f));
+        map.AddRing(new Vector2(7.88f, -5.16f));
+        map.AddRing(new Vector2(9.3f, -5.16f));
+        map.AddRing(new Vector2(10.87f, -5.16f));
+        map.AddNewPassage(new Vector2(9.72f, -3.69f));
+        map.AddNewPassage(new Vector2(4.73f, -3.69f));
+        map.AddNewPassage(new Vector2(7.19f, -3.9f));
+        map.AddNewPassage(new Vector2(7.19f, -6.45f));
+        map.AddNewPassage(new Vector2(7.19f, -7.94f));
         return map;
     }
 }

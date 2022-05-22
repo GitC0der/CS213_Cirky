@@ -28,7 +28,7 @@ public class PathfinderUtils
                 str += $"\nRing with radius {radius} : ";
             }
 
-            str = str + "\n  " + node + ", ";
+            str = str + "\n  -> " + node.ToFullString() + ", ";
         }
         
         str = str.Remove(str.Length - 2, 2);

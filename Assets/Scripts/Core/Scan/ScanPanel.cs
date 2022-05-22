@@ -213,7 +213,7 @@ public class ScanPanel : MonoBehaviour
     }
 
 	/// <summary>
-	/// Remove a robot from the list
+	/// Dequeue a robot from the list
 	/// </summary>
 	/// <param name="macAddr">
 	/// The MAC address of the robot to remove

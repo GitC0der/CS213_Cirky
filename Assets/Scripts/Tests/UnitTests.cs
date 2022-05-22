@@ -118,10 +118,10 @@ public class UnitTests : MonoBehaviour
             e => Math.Abs(e));
         Debug.Log(list);
         Assert.AreEqual(2, list.Peek());
-        list.Remove();
+        list.Dequeue();
         Debug.Log(list);
         Assert.AreEqual(-3, list.Peek());
-        list.Remove();
+        list.Dequeue();
         Debug.Log(list);
         Assert.AreEqual(7, list.Peek());
     }

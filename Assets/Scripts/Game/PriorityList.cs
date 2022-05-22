@@ -43,12 +43,17 @@ public class PriorityList<TElement> : IEnumerable<TElement>
         SortQueue();
     }
 
-    public TElement Peek() => _elements[0];
+    public TElement Peek()
+    {
+        if (IsEmpty()) throw new InvalidOperationException("The priority queue is empty!");
+        return _elements[0];
+    } 
 
-    public void Remove()
+    public void Dequeue()
     {
         if (_elements.Count == 0) return;
-        _elements[0] = default(TElement);
+        //_elements[0] = default(TElement);
+        _elements.Remove(_elements[0]);
         SortQueue();
     }
 
@@ -59,6 +64,8 @@ public class PriorityList<TElement> : IEnumerable<TElement>
         _elements.RemoveAll(IsNull);
         _elements = _elements.OrderBy(e => _sorter(e)).ToList();
     }
+    
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     public IEnumerator<TElement> GetEnumerator()
     {
@@ -70,8 +77,4 @@ public class PriorityList<TElement> : IEnumerable<TElement>
         return $"PriorityList [elements: {ListToString(_elements)}]";
     }
 
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return GetEnumerator();
-    }
 }

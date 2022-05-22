@@ -51,6 +51,11 @@ public class CircularMap
         }
     }
 
+    public MapRing AddRing(Vector2 position)
+    {
+        return AddRing((position - _center).magnitude);
+    }
+
     public MapRing AddRing(float radius)
     {
         MapRing ring = new MapRing(radius, _center);
@@ -214,7 +219,7 @@ public class CircularMap
                 throw new ArgumentException("Position too close to the rings. Try to find another position");
             }
             
-            if (ring1.Radius() < ring2.Radius())
+            if (ring1.Radius() < ring2.Radius()) 
             {
                 _smallRing = ring1;
                 _largeRing = ring2;
@@ -274,7 +279,8 @@ public class CircularMap
         {
             //TODO : Implement this
             Vector2 orientation = (_largePoint - _smallPoint).normalized;
-            return Vector2.Dot(target - position, orientation) > 0 ? orientation : -orientation;
+            //return Vector2.Dot(target - position, orientation) > 0 ? orientation : -orientation;
+            return (target - position).normalized;
         }
 
         /*
@@ -321,6 +327,8 @@ public class CircularMap
             if (_radius <= 0) throw new ArgumentException($"Negative radius. There is something wrong with {map.Rings()[ringIndex]}");
             _center = map.Rings()[0]._center;
         }
+        
+        [Obsolete("Works only with a map with uniformly spaced rings, i.e linear radii")]
         public MapRing(float radius, Vector2 center)
         {
             if (radius <= 0) throw new ArgumentException("Radius can't be null or negative!");
@@ -365,7 +373,8 @@ public class CircularMap
             // TODO : Implement this
             //bool isClockwise = !forceDetour || Vector2.Angle(position - _center, target - _center) < 180;
             //return Direction(position, isClockwise);
-            bool isClockwise = Vector2.Angle(currentDirection, Direction(position, true)) < 90;
+            //bool isClockwise = Vector2.Angle(currentDirection, Direction(position, true)) < 90;
+            bool isClockwise = Vector2.SignedAngle(currentDirection, Direction(position, true)) < 0;
             return Direction(position, isClockwise);
         }
 
