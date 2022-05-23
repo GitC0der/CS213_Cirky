@@ -61,9 +61,9 @@ public class UnitTests : MonoBehaviour
     {
         CircularMap map = new CircularMap(new Vector2(3, 5), 2);
         Debug.Log($"Empty map is {map}");
-        map.AddNewPassage(0, new Vector2(0,1));
+        map.AddPassage(0, new Vector2(0,1));
         Debug.Log($"Passage should go from (3,7) to (3,9), actually is {map}");
-        map.AddNewPassage(new Vector2(6,5));
+        map.AddPassage(new Vector2(6,5));
         Debug.Log($"Passage should go from (5,5) to (7,5), actually is {map}");
     }
 
@@ -178,11 +178,11 @@ public class UnitTests : MonoBehaviour
     {
         var direction1 = new Vector2(1, 4);
         var direction2 = new Vector2(-1, -1);
-        map.AddNewPassage(0, direction1);
-        map.AddNewPassage(0, direction2);
-        map.AddNewPassage(1, direction1);
-        map.AddNewPassage(2, direction2);
-        map.AddNewPassage(2, direction1);
+        map.AddPassage(0, direction1);
+        map.AddPassage(0, direction2);
+        map.AddPassage(1, direction1);
+        map.AddPassage(2, direction2);
+        map.AddPassage(2, direction1);
         Debug.Log(map);
         Pathfinder pf = new Pathfinder(map);
         Debug.Log(pf);

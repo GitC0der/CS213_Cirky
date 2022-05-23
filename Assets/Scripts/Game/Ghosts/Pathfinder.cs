@@ -183,13 +183,8 @@ public class Pathfinder
         Debug.Log($"Next node : {nextNode}");
         */
         
-        return newDirection;
-    }
-    
-    /// Should be called when another cellulo leaves its current Pathway
-    public void UpdateGraph()
-    {
         
+        return newDirection;
     }
 
     public void OnNextPathway()
@@ -236,9 +231,13 @@ public class Pathfinder
             frontier.Dequeue();
 
             if (currentNode.Equals(endNode)) break;
-            
+
+            //PriorityList<Node> neighbors = new PriorityList<Node>(currentNode.Neighbors(), n => GetFrom(costSoFar, n));
             foreach (Node neighbor in currentNode.Neighbors())
+            //while (neighbors.Count() > 0)
             {
+                //Node neighbor = neighbors.Peek();
+                //neighbors.Dequeue();
                 //if (!IsBlocked(currentNode.EdgeTo(neighbor)) && !comeFrom.ContainsKey(neighbor))
                 if (!comeFrom.ContainsKey(neighbor))  // TODO : Implement above version
                 {
@@ -328,26 +327,6 @@ public class Pathfinder
     public override string ToString()
     {
         return $"Pathfinder [nodes = {ListToString(_nodes)}]";
-    }
-
-    public class Path
-    {
-        private List<IPathway> _pathways = new List<IPathway>();
-        private Vector2 _position;
-        private Vector2 _target;
-        private Vector2 _direction;
-
-        public Path(Vector2 startPos, Vector2 targetPos, List<IPathway> pathways)
-        {
-            _position = startPos;
-            _target = targetPos;
-            _pathways.AddRange(pathways);
-        }
-        
-        public Vector2 GetOrientation()
-        {
-            return _pathways[0].Orientate(_position, _target, _direction);
-        }
     }
 
     public ISet<Node> Nodes() => _nodes;

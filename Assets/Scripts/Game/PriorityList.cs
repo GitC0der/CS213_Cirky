@@ -77,4 +77,22 @@ public class PriorityList<TElement> : IEnumerable<TElement>
         return $"PriorityList [elements: {ListToString(_elements)}]";
     }
 
+    public string ToFullString()
+    {
+        if (_elements.Count == 0) return "PriorityList []";
+        if (_elements.Count == 1)
+        {
+            return "PriorityList [element: {" + _elements[0] + ", " + _sorter(_elements[0]) + "}]";
+        }
+
+        string s = "PriorityList [";
+        foreach (TElement element in _elements)
+        {
+            s += "{" + element + ", " + _sorter(element) +"}" + ", ";
+        }
+        
+        s = s.Remove(s.Length - 2, 2);
+        return "PriorityList[elements: " + s + "]";
+    }
+
 }

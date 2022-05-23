@@ -2,8 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using UnityEngine;
 using UnityEngine.Diagnostics;
+using Vector2 = UnityEngine.Vector2;
 
 public class CircularMap
 {
@@ -15,11 +17,13 @@ public class CircularMap
     private IList<MapRing> _rings = new List<MapRing>();
     private ISet<Passageway> _passages = new HashSet<Passageway>();
 
+    /// Use this to create a custom map, and then use AddRing() and AddPassage()
     public CircularMap(Vector2 center)
     {
         _center = center;
     }
     
+    /// Creates a circular map with evenly space rings. ***Not for the current map layout***
     public CircularMap(Vector2 center, int ringsCount)
     {
         if (ringsCount < 1) throw new ArgumentException("There must be at least 1 ring");
@@ -29,8 +33,11 @@ public class CircularMap
             _rings.Add(new MapRing(2*(i+1)*MARGIN, center));
         }
     }
+    
+    [Obsolete("May be deleted later")]
     public CircularMap(Vector2 center, float smallestRadius) : this(center, smallestRadius, new HashSet<Passageway>()) {}
 
+    [Obsolete("May be deleted later")]
     public CircularMap(Vector2 center, float smallestRadius, ICollection<Passageway> passages)
     {
         if (smallestRadius <= 5 * MARGIN)
@@ -52,11 +59,13 @@ public class CircularMap
         }
     }
 
+    /// Adds a new ring to the map at the desired position (i.e the ring will go through a specified position)
     public MapRing AddRing(Vector2 position)
     {
         return AddRing((position - _center).magnitude);
     }
 
+    /// Adds a new ring to the map with a specified radius
     public MapRing AddRing(float radius)
     {
         MapRing ring = new MapRing(radius, _center);
@@ -65,12 +74,25 @@ public class CircularMap
         return ring;
     }
 
-    public Passageway AddNewPassage(int firstRingIndex, Vector2 direction)
+    /// <summary>
+    ///     Adds a new passage on the map, with specified direction and smaller ring. Will automatically connect to the closest larger ring
+    /// </summary>
+    /// <param name="firstRingIndex">The index of the ring from which the passage will span</param>
+    /// <param name="orientation">The orientation of the passage</param>
+    /// <returns>The added passage</returns>
+    public Passageway AddPassage(int firstRingIndex, Vector2 orientation)
     {
         //_passages.Add(Passageway.FromMap(this, firstRingIndex, direction));
-        return AddNewPassage(_center + (MARGIN + 2*MARGIN*(firstRingIndex + 1))*direction.normalized);
+        return AddPassage(_center + (MARGIN + 2*MARGIN*(firstRingIndex + 1))*orientation.normalized);
     }
-    public Passageway AddNewPassage(Vector2 target)
+    
+    /// <summary>
+    ///     Adds a passage that will go through a specified point. Will automatically connect to the closest rings
+    /// </summary>
+    /// <param name="target">The point which the passage will go through</param>
+    /// <returns>The added passage</returns>
+    /// <exception cref="ArgumentException">If the point is too close to a ring</exception>
+    public Passageway AddPassage(Vector2 target)
     {
         bool isOnSomeRing = false;
         foreach (MapRing ring in _rings)
@@ -84,14 +106,18 @@ public class CircularMap
         _passages.Add(passage);
         return passage;
     }
-
-    /// Use this to detect if the player is cheating, and then take appropriate actions. Returns true if the
-    /// player is cheating, i.e if the player is to far from the guardrails 
+    
+    /// <summary>
+    ///     Use this to detect if the player is cheating, and then take appropriate actions
+    /// </summary>
+    /// <param name="position">The position of the player</param>
+    /// <returns>True if the player is cheating, false if not</returns>
     public bool IsCheating(Vector2 position)
     {
         return Vector2.Distance(FindClosestPoint(position), position) > CHEAT_DETECTION;
     }
 
+    /// Finds the closest point on the map from a specified target
     public Vector2 FindClosestPoint(Vector2 target)
     {
         Vector2 closest = new Vector2(0,0);
@@ -117,18 +143,13 @@ public class CircularMap
 
         return closest;
     }
-
+    
     public IPathway FindClosestPathway(Vector2 target)
     {
         Func<IPathway, float> sorter = p => p.DistanceFromPath(target);
         IPathway closestRing = MinElement(_rings, sorter);
         IPathway closestPassage = MinElement(_passages, sorter);
         return MinElement(closestRing, closestPassage, sorter);
-    }
-
-    public bool IsCloseEnough(Vector2 position, float minDistance)
-    {
-        return Vector2.Distance(FindClosestPoint(position), position) <= minDistance;
     }
 
     public IList<MapRing> ClosestRings(Vector2 position)
@@ -156,17 +177,11 @@ public class CircularMap
         }
 
         return list;
-        /*
-        IList<Passageway> list = new List<Passageway>(_passages);
-        return list.TakeWhile(p => p.SmallRing().Equals(ring) || p.LargeRing().Equals(ring)) as IList<Passageway>;
-        */
     }
 
     public List<MapRing> Rings()
     {
         List<MapRing> list = new List<MapRing>(_rings).OrderBy(ring => ring.Radius()).ToList();
-        //List<MapRing> list = new List<MapRing>(_rings);
-        //list.Sort((r1,r2) => r1.Radius().CompareTo(r2.Radius()));
         return list;
     }
 
@@ -216,7 +231,7 @@ public class CircularMap
             return new Passageway(map.Rings()[firstRingIndex], map.Rings()[firstRingIndex + 1], map._center + direction);
         }
         
-        /** The passageway is assumed to radiate from the center of the rings */
+        /// The passageway is assumed to radiate from the center of the rings
         public Passageway(MapRing ring1, MapRing ring2, Vector2 position)
         {
             //TODO : Change to direction instead of position
@@ -336,7 +351,7 @@ public class CircularMap
             _center = map.Rings()[0]._center;
         }
         
-        [Obsolete("Works only with a map with uniformly spaced rings, i.e linear radii")]
+        //[Obsolete("Works only with a map with uniformly spaced rings, i.e linear radii")]
         public MapRing(float radius, Vector2 center)
         {
             if (radius <= 0) throw new ArgumentException("Radius can't be null or negative!");
@@ -349,12 +364,17 @@ public class CircularMap
             return (_center - point).magnitude;
         }
 
-        public float DistanceBetween(Vector2 pointA, Vector2 pointB, bool forceDetour = false)
+        public float DistanceBetween(Vector2 from, Vector2 to, bool forceDetour = false)
         {
+            float angle = Vector2.Angle(from - _center, to - _center);
+            angle = forceDetour ? 360 - angle : angle;
+            return Mathf.Abs(Mathf.PI * angle * _radius / 180f);
+            /*
             bool isClockwise = !forceDetour || Vector2.Angle(pointA - _center, pointB - _center) < 90;
             float angle = Mathf.Abs(Vector2.Angle(pointA - _center, pointB - _center));
             angle = isClockwise ? angle : 360 - angle;
             return (float)Mathf.Abs(Mathf.PI * angle * _radius / 180f);
+            */
         }
 
         public bool IsOn(Vector2 point)

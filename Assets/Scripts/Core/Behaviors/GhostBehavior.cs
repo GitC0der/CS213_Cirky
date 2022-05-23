@@ -27,7 +27,7 @@ public class GhostBehavior : AgentBehaviour
         _map = GenerateMap();
         _pathfinder = new Pathfinder(_map);
         //_target = _map.Rings()[2].PointAt(130);    // Original Debugging target
-        _target = _map.Rings()[2].PointAt(210);
+        _target = _map.Rings()[0].PointAt(320);
         _pathfinder.ComputePath(ToVector2(transform.localPosition), _target);
     }
     
@@ -39,7 +39,7 @@ public class GhostBehavior : AgentBehaviour
 
     public override Steering GetSteering()
     {
-        // TODO : Use this when merging nodes will be working
+        // TODO : Use this when merging nodes is working
         //_pathfinder.ComputePath(ToVector2(transform.localPosition), _target);
         
         // This is necessary since the cellulo is going up for no discernable reason
@@ -54,9 +54,9 @@ public class GhostBehavior : AgentBehaviour
 
         //steering.linear = Vector3.ClampMagnitude(10000*(direction - agent.GetVelocity()), agent.maxAccel);
         
-        /*  ------------------------------------------------------------------
-            |       THE HOLY FORMULA : *DO* *NOT* *TOUCH* *THIS*             |
-            ------------------------------------------------------------------ */
+        /**************************************************************** /
+        /       THE HOLY FORMULA : *DO* *NOT* *TOUCH* *THIS*              /
+        /*****************************************************************/
         steering.linear = Vector3.ClampMagnitude(10000*(2.5f*direction - agent.GetVelocity()), agent.maxAccel);
         
         
@@ -73,11 +73,11 @@ public class GhostBehavior : AgentBehaviour
         map.AddRing(new Vector2(7.88f, -5.16f));
         map.AddRing(new Vector2(9.3f, -5.16f));
         map.AddRing(new Vector2(10.87f, -5.16f));
-        map.AddNewPassage(new Vector2(9.72f, -3.69f));
-        map.AddNewPassage(new Vector2(4.73f, -3.69f));
-        map.AddNewPassage(new Vector2(7.19f, -3.9f));
-        map.AddNewPassage(new Vector2(7.19f, -6.45f));
-        map.AddNewPassage(new Vector2(7.19f, -7.94f));
+        map.AddPassage(new Vector2(9.72f, -3.69f));
+        map.AddPassage(new Vector2(4.73f, -3.69f));
+        map.AddPassage(new Vector2(7.19f, -3.9f));
+        map.AddPassage(new Vector2(7.19f, -6.45f));
+        map.AddPassage(new Vector2(7.19f, -7.94f));
         return map;
     }
 }

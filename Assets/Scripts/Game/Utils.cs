@@ -60,12 +60,13 @@ public static class Utils
 
         return minElement;
     }
-
+    
     public static bool IsNull<TElement>(TElement element)
     {
         return EqualityComparer<TElement>.Default.Equals(element, default(TElement));
     }
 
+    /// Gets a value from a dictionary. Just syntaxic sugar
     public static TValue GetFrom<TKey, TValue>(Dictionary<TKey, TValue> dictionnary, TKey key)
     {
         //if (!dictionnary.Contains<>(key)) throw new ArgumentException("Dictionnary does not contain key");
