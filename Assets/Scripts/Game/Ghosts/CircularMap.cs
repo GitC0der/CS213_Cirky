@@ -9,6 +9,7 @@ public class CircularMap
 {
     public const float MARGIN = 1.0f;    // "Wiggle room" to prevent collision between a Cellulo and map borders or other cellulos
     private const float EPSILON = 1e-4f;   // Tolerance regarding floating point values equality
+    public const float CHEAT_DETECTION = 0.7f;
 
     private Vector2 _center;
     private IList<MapRing> _rings = new List<MapRing>();
@@ -82,6 +83,13 @@ public class CircularMap
         Passageway passage = new Passageway(borders[0], borders[1], target);
         _passages.Add(passage);
         return passage;
+    }
+
+    /// Use this to detect if the player is cheating, and then take appropriate actions. Returns true if the
+    /// player is cheating, i.e if the player is to far from the guardrails 
+    public bool IsCheating(Vector2 position)
+    {
+        return Vector2.Distance(FindClosestPoint(position), position) > CHEAT_DETECTION;
     }
 
     public Vector2 FindClosestPoint(Vector2 target)
@@ -279,8 +287,8 @@ public class CircularMap
         {
             //TODO : Implement this
             Vector2 orientation = (_largePoint - _smallPoint).normalized;
-            //return Vector2.Dot(target - position, orientation) > 0 ? orientation : -orientation;
-            return (target - position).normalized;
+            return Vector2.Dot(target - position, orientation) > 0 ? orientation : -orientation;
+            //return (target - position).normalized;
         }
 
         /*
@@ -370,12 +378,14 @@ public class CircularMap
 
         public Vector2 Orientate(Vector2 position, Vector2 target, Vector2 currentDirection)
         {
-            // TODO : Implement this
+            // TODO : Account for blocked edges
+            bool isClockwise = Vector2.SignedAngle(position - _center, target - _center) < 0;
+            return Direction(position, isClockwise);
             //bool isClockwise = !forceDetour || Vector2.Angle(position - _center, target - _center) < 180;
             //return Direction(position, isClockwise);
             //bool isClockwise = Vector2.Angle(currentDirection, Direction(position, true)) < 90;
-            bool isClockwise = Vector2.SignedAngle(currentDirection, Direction(position, true)) < 0;
-            return Direction(position, isClockwise);
+            //bool isClockwise = Vector2.SignedAngle(currentDirection, Direction(position, true)) < 0;
+            //return Direction(position, isClockwise);
         }
 
 

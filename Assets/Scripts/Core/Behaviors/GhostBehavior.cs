@@ -9,6 +9,7 @@ using UnityEngine.Assertions.Comparers;
 
 public class GhostBehavior : AgentBehaviour
 {
+    public const float _height = 1;
     private bool _isFleeing;
     private Pathfinder _pathfinder;
     private Vector2 _target;
@@ -25,8 +26,8 @@ public class GhostBehavior : AgentBehaviour
         _isFleeing = false;
         _map = GenerateMap();
         _pathfinder = new Pathfinder(_map);
-        //_target = _map.Center() + new Vector2(0,4);
-        _target = _map.Rings()[2].PointAt(130);
+        //_target = _map.Rings()[2].PointAt(130);    // Original Debugging target
+        _target = _map.Rings()[2].PointAt(210);
         _pathfinder.ComputePath(ToVector2(transform.localPosition), _target);
     }
     
@@ -38,22 +39,29 @@ public class GhostBehavior : AgentBehaviour
 
     public override Steering GetSteering()
     {
-        Vector2 center = new Vector2(7,-5);
-        MapRing ring = new MapRing(3, center);
+        // TODO : Use this when merging nodes will be working
+        //_pathfinder.ComputePath(ToVector2(transform.localPosition), _target);
+        
+        // This is necessary since the cellulo is going up for no discernable reason
+        transform.localPosition = new Vector3(transform.localPosition.x, 0, transform.localPosition.z);
+        
         //Vector3 direction = transform.parent.TransformDirection(ToVector3(ring.Direction(ToVector2(transform.localPosition), true), 0).normalized);
+        
         Vector3 direction = ToVector3(_pathfinder.Orientation(ToVector2(transform.localPosition), _target), 0);
+        
         Steering steering = new Steering();
         //steering.linear = Vector3.ClampMagnitude(1000*transform.TransformDirection(direction), agent.maxAccel);
 
         //steering.linear = Vector3.ClampMagnitude(10000*(direction - agent.GetVelocity()), agent.maxAccel);
-        steering.linear = Vector3.ClampMagnitude(10000*(2.5f*direction - agent.GetVelocity()), agent.maxAccel);
-        //steering.linear = transform.TransformDirection(Vector3.ClampMagnitude(steering.linear, agent.maxAccel));
-        //steering.linear = (agent.maxAccel*1000/steering.linear.magnitude)*steering.linear;
-        //steering.linear = transform.parent.TransformDirection(Vector3.ClampMagnitude(steering.linear, agent.maxAccel));
-        //steering.linear = Vector3.ClampMagnitude(direction3, agent.maxAccel);
-        float distance = Vector2.Distance(ToVector2(transform.localPosition), center);
         
-        //Debug.Log($"Direction is {direction}, Steering is {steering.linear} and distance is {distance}");
+        /*  ------------------------------------------------------------------
+            |       THE HOLY FORMULA : *DO* *NOT* *TOUCH* *THIS*             |
+            ------------------------------------------------------------------ */
+        steering.linear = Vector3.ClampMagnitude(10000*(2.5f*direction - agent.GetVelocity()), agent.maxAccel);
+        
+        
+
+        //Debug.Log($"Direction is {direction}, Steering is {steering.linear}");
         return steering;
     }
 

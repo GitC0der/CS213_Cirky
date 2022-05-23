@@ -43,10 +43,8 @@ public class Pathfinder
 
         foreach (MapRing ring in map.Rings())
         {
-            //List<Vector2> positions = _map.PassagesOnRing(ring).ToList().OrderBy(pos => Vector2.SignedAngle(Vector2.right, pos)).ToList();
             List<Vector2> positions = _map.PassagesOnRing(ring).ToList().OrderBy(pos => Angle(pos - ring.Center())).ToList();
-            //List<Vector2> positions = _map.PassagesOnRing(ring).ToList();
-            //positions.Sort((v1,v2) => Vector2.Angle(Vector2.right, v1).CompareTo(Vector2.Angle(Vector2.right, v2)));
+
             Node current = null; Node next = null;
             if (positions.Count > 1)
             {
@@ -66,9 +64,17 @@ public class Pathfinder
         
     }
 
-    private void MergeNodes(Node node1, Node node2)
+    private void MergeNodes(Node original, Node merged)
     {
         //TODO: Implement this if necessary
+        foreach (Node neighbor in merged.Neighbors())
+        {
+            Edge edge = merged.EdgeTo(neighbor);
+            original.Connect(neighbor, edge.Length(), edge.Pathway(), edge.Cost());
+            merged.Disconnect(neighbor);
+        }
+
+        _nodes.Remove(merged);
     }
 
     private Node InsertNode(IPathway path, Vector2 newPosition)
@@ -99,18 +105,6 @@ public class Pathfinder
     private Node AddNodeOnEdge(Vector2 newPosition)
     {
         return InsertNode(_map.FindClosestPathway(newPosition), newPosition);
-        //return AddNodeOnEdge(FindClosestEdgeFrom(newPosition), newPosition);
-        /*
-        IPathway pathway = _map.FindClosestPathway(position);
-        List<Node> nodes = FindClosestNodesOn(pathway, position);
-        
-        //nodes[0].Connect(nodes[1], pathway.DistanceBetween(nodes[0].Position(), nodes[1].Position()), pathway);
-        nodes[0].Disconnect(nodes[1]);
-        Edge edge = nodes[0].EdgeTo(nodes[1], position);
-        if (edge == null || edge.Pathway().Equals(pathway)) throw new ArgumentException("Unexpected error happened. The graph seems a little different from the map");
-        
-        return AddNodeOnEdge(edge, position);
-        */
     }
 
     /* Note : can only remove cellulo nodes, which are nodes that do not serve as a junction (i.e only have 2 edges) **/
@@ -165,14 +159,31 @@ public class Pathfinder
 
     public Vector2 Orientation(Vector2 currentPos, Vector2 targetPos)
     {
-        Node nextWaypointNode = _finalNodes.Peek();
-        if (nextWaypointNode.IsCloseEnoughTo(targetPos) || _finalNodes.Count == 0) return targetPos - currentPos;
 
-        if (nextWaypointNode.IsCloseEnoughTo(currentPos)) OnNextPathway();
+        if (_finalNodes.Count == 0) return new Vector2(0, 0);
+        Node nextNode = _finalNodes.Peek();
+        IPathway nextPath = _finalPath.Peek();
+        //if (nextNode.IsCloseEnoughTo(targetPos) || _finalNodes.Count == 0) return targetPos - currentPos;
 
+        //if (nextWaypointNode.IsCloseEnoughTo(currentPos)) OnNextPathway();
+
+        if (nextPath.DistanceBetween(currentPos, nextNode.Position()) < TRIGGER_DIST) OnNextPathway();
+
+        Vector2 newDirection = nextPath.Orientate(currentPos, nextNode.Position(), _direction);
+        Vector2 mathDirection = nextPath.Orientate(currentPos, targetPos, _direction);
+        
+        /*
+        Debug.Log("-------------------------------");
         Debug.Log($"Waypoints : {ListToString(_finalNodes.ToList())}");
         Debug.Log($"Pathways : {ListToString(_finalPath.ToList())}");
-        return _finalPath.Peek().Orientate(currentPos, nextWaypointNode.Position(), _direction);
+        Debug.Log($"Direction : {mathDirection}");
+        Debug.Log($"Angle : {Angle(currentPos - _map.Center())}");
+        Debug.Log($"Distance to next waypoint : {nextPath.DistanceBetween(currentPos, nextNode.Position())}");
+        Debug.Log($"Next path : {nextPath}");
+        Debug.Log($"Next node : {nextNode}");
+        */
+        
+        return newDirection;
     }
     
     /// Should be called when another cellulo leaves its current Pathway
@@ -187,17 +198,25 @@ public class Pathfinder
         _finalNodes.Dequeue();
     }
     
+    /// <summary>
+    ///     Sets the path from the current position to a specified target
+    /// </summary>
+    /// <param name="current"></param>
+    /// <param name="target"></param>
+    /// <exception cref="Exception"></exception>
     public void ComputePath(Vector2 current, Vector2 target)
     {
         Dictionary<Node, float> costSoFar = new Dictionary<Node, float>();
         Dictionary<Node, Node> comeFrom = new Dictionary<Node, Node>();
+        /*
         Func<Node, float> sorter = n =>
         {
             float value = 0;
             costSoFar.TryGetValue(n, out value);
             return value;
         };
-        PriorityList<Node> frontier = new PriorityList<Node>(sorter);
+        */
+        PriorityList<Node> frontier = new PriorityList<Node>(n => GetFrom(costSoFar, n));
         Node startNode = FindExistingNode(new Node(current), null);
         Node endNode = FindExistingNode(new Node(target), null);
         bool isStartNodeNew = IsNull(startNode);
@@ -234,9 +253,10 @@ public class Pathfinder
                         throw new Exception($"Problem with node connection : the connection from one node to " +
                                             $"the other is different. One is {neighbor.EdgeTo(currentNode)} while the other is {currentNode.EdgeTo(neighbor)}");
                     }
-                    
+
                     // TODO : Adapt for custom costs
-                    costSoFar.Add(neighbor, neighbor.EdgeTo(currentNode).Length());
+                    //costSoFar.Add(neighbor, neighbor.EdgeTo(currentNode).Length());
+                    costSoFar.Add(neighbor, GetFrom(costSoFar,currentNode) + currentNode.EdgeTo(neighbor).Length());
                     
                     frontier.Add(neighbor);
                     comeFrom.Add(neighbor, currentNode);
@@ -276,65 +296,6 @@ public class Pathfinder
         // Removes the nodes of the cellulos
         if (isStartNodeNew) RemoveNode(_map.FindClosestPathway(startNode.Position()),startNode);
         if (isEndNodeNew) RemoveNode(_map.FindClosestPathway(endNode.Position()),endNode);
-        
-        
-        /*
-        frontier.Add(startNode.Neighbors());
-        //_currentPathway = _map.FindClosestPathway(current);
-        Node currentNode = frontier.Peek(); 
-        frontier.Dequeue();
-        costSoFar.Add(startNode, 0);
-        
-        costSoFar.Add(currentNode, currentNode.EdgeTo(startNode).Length()); //TODO : Update this to take cellulos into account
-        comeFrom.Add(currentNode, startNode);
-        foreach (Node node in frontier)
-        {
-            comeFrom.Add(node, startNode);
-            costSoFar.Add(node, node.EdgeTo(startNode).Length());
-        }
-        
-        // When all nodes have been reached
-        if (frontier.IsEmpty() && costSoFar.Count > 2)
-        {
-            Node tempNode = endNode;
-            _finalNodes.Add(endNode);
-            _finalPath.Add(endNode.EdgeTo(GetFrom(comeFrom, endNode)).Pathway());
-            do
-            {
-                _finalPath.Add(tempNode.EdgeTo(GetFrom(comeFrom, tempNode)).Pathway());
-                tempNode = GetFrom(comeFrom, tempNode);
-                _finalNodes.Add(tempNode);
-            } while (!IsNull(GetFrom(comeFrom, GetFrom(comeFrom, tempNode))));
-
-            Debug.Log($"Final path is {ListToString(_finalNodes)}");
-            return new Path(current, target, _finalPath);
-        }
-        
-        // When moved to next frontier pathfinding.Node
-        if (neighbors.Count == 0)
-        {
-            currentNode = frontier.Peek();
-            frontier.Dequeue();
-            neighbors = new Queue<Node>(currentNode.Neighbors());
-        }
-        
-        Node neighbor;
-        do {
-            neighbor = neighbors.Peek();
-            neighbors.Clear();
-
-        } while (neighbors.Count != 0 && costSoFar.ContainsKey(neighbor));
-        
-        if (!costSoFar.ContainsKey(neighbor)) {
-            frontier.Add(neighbor);
-            comeFrom.Add(neighbor, currentNode);
-            AddNodeToCostSoFar(costSoFar, neighbor, currentNode);
-            if (neighbor.Equals(endNode)) {
-                Debug.Log("Final path computed");
-                return;
-            }
-        }
-        */
         
     }
 
@@ -417,6 +378,8 @@ public class Pathfinder
         public Node OtherNode(Node node) => _node1.Equals(node)? _node2: _node1;
 
         public float Length() => _length;
+
+        public float Cost() => _cost;
 
         public bool IsOccupied() => _isOccupied;
 
