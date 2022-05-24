@@ -63,6 +63,17 @@ public class Pathfinder
         }
         
     }
+    
+    public float DistanceToClosestNode(Vector2 from)
+    {
+        float distance = float.MaxValue;
+        foreach (Node node in _nodes)
+        {
+            float newDistance = Vector2.Distance(from, node.Position());
+            if (newDistance < distance) distance = newDistance;
+        }
+        return distance;
+    }
 
     private void MergeNodes(Node original, Node merged)
     {
@@ -160,7 +171,7 @@ public class Pathfinder
     public Vector2 Orientation(Vector2 currentPos, Vector2 targetPos)
     {
 
-        if (_finalNodes.Count == 0) return new Vector2(0, 0);
+        if (IsNull(_finalNodes) || _finalNodes.Count == 0) return new Vector2(0, 0);
         Node nextNode = _finalNodes.Peek();
         IPathway nextPath = _finalPath.Peek();
         //if (nextNode.IsCloseEnoughTo(targetPos) || _finalNodes.Count == 0) return targetPos - currentPos;
@@ -345,7 +356,7 @@ public class Pathfinder
         public Edge(Node node1, Node node2, float length, IPathway path, float cost = BASE_COST, bool isOccupied = false)
         {
             if (node1.Equals(node2)) throw new ArgumentException("Nodes must be different from one another!");
-            if (length <= 0) throw new ArgumentException($"Length must be greater than 0, but was {length}");
+            if (length < 0) throw new ArgumentException($"Length must be greater or equal to 0, but was {length}");
             _node1 = node1;
             _node2 = node2;
             _length = length;

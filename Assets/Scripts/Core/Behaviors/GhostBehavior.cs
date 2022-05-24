@@ -14,6 +14,7 @@ public class GhostBehavior : AgentBehaviour
     private Pathfinder _pathfinder;
     private Vector2 _target;
     private CircularMap _map;  //TODO : Change this
+    private GameObject _player;
     
     public new void Awake()
     {
@@ -29,6 +30,8 @@ public class GhostBehavior : AgentBehaviour
         //_target = _map.Rings()[2].PointAt(130);    // Original Debugging target
         _target = _map.Rings()[0].PointAt(320);
         _pathfinder.ComputePath(ToVector2(transform.localPosition), _target);
+        _player = GameObject.FindGameObjectWithTag("Player");
+        GoTo(_player.transform.localPosition);
     }
     
     // Update is called once per frame
@@ -37,10 +40,23 @@ public class GhostBehavior : AgentBehaviour
         
     }
 
+    public void GoTo(Vector3 target)
+    {
+        _pathfinder = new Pathfinder(_map);
+        _pathfinder.ComputePath(ToVector2(transform.localPosition), ToVector2(target));
+    }
+    
+
     public override Steering GetSteering()
     {
         // TODO : Use this when merging nodes is working
-        //_pathfinder.ComputePath(ToVector2(transform.localPosition), _target);
+        const float BUG_MARGIN = 1.5f;
+        float distanceGhost = _pathfinder.DistanceToClosestNode(ToVector2(transform.localPosition));
+        float distancePlayer = _pathfinder.DistanceToClosestNode(ToVector2(_player.transform.localPosition));
+        if (distanceGhost > BUG_MARGIN && distancePlayer > BUG_MARGIN)
+        {
+            GoTo(_player.transform.localPosition);
+        }
         
         // This is necessary since the cellulo is going up for no discernable reason
         transform.localPosition = new Vector3(transform.localPosition.x, 0, transform.localPosition.z);
