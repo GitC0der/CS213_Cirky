@@ -213,7 +213,7 @@ public class ScanPanel : MonoBehaviour
     }
 
 	/// <summary>
-	/// Dequeue a robot from the list
+	/// Remove a robot from the list
 	/// </summary>
 	/// <param name="macAddr">
 	/// The MAC address of the robot to remove
@@ -246,6 +246,7 @@ public class ScanPanel : MonoBehaviour
     void OnDestroy()
     {
         _scanner = null;
+        _celluloScannedList.Clear();
     }
 
 	/// <summary>

@@ -19,6 +19,8 @@ public static class Config
     // Cellulo constant
     public const int CELLULO_KEYS = 6;
     public const float DEFAULT_CONTROL_PERIOD = 0.1f;
+    public const float goalPoseThreshold = 1f;
+    public const float goalRotationThreshold = 10f;
 
     ///////////////////
     //// SCALING ////
@@ -29,7 +31,9 @@ public static class Config
     public static int REAL_MAP_DIMENSION_X = 297 ; // in mm 
     public static int REAL_MAP_DIMENSION_Y = 420; // in mm 
 
-    public static float CELLULO_SCALE = 1000.0f/ Mathf.Min(REAL_MAP_DIMENSION_X,REAL_MAP_DIMENSION_Y);
+    public static float GetCelluloScale(){
+        return 1000.0f/ Mathf.Min(REAL_MAP_DIMENSION_X,REAL_MAP_DIMENSION_Y);
+    }
 
     public static float UNITY_MAP_DIMENSION_X = REAL_MAP_DIMENSION_X<=REAL_MAP_DIMENSION_Y?10:10* REAL_MAP_DIMENSION_X/ REAL_MAP_DIMENSION_Y; 
     public static float UNITY_MAP_DIMENSION_Y = REAL_MAP_DIMENSION_Y<= REAL_MAP_DIMENSION_X ? 10 : 10 * REAL_MAP_DIMENSION_Y / REAL_MAP_DIMENSION_X;
