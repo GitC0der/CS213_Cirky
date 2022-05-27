@@ -18,10 +18,17 @@ public class Pathfinder
     private const float OCCUPIED_COST = 10e3f;  //TODO: Use this
     private const float TOLERANCE = 0.2f;
     private const float TRIGGER_DIST = 0.1f;
+    private const float MERGE_DIST = 0.25f;
 
+    private bool DEBUG_FAILED = false;
+    
     private readonly CircularMap _map;
     private ISet<Node> _nodes = new HashSet<Node>();
+    private ISet<Node> _initialNodes = new HashSet<Node>();
     private ISet<IPathway> _occupied = new HashSet<IPathway>();
+
+    private Vector2 _targetPos;
+    private Vector2 _currentPos;
 
     private Vector2 _direction;
     private Queue<Node> _finalNodes;
@@ -31,48 +38,83 @@ public class Pathfinder
     public Pathfinder(CircularMap map)
     {
         _map = map;
+        _nodes = ReinitializeNodes();
+    }
+
+    public ISet<Node> ReinitializeNodes()
+    {
+
+        ISet<Node> newNodes = new HashSet<Node>();
         
         foreach (Passageway passage in _map.Passages())
         {
-            Node node1 = new Node(passage.SmallPoint());
-            Node node2 = new Node(passage.LargePoint());
+            Node node1 = FindExistingNode(new Node(passage.SmallPoint()), null, MERGE_DIST, newNodes);
+            Node node2 = FindExistingNode(new Node(passage.LargePoint()), null, MERGE_DIST, newNodes);
+
+            if (IsNull(node1)) {
+                node1 = new Node(passage.SmallPoint());
+                newNodes.Add(node1);
+            }
+
+            if (IsNull(node2)) {
+                node2 = new Node(passage.LargePoint());
+                newNodes.Add(node2);
+            }
             node1.Connect(node2, passage.Length(), passage);
-            _nodes.Add(node1);
-            _nodes.Add(node2);
         }
 
-        foreach (MapRing ring in map.Rings())
+        foreach (MapRing ring in _map.Rings())
         {
-            List<Vector2> positions = _map.PassagesOnRing(ring).ToList().OrderBy(pos => Angle(pos - ring.Center())).ToList();
+            List<Vector2> positions = _map.PassagesPointsOnRing(ring).ToList().OrderBy(pos => Angle(pos - ring.Center())).ToList();
+            //List<Vector2> positions = new List<Node>(newNodes).RemoveAll(n => ring.DistanceFromPath(n.Position()) < TOLERANCE)
 
             Node current = null; Node next = null;
             if (positions.Count > 1)
             {
-                Node first = FindExistingNode(new Node(positions[0]));
+                
+                Node first = GetExistingNode(positions[0], newNodes);
                 for (int i = 0; i < positions.Count - 1; ++i)
                 {
-                    current = FindExistingNode(new Node(positions[i]));
-                    next = FindExistingNode(new Node(positions[i + 1]));
+                    
+                    current = GetExistingNode(positions[i], newNodes);
+                    next = GetExistingNode(positions[i + 1], newNodes);
+                    //if (!current.IsConnectedTo(next) && !current.Equals(next))
+                    if (!current.IsConnectedTo(next) && current != next)
+                    {
+                        current.Connect(next, ring.DistanceBetween(current.Position(), next.Position()), ring);
+                    }
+                }
+                
+                /*
+                Node first = FindExistingNode(new Node(positions[0]), newNodes);
+                for (int i = 0; i < positions.Count - 1; ++i)
+                {
+                    current = FindExistingNode(new Node(positions[i]), newNodes);
+                    next = FindExistingNode(new Node(positions[i + 1]), newNodes);
                     if (!current.IsConnectedTo(next) && !current.Equals(next))
                     {
                         current.Connect(next, ring.DistanceBetween(current.Position(), next.Position()), ring);
                     }
                 }
+                */
+                
                 next.Connect(first, ring.DistanceBetween(next.Position(), first.Position()), ring);
             }
         }
-        
+
+        _initialNodes = new HashSet<Node>(newNodes);
+
+        return newNodes;
     }
-    
-    public float DistanceToClosestNode(Vector2 from)
+
+    private Node GetExistingNode(Vector2 position, ICollection<Node> nodes)
     {
-        float distance = float.MaxValue;
-        foreach (Node node in _nodes)
-        {
-            float newDistance = Vector2.Distance(from, node.Position());
-            if (newDistance < distance) distance = newDistance;
-        }
-        return distance;
+        List<Node> newNodes = new List<Node>(nodes);
+        newNodes = newNodes.OrderBy(n => Vector2.Distance(n.Position(), position)).ToList();
+        int count = newNodes.FindAll(n => Vector2.Distance(n.Position(), position) < MERGE_DIST).Count;
+        if (count == 0) throw new ArgumentException($"There was no node at {position}! One should have been present there");
+        if (count > 1) throw new ArgumentException($"Multiple nodes found at {position}! There should only be one");
+        return newNodes[0];
     }
 
     private void MergeNodes(Node original, Node merged)
@@ -90,98 +132,127 @@ public class Pathfinder
 
     private Node InsertNode(IPathway path, Vector2 newPosition)
     {
-        List<Node> nodes = FindClosestNodesOn(path, newPosition);
+        List<Node> nodes = FindClosestNodesOn(path, newPosition, _nodes);
         nodes = new List<Node> { nodes[0], nodes[1] };
         Edge edge = nodes[0].EdgeTo(nodes[1]);
-        if (IsNull(edge) || IsNull(nodes[1].EdgeTo(nodes[0]))) throw new Exception($"Nodes {nodes[0]} and {nodes[1]} should be connected! There may be a problem with graph initialization");
+        if (IsNull(edge) || IsNull(nodes[1].EdgeTo(nodes[0])))
+        {
+            //nodes[0].Connect(nodes[1], path.DistanceBetween(nodes[0].Position(), nodes[1].Position()), path);
+            //edge = nodes[0].EdgeTo(nodes[1]);
+            throw new Exception($"Nodes {nodes[0]} and {nodes[1]} should be connected! There may be a problem with graph initialization");
+            //DEBUG_FAILED = true;
+        }
         Node newNode = new Node(newPosition);
         edge.Node1().Disconnect(edge.Node2());
+        
         newNode.Connect(edge.Node1(), path.DistanceBetween(edge.Node1().Position(), newPosition), edge.Pathway());
         newNode.Connect(edge.Node2(), path.DistanceBetween(edge.Node2().Position(), newPosition), edge.Pathway());
         _nodes.Add(newNode);
         return newNode;
     }
 
-    private Node AddNodeOnEdge(Edge edge, Vector2 newPosition)
+    private IPathway MoveToNextPathway(IPathway nextPathway, Vector2 currentPos)
     {
-        Node newNode = new Node(newPosition);
-        edge.Node1().Disconnect(edge.Node2());
-        newNode.Connect(edge.Node1(), edge.Pathway().DistanceBetween(edge.Node1().Position(), newPosition), edge.Pathway());
-        newNode.Connect(edge.Node2(), edge.Pathway().DistanceBetween(edge.Node2().Position(), newPosition), edge.Pathway());
-        _nodes.Add(newNode);
-        return newNode;
-        
-    }
+        const float tolerance = 0.3f;
+        List<IPathway> pathways = _map.Pathways().OrderBy(p => p.DistanceFromPath(currentPos)).ToList();
+        if (pathways.Contains(nextPathway) && nextPathway.DistanceFromPath(currentPos) < tolerance)
+        {
+            return nextPathway;
+        }
 
-    private Node AddNodeOnEdge(Vector2 newPosition)
-    {
-        return InsertNode(_map.FindClosestPathway(newPosition), newPosition);
+        return pathways[0];
     }
 
     /* Note : can only remove cellulo nodes, which are nodes that do not serve as a junction (i.e only have 2 edges) **/
-    private void RemoveNode(IPathway path, Node node)
+    private void RemoveNode(Node node)
     {
         if (node.Edges().Count != 2)
             throw new ArgumentException(
                 $"Can only remove edges that do not serve as a junction (i.e it mst have exactly 2 edges). " +
                 $"It instead had {node.Edges().Count} edges");
+        
         Node node1 = node.Edges().ToList()[0].OtherNode(node);
         Node node2 = node.Edges().ToList()[1].OtherNode(node);
+        IPathway pathway = node.EdgeTo(node1).Pathway();
+        if (!pathway.Equals(node.EdgeTo(node2).Pathway())) throw new Exception("Both edge connected to the removed node do not share the same pathway");
+
         node.Disconnect(node1);
         node.Disconnect(node2);
         _nodes.Remove(node);
         
         //TODO : Adapt this to allow for custom node cost
-        node1.Connect(node2, path.DistanceBetween(node1.Position(), node2.Position()), path);
+        // TODO : DEBUG
+        float length = pathway.DistanceBetween(node1.Position(), node2.Position());
+        node1.Connect(node2, pathway.DistanceBetween(node1.Position(), node2.Position()), pathway);
     }
 
-    private bool NodeAlreadyExists(Node node)
-    {
-        foreach (Node possibleNode in _nodes)
-        {
-            if (node.Equals(possibleNode)) return true;
-        }
-        return false;
-    }
-    
     /** Returns the similar node already present when possible, otehrwise returns the given node */
-    private Node FindExistingNode(Node toFind) => FindExistingNode(toFind, toFind);
+    private Node FindExistingNode(Node toFind, ICollection<Node> nodes) => FindExistingNode(toFind, toFind, nodes);
 
-    /** Returns the similar node already present when possible, otherwise returns a specified different Node */
-    private Node FindExistingNode(Node toFind, Node ifNotFound)
+    private Node FindExistingNode(Node toFind, Node ifNotFound, ICollection<Node> nodes)
     {
-        foreach (Node possibleNode in _nodes)
+        foreach (Node node in nodes)
         {
-            if (toFind.Equals(possibleNode)) return possibleNode;
+            if (toFind.Equals(node)) return node;
         }
-        
+
         return ifNotFound;
     }
+    
+    /** Returns the similar node already present when possible, otherwise returns a specified different Node */
+    private Node FindExistingNode(Node toFind, Node ifNotFound, float minDistance, ICollection<Node> nodes)
+    {
+        float smallestDistance = float.MaxValue;
+        Node foundNode = null;
+        foreach (Node possibleNode in nodes)
+        {
+            float currentDistance = Vector2.Distance(toFind.Position(), possibleNode.Position());
+            if (currentDistance < smallestDistance && currentDistance < minDistance)
+            {
+                smallestDistance = currentDistance;
+                foundNode = possibleNode;
+            }
+        }
+        
+        return foundNode == null ? ifNotFound : foundNode;
+    }
 
-    private List<Node> FindClosestNodesOn(IPathway path, Vector2 position)
+    private List<Node> FindClosestNodesOn(IPathway path, Vector2 position, ICollection<Node> nodes)
     {
         //TODO : Change return type to array
+        /*
         List<Node> newNodes = new List<Node>(_nodes);
         newNodes.RemoveAll(n => path.DistanceFromPath(n.Position()) > TOLERANCE);
         newNodes = newNodes.OrderBy(n => path.DistanceBetween(n.Position(), position)).ToList();
         if (newNodes.Count < 2) throw new ArgumentException("Only 1 or no node found on pathway. Must be at least 2");
         return newNodes;
+        */
+        ISet<Node> newNodes = new HashSet<Node>();
+        foreach (Node node in nodes)
+        {
+            foreach (Edge edge in node.Edges())
+            {
+                if (edge.Pathway().Equals(path)) newNodes.Add(node);
+            }
+        }
+        if (newNodes.Count < 2) throw new ArgumentException("Only 1 or no node found on pathway. Must be at least 2");
+        return newNodes.OrderBy(n => path.DistanceBetween(n.Position(), position)).ToList();
     }
 
     public Vector2 Orientation(Vector2 currentPos, Vector2 targetPos)
     {
 
-        if (IsNull(_finalNodes) || _finalNodes.Count == 0) return new Vector2(0, 0);
+        if (_finalNodes.Count == 0) return new Vector2(0, 0);
         Node nextNode = _finalNodes.Peek();
         IPathway nextPath = _finalPath.Peek();
         //if (nextNode.IsCloseEnoughTo(targetPos) || _finalNodes.Count == 0) return targetPos - currentPos;
 
         //if (nextWaypointNode.IsCloseEnoughTo(currentPos)) OnNextPathway();
 
-        if (nextPath.DistanceBetween(currentPos, nextNode.Position()) < TRIGGER_DIST) OnNextPathway();
+        if (Vector2.Distance(currentPos, nextNode.Position()) < TRIGGER_DIST) OnNextPathway();
 
-        Vector2 newDirection = nextPath.Orientate(currentPos, nextNode.Position(), _direction);
-        Vector2 mathDirection = nextPath.Orientate(currentPos, targetPos, _direction);
+        Vector2 newDirection = nextPath.Orientate(currentPos, nextNode.Position());
+        Vector2 mathDirection = nextPath.Orientate(currentPos, targetPos );
         
         /*
         Debug.Log("-------------------------------");
@@ -207,28 +278,46 @@ public class Pathfinder
     /// <summary>
     ///     Sets the path from the current position to a specified target
     /// </summary>
-    /// <param name="current"></param>
+    /// <param name="currentPos"></param>
     /// <param name="target"></param>
     /// <exception cref="Exception"></exception>
-    public void ComputePath(Vector2 current, Vector2 target)
+    public void GoToTarget(Vector2 currentPos, Vector2 target)
     {
+        _nodes = ReinitializeNodes();
+        _targetPos = target;
+        _currentPos = currentPos;
+
+        // ------ TODO : DEBUG ----------
+        if (Time.time > 0.1f)
+        {
+            Debug.Log($"Position = {currentPos}, Target = {target}");
+            Debug.Log($"Path, Nodes : {ListToString(_finalNodes.ToList())}");
+            Debug.Log($"Path, pathways : {ListToString(_finalPath.ToList())}");
+        }
+        Debug.Log(DrawGraph());
+        
         Dictionary<Node, float> costSoFar = new Dictionary<Node, float>();
         Dictionary<Node, Node> comeFrom = new Dictionary<Node, Node>();
-        /*
-        Func<Node, float> sorter = n =>
-        {
-            float value = 0;
-            costSoFar.TryGetValue(n, out value);
-            return value;
-        };
-        */
         PriorityList<Node> frontier = new PriorityList<Node>(n => GetFrom(costSoFar, n));
-        Node startNode = FindExistingNode(new Node(current), null);
-        Node endNode = FindExistingNode(new Node(target), null);
+        Node startNode = FindExistingNode(new Node(currentPos), null, MERGE_DIST, _nodes);
+        Node endNode = FindExistingNode(new Node(target), null, MERGE_DIST, _nodes);
         bool isStartNodeNew = IsNull(startNode);
         bool isEndNodeNew = IsNull(endNode);
-        if (isStartNodeNew) startNode = AddNodeOnEdge(current);
-        if (isEndNodeNew) endNode = AddNodeOnEdge(target);
+        if (isStartNodeNew) {
+            //startNode = InsertNode(_map.FindClosestPathway(currentPos), currentPos);
+            
+            if (!IsNull(_finalPath) && _finalPath.Count > 1) {
+                //startNode = InsertNode(MoveToNextPathway(_finalPath.ToList()[1], currentPos), currentPos);
+                startNode = InsertNode(_map.FindClosestPathway(currentPos), currentPos);
+            } else {
+                startNode = InsertNode(_map.FindClosestPathway(currentPos), currentPos);
+            }
+            
+        }
+
+        if (isEndNodeNew) {
+            endNode = InsertNode(_map.FindClosestPathway(target), target);
+        }
 
         costSoFar.Add(startNode, 0);
         //frontier.Add(startNode.Neighbors());
@@ -252,18 +341,6 @@ public class Pathfinder
                 //if (!IsBlocked(currentNode.EdgeTo(neighbor)) && !comeFrom.ContainsKey(neighbor))
                 if (!comeFrom.ContainsKey(neighbor))  // TODO : Implement above version
                 {
-                    //TODO: For debugging, may need to remove later
-                    if (IsNull(neighbor.EdgeTo(currentNode))) 
-                    {
-                        throw new Exception($"Problem with node connection : {neighbor} is the neighbor of " +
-                                            $"{currentNode} but their is no edge between them");
-                    }
-                    if (!neighbor.EdgeTo(currentNode).Equals(currentNode.EdgeTo(neighbor)))
-                    {
-                        throw new Exception($"Problem with node connection : the connection from one node to " +
-                                            $"the other is different. One is {neighbor.EdgeTo(currentNode)} while the other is {currentNode.EdgeTo(neighbor)}");
-                    }
-
                     // TODO : Adapt for custom costs
                     //costSoFar.Add(neighbor, neighbor.EdgeTo(currentNode).Length());
                     costSoFar.Add(neighbor, GetFrom(costSoFar,currentNode) + currentNode.EdgeTo(neighbor).Length());
@@ -304,11 +381,26 @@ public class Pathfinder
         _finalNodes.Dequeue();  // Removes the start node from the list of waypoints
         
         // Removes the nodes of the cellulos
-        if (isStartNodeNew) RemoveNode(_map.FindClosestPathway(startNode.Position()),startNode);
-        if (isEndNodeNew) RemoveNode(_map.FindClosestPathway(endNode.Position()),endNode);
-        
+        //if (isStartNodeNew) RemoveNode(_map.FindClosestPathway(startNode.Position()),startNode);
+        if (isStartNodeNew) RemoveNode(startNode);
+        //if (isEndNodeNew) RemoveNode(_map.FindClosestPathway(endNode.Position()),endNode);
+        if (isEndNodeNew) RemoveNode(endNode);
+
     }
 
+    public float DistanceToClosestNode(Vector2 from)
+    {
+        float distance = float.MaxValue;
+        foreach (Node node in _nodes)
+        {
+            float newDistance = Vector2.Distance(from, node.Position());
+            if (newDistance < distance) distance = newDistance;
+        }
+        return distance;
+    }
+
+    
+    
     private Edge FindClosestEdgeFrom(Vector2 position)
     {
         Edge closestEdge = null;
@@ -339,6 +431,44 @@ public class Pathfinder
     {
         return $"Pathfinder [nodes = {ListToString(_nodes)}]";
     }
+    
+    [Obsolete("----- For debugging only! -----")]
+    public Node FindNode(float x, float y)
+    {
+        Vector2 position = new Vector2(x, y);
+        Node node = MinElement(_nodes, n => Vector2.Distance(n.Position(), position));
+        if (Vector2.Distance(node.Position(), position) > 0.3f) return null;
+        return node;
+    }
+    
+    [Obsolete("----- For debugging only! -----")]
+    public string DrawGraph()
+    {
+        if (Nodes().Count == 0) return "Graph[EMPTY]";
+        List<Node> nodes = Nodes().OrderBy(n => Vector2.Distance(n.Position(), Map().Center())).ToList();
+
+        float radius = Vector2.Distance(nodes[0].Position(), Map().Center());
+        string str = $"\nRing with radius {radius} : ";
+        int ringID = 0;
+        foreach (Node node in nodes)
+        {
+            float newRadius = Vector2.Distance(node.Position(), Map().Center());
+            if (newRadius > radius + CircularMap.MARGIN)
+            {
+                radius = newRadius;
+                ++ringID;
+                if (str.Length >= 2) str = str.Remove(str.Length - 2, 2);
+                str += $"\nRing with radius {radius} : ";
+            }
+
+            str = str + "\n  -> " + node.ToFullString() + ", ";
+        }
+        
+        str = str.Remove(str.Length - 2, 2);
+        str += $"\nPlayer position : {GameObject.FindGameObjectWithTag("Player").transform.localPosition}";
+        str += $"\nGhost position : {GameObject.FindGameObjectWithTag("Ghost").transform.localPosition}";
+        return $"Graph [{str}\n]";
+    }
 
     public ISet<Node> Nodes() => _nodes;
     
@@ -355,7 +485,9 @@ public class Pathfinder
 
         public Edge(Node node1, Node node2, float length, IPathway path, float cost = BASE_COST, bool isOccupied = false)
         {
+            if (IsNull(node1) || IsNull(node2)) throw new ArgumentException($"Nodes can't be null! Nodes were {node1} and {node2}");
             if (node1.Equals(node2)) throw new ArgumentException("Nodes must be different from one another!");
+            //if (length <= 0) throw new ArgumentException($"Length must be greater than 0, but was {length}");
             if (length < 0) throw new ArgumentException($"Length must be greater or equal to 0, but was {length}");
             _node1 = node1;
             _node2 = node2;
@@ -462,10 +594,12 @@ public class Pathfinder
         public void Connect(Node otherNode, float length, IPathway path, float cost = BASE_COST)
         {
             //Connect(new Edge(this, node, length, path, cost));
+            if (otherNode == this) throw new ArgumentException("Can't connect a node to itself!");
+            if (length < 0) throw new ArgumentException("Length must be greater or equal to zero!");
             
             // TODO : Modify this such that connecting with an already connected node rewrites the connection
-            if (_neighbors.Contains(otherNode)) return;
-            _neighbors.Add(otherNode);
+            if (!_neighbors.Contains(otherNode)) _neighbors.Add(otherNode);
+            
             if (IsNull(EdgeTo(otherNode)))
             {
                 _edges.Add(new Edge(this, otherNode, length, path, cost));

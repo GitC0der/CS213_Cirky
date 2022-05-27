@@ -21,6 +21,23 @@ public class UnitTests : MonoBehaviour
         //Pathfinder_OtherNode_Works();
         //Pathfinder_Connect_Works();
         //MapRing_Direction_Works();
+        DistanceToPassageway();
+    }
+
+    private void DistanceToPassageway()
+    {
+        Vector2 center = new Vector2(3, 5);
+        Passageway passage = new Passageway(new MapRing(3, center), new MapRing(5, center), new Vector2(7,5));
+        float distance1 = passage.DistanceFromPath(new Vector2(6,6));
+        float distance2 = passage.DistanceFromPath(new Vector2(2,5));
+        float distance3 = passage.DistanceFromPath(new Vector2(6,3));
+        float distance4 = passage.DistanceFromPath(new Vector2(8,5));
+        float distance5 = passage.DistanceFromPath(new Vector2(9,5));
+        Debug.Log($"Distance1 was {distance1}, expected {1}");
+        Debug.Log($"Distance2 was {distance2}, expected {4}");
+        Debug.Log($"Distance3 was {distance3}, expected {2}");
+        Debug.Log($"Distance4 was {distance4}, expected {0}");
+        Debug.Log($"Distance5 was {distance5}, expected {1}");
     }
 
     private void NeighborsAdd_Test()
@@ -205,8 +222,8 @@ public class UnitTests : MonoBehaviour
         CircularMap.Passageway passage2 = new CircularMap.Passageway(ring1, ring2, new Vector2(1, -0.5f));
         CircularMap.Passageway falsePassage = new CircularMap.Passageway(ring1, falseRing, new Vector2(2,3));
         CircularMap map = new CircularMap(center, 12, new List<CircularMap.Passageway> {passage1, passage2, falsePassage});
-        Debug.Log(ListToString(map.PassagesOnRing(ring1)));
-        Debug.Log(ListToString(map.PassagesOnRing(falseRing)));
+        Debug.Log(ListToString(map.PassagesPointsOnRing(ring1)));
+        Debug.Log(ListToString(map.PassagesPointsOnRing(falseRing)));
     }
 
     // Update is called once per frame

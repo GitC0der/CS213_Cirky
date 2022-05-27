@@ -149,6 +149,7 @@ public class CircularMap
         Func<IPathway, float> sorter = p => p.DistanceFromPath(target);
         IPathway closestRing = MinElement(_rings, sorter);
         IPathway closestPassage = MinElement(_passages, sorter);
+        
         return MinElement(closestRing, closestPassage, sorter);
     }
 
@@ -167,16 +168,16 @@ public class CircularMap
         return new List<MapRing> {sorted[0], sorted[1]};
     }
 
-    public IList<Vector2> PassagesOnRing(MapRing ring)
+    public IList<Vector2> PassagesPointsOnRing(MapRing ring)
     {
-        IList<Vector2> list = new List<Vector2>();
+        ISet<Vector2> list = new HashSet<Vector2>();
         foreach (Passageway p in _passages)
         {
             if (p.SmallRing().Equals(ring)) list.Add(p.SmallPoint());
             if (p.LargeRing().Equals(ring)) list.Add(p.LargePoint());
         }
 
-        return list;
+        return list.ToList();
     }
 
     public List<MapRing> Rings()
@@ -186,6 +187,13 @@ public class CircularMap
     }
 
     public ISet<Passageway> Passages() => new HashSet<Passageway>(_passages);
+
+    public List<IPathway> Pathways()
+    {
+        List<IPathway> pathways = new List<IPathway>(_rings);
+        pathways.AddRange(_passages);
+        return pathways;
+    }
 
     public Vector2 Center() => _center;
 
@@ -202,7 +210,7 @@ public class CircularMap
 
         public float DistanceBetween(Vector2 pointA, Vector2 pointB, bool forceDetour = false);
 
-        public Vector2 Orientate(Vector2 position, Vector2 target, Vector2 currentDirection);
+        public Vector2 Orientate(Vector2 position, Vector2 target);
 
         public bool IsOn(Vector2 point);
 
@@ -275,7 +283,8 @@ public class CircularMap
 
         public Vector2 ClosestTo(Vector2 target)
         {
-            return _smallPoint + Projection(target, _largePoint - _smallPoint);
+            //return _smallPoint + Projection(target, _largePoint - _smallPoint);
+            return _smallPoint + Projection(target - _smallPoint, _largePoint - _smallPoint);
         }
         
         public float DistanceBetween(Vector2 pointA, Vector2 pointB, bool forceDetour = false)
@@ -285,11 +294,23 @@ public class CircularMap
 
         public float DistanceFromPath(Vector2 target)
         {
+            /*
             if (!IsOn(target))
             {
                 return Mathf.Min(Vector2.Distance(target, _smallPoint), Vector2.Distance(target, _largePoint));
             }
             return Vector2.Distance(ClosestTo(target), target);
+            */
+            Vector2 projected = _smallPoint + Projection(target - _smallPoint, _largePoint - _smallPoint);
+            
+            if (IsOn(projected))
+            {
+                return Vector2.Distance(projected, target);
+            }
+            return Mathf.Min(Vector2.Distance(target, _smallPoint), Vector2.Distance(target, _largePoint)); 
+            
+            //return Vector2.Distance(projected, target);
+
         }
 
         public bool IsOn(Vector2 position)
@@ -298,7 +319,7 @@ public class CircularMap
                             - Length()) < EPSILON;
         }
 
-        public Vector2 Orientate(Vector2 position, Vector2 target, Vector2 currentDirection)
+        public Vector2 Orientate(Vector2 position, Vector2 target)
         {
             //TODO : Implement this
             Vector2 orientation = (_largePoint - _smallPoint).normalized;
@@ -316,7 +337,8 @@ public class CircularMap
 
         private Vector2 Projection(Vector2 vector, Vector2 axis)
         {
-            return Vector2.Dot(axis.normalized, vector)*axis;
+            //return Vector2.Dot(axis.normalized, vector)*axis;
+            return Vector2.Dot(axis.normalized, vector)*axis.normalized;
             //return axis * (float)(vector.magnitude * Math.Cos(Vector2.Angle(axis, vector)));
         }
         
@@ -396,10 +418,11 @@ public class CircularMap
 
         public Vector2 Center() => _center;
 
-        public Vector2 Orientate(Vector2 position, Vector2 target, Vector2 currentDirection)
+        public Vector2 Orientate(Vector2 position, Vector2 target)
         {
             // TODO : Account for blocked edges
             bool isClockwise = Vector2.SignedAngle(position - _center, target - _center) < 0;
+            
             return Direction(position, isClockwise);
             //bool isClockwise = !forceDetour || Vector2.Angle(position - _center, target - _center) < 180;
             //return Direction(position, isClockwise);
@@ -429,9 +452,9 @@ public class CircularMap
             Vector2 direction = ToVector2(direction3);   
             */   
             
-            Vector2 direction = -Vector2.Perpendicular(currentPos - _center).normalized;
+            Vector2 direction = Vector2.Perpendicular(currentPos - _center).normalized;
             
-            return isClockWise ? direction: -direction;
+            return isClockWise ? -direction: direction;
         }
 
         public Vector2 ClosestTo(Vector2 target)

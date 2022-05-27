@@ -29,7 +29,7 @@ public class GhostBehavior : AgentBehaviour
         _pathfinder = new Pathfinder(_map);
         //_target = _map.Rings()[2].PointAt(130);    // Original Debugging target
         _target = _map.Rings()[0].PointAt(320);
-        _pathfinder.ComputePath(ToVector2(transform.localPosition), _target);
+        //_pathfinder.GoToTarget(ToVector2(transform.localPosition), _target);
         _player = GameObject.FindGameObjectWithTag("Player");
         GoTo(_player.transform.localPosition);
     }
@@ -42,14 +42,18 @@ public class GhostBehavior : AgentBehaviour
 
     public void GoTo(Vector3 target)
     {
-        _pathfinder = new Pathfinder(_map);
-        _pathfinder.ComputePath(ToVector2(transform.localPosition), ToVector2(target));
+        if (Input.GetKeyDown("space"))
+        {
+            string stopHere = "Place breakpoint here!";
+        }
+        _pathfinder.GoToTarget(ToVector2(transform.localPosition), ToVector2(target));
     }
     
 
     public override Steering GetSteering()
     {
         // TODO : Use this when merging nodes is working
+        /*
         const float BUG_MARGIN = 1.5f;
         float distanceGhost = _pathfinder.DistanceToClosestNode(ToVector2(transform.localPosition));
         float distancePlayer = _pathfinder.DistanceToClosestNode(ToVector2(_player.transform.localPosition));
@@ -57,6 +61,9 @@ public class GhostBehavior : AgentBehaviour
         {
             GoTo(_player.transform.localPosition);
         }
+        */
+        
+        GoTo(_player.transform.localPosition);
         
         // This is necessary since the cellulo is going up for no discernable reason
         transform.localPosition = new Vector3(transform.localPosition.x, 0, transform.localPosition.z);
@@ -88,6 +95,7 @@ public class GhostBehavior : AgentBehaviour
         CircularMap map = new CircularMap(new Vector2(7.18f, -5.16f));
         map.AddRing(new Vector2(7.88f, -5.16f));
         map.AddRing(new Vector2(9.3f, -5.16f));
+        //map.AddRing(new Vector2(9.25f, -5.16f));
         map.AddRing(new Vector2(10.87f, -5.16f));
         map.AddPassage(new Vector2(9.72f, -3.69f));
         map.AddPassage(new Vector2(4.73f, -3.69f));
