@@ -18,7 +18,7 @@ public class Pathfinder
     private const float OCCUPIED_COST = 10e3f;  //TODO: Use this
     private const float TOLERANCE = 0.2f;
     private const float TRIGGER_DIST = 0.1f;
-    private const float MERGE_DIST = 0.25f;
+    private const float MERGE_DIST = 0.3f;
 
     private bool DEBUG_FAILED = false;
     
@@ -33,6 +33,9 @@ public class Pathfinder
     private Vector2 _direction;
     private Queue<Node> _finalNodes;
     private Queue<IPathway> _finalPath;
+
+    private Node _startNode;
+    private Node _endNode;
     
     /// You must generate a map before creating the pathfinder
     public Pathfinder(CircularMap map)
@@ -137,9 +140,9 @@ public class Pathfinder
         Edge edge = nodes[0].EdgeTo(nodes[1]);
         if (IsNull(edge) || IsNull(nodes[1].EdgeTo(nodes[0])))
         {
-            //nodes[0].Connect(nodes[1], path.DistanceBetween(nodes[0].Position(), nodes[1].Position()), path);
-            //edge = nodes[0].EdgeTo(nodes[1]);
-            throw new Exception($"Nodes {nodes[0]} and {nodes[1]} should be connected! There may be a problem with graph initialization");
+            nodes[0].Connect(nodes[1], path.DistanceBetween(nodes[0].Position(), nodes[1].Position()), path);
+            edge = nodes[0].EdgeTo(nodes[1]);
+            //throw new Exception($"Nodes {nodes[0]} and {nodes[1]} should be connected! There may be a problem with graph initialization");
             //DEBUG_FAILED = true;
         }
         Node newNode = new Node(newPosition);
@@ -167,10 +170,11 @@ public class Pathfinder
     private void RemoveNode(Node node)
     {
         if (node.Edges().Count != 2)
-            throw new ArgumentException(
-                $"Can only remove edges that do not serve as a junction (i.e it mst have exactly 2 edges). " +
-                $"It instead had {node.Edges().Count} edges");
-        
+        {
+            return;
+            //throw new ArgumentException($"Can only remove edges that do not serve as a junction (i.e it mst have exactly 2 edges). It instead had {node.Edges().Count} edges");
+        }
+
         Node node1 = node.Edges().ToList()[0].OtherNode(node);
         Node node2 = node.Edges().ToList()[1].OtherNode(node);
         IPathway pathway = node.EdgeTo(node1).Pathway();
@@ -283,7 +287,7 @@ public class Pathfinder
     /// <exception cref="Exception"></exception>
     public void GoToTarget(Vector2 currentPos, Vector2 target)
     {
-        _nodes = ReinitializeNodes();
+        //_nodes = ReinitializeNodes();
         _targetPos = target;
         _currentPos = currentPos;
 
@@ -318,6 +322,9 @@ public class Pathfinder
         if (isEndNodeNew) {
             endNode = InsertNode(_map.FindClosestPathway(target), target);
         }
+
+        _startNode = startNode;
+        _endNode = endNode;
 
         costSoFar.Add(startNode, 0);
         //frontier.Add(startNode.Neighbors());
@@ -380,11 +387,12 @@ public class Pathfinder
         _finalPath = new Queue<IPathway>(pathways);
         _finalNodes.Dequeue();  // Removes the start node from the list of waypoints
         
+        _nodes = ReinitializeNodes();
         // Removes the nodes of the cellulos
         //if (isStartNodeNew) RemoveNode(_map.FindClosestPathway(startNode.Position()),startNode);
-        if (isStartNodeNew) RemoveNode(startNode);
+        //if (isStartNodeNew) RemoveNode(startNode);
         //if (isEndNodeNew) RemoveNode(_map.FindClosestPathway(endNode.Position()),endNode);
-        if (isEndNodeNew) RemoveNode(endNode);
+        //if (isEndNodeNew) RemoveNode(endNode);
 
     }
 
