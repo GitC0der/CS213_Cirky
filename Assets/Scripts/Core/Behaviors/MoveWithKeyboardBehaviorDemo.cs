@@ -23,6 +23,9 @@ public class MoveWithKeyboardBehaviorDemo : AgentBehaviour
             steering.angular = -agent.maxAngularAccel * rotate.y;
 
             if(Input.GetKeyDown(KeyCode.Z)){
+                agent.SetGoalPosition(6,-5,5);
+            }
+            if(Input.GetKeyDown(KeyCode.X)){
                 agent.SetGoalPose(6,-5,0,5,5);
             }
         }

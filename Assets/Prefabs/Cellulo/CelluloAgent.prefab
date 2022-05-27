@@ -398,6 +398,7 @@ MonoBehaviour:
   blendWeight: 0
   byPriority: 1
   isConnected: 0
+  updateTheta: 1
   isMoved: 1
   simulatedTouch: 740000007200000066000000760000006200000068000000
   ledColorWhenTouched: {r: 1, g: 1, b: 1, a: 1}

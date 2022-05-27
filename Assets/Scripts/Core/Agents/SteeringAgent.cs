@@ -7,6 +7,7 @@ using System.Collections.Generic;
 
 public class SteeringAgent : MonoBehaviour
 {
+    [Header ("Blend Behaviour Settings")]
     public bool blendWeight = false; //!< If more than one behavior is included and the desired output is a weighted sum of the different behaviors.
     public bool byPriority = false;
     public float maxSpeed  {get; protected set;} = 3f; //!< maximum speed in unity units
@@ -15,6 +16,7 @@ public class SteeringAgent : MonoBehaviour
     public float maxAngularAccel {get; protected set;}  = 7.5f; //!< maximum angular accel in unity units
 
     protected float rotation;
+    
     protected Vector3 velocity;
     protected Steering steering;
     private AgentBehaviour[] behaviours; 
@@ -86,11 +88,11 @@ public class SteeringAgent : MonoBehaviour
             steering = new Steering();
             bool priorityBreak = false; 
             foreach (AgentBehaviour singleBehavior in groups[group])
-            {   
-                if(singleBehavior.GetSteering()!=null){
+            {   Steering localSteering = singleBehavior.GetSteering();
+                if(localSteering!=null){
                     priorityBreak = true;
-                    steering.linear += singleBehavior.weight*singleBehavior.GetSteering().linear;
-                    steering.angular += singleBehavior.weight*singleBehavior.GetSteering().angular;
+                    steering.linear += singleBehavior.weight*localSteering.linear;
+                    steering.angular += singleBehavior.weight*localSteering.angular;
                 }
             }
             if(priorityBreak) return;

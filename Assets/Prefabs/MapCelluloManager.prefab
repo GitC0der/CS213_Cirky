@@ -573,9 +573,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   paper: 0
-  REAL_MAP_DIMENSION_X: 841
-  REAL_MAP_DIMENSION_Y: 1189
+  RealMapDimensionInX: 0
+  RealMapDimensionInY: 0
+  RealMapOrigin: 0
+  ShowRealRobotPosition: 0
+  xRobot: 0
+  yRobot: 0
+  idRobot: 0
   map: {fileID: 1300460603369726367}
+  spawedCellulos: {fileID: 1300460602924199587}
 --- !u!1 &1300460604099333502
 GameObject:
   m_ObjectHideFlags: 0

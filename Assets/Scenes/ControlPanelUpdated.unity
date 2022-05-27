@@ -9618,7 +9618,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1915740218}
   m_HandleRect: {fileID: 1915740217}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0.99999994
   m_Size: 0.34251827
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -21228,12 +21228,28 @@ PrefabInstance:
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 3996232962186901251, guid: 6f5f6d7624c2ce5cc8896e584e30f1c5, type: 3}
+      propertyPath: RealMapOrigin
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3996232962186901251, guid: 6f5f6d7624c2ce5cc8896e584e30f1c5, type: 3}
+      propertyPath: RealMapDimensionInX
+      value: 841
+      objectReference: {fileID: 0}
+    - target: {fileID: 3996232962186901251, guid: 6f5f6d7624c2ce5cc8896e584e30f1c5, type: 3}
+      propertyPath: RealMapDimensionInY
+      value: 1189
+      objectReference: {fileID: 0}
+    - target: {fileID: 3996232962186901251, guid: 6f5f6d7624c2ce5cc8896e584e30f1c5, type: 3}
       propertyPath: REAL_MAP_DIMENSION_X
       value: 297
       objectReference: {fileID: 0}
     - target: {fileID: 3996232962186901251, guid: 6f5f6d7624c2ce5cc8896e584e30f1c5, type: 3}
       propertyPath: REAL_MAP_DIMENSION_Y
       value: 420
+      objectReference: {fileID: 0}
+    - target: {fileID: 3996232962186901251, guid: 6f5f6d7624c2ce5cc8896e584e30f1c5, type: 3}
+      propertyPath: ShowRealRobotPosition
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4995976850412489289, guid: 6f5f6d7624c2ce5cc8896e584e30f1c5, type: 3}
       propertyPath: m_Enabled
