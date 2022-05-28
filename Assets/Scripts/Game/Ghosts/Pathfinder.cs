@@ -330,15 +330,17 @@ public class Pathfinder
         //frontier.Add(startNode.Neighbors());
         frontier.Add(startNode);
         comeFrom.Add(startNode, startNode);
-        
+
+        bool reachedTarget = false;
         //while (frontier.Count() > 0 || costSoFar.Count <= 2)
+        //while (!reachedTarget && frontier.Count() > 0)  
         while (frontier.Count() > 0)   // TODO : Try above version
         {
             Node currentNode = frontier.Peek(); 
             frontier.Dequeue();
 
             if (currentNode.Equals(endNode)) break;
-
+            
             //PriorityList<Node> neighbors = new PriorityList<Node>(currentNode.Neighbors(), n => GetFrom(costSoFar, n));
             foreach (Node neighbor in currentNode.Neighbors())
             //while (neighbors.Count() > 0)
@@ -346,14 +348,24 @@ public class Pathfinder
                 //Node neighbor = neighbors.Peek();
                 //neighbors.Dequeue();
                 //if (!IsBlocked(currentNode.EdgeTo(neighbor)) && !comeFrom.ContainsKey(neighbor))
-                if (!comeFrom.ContainsKey(neighbor))  // TODO : Implement above version
+                float newCost = GetFrom(costSoFar, currentNode) + currentNode.EdgeTo(neighbor).Length();
+                //if (!comeFrom.ContainsKey(neighbor))  // TODO : Implement above version
+                if (!comeFrom.ContainsKey(neighbor) || newCost < GetFrom(costSoFar, neighbor))  // TODO : Implement above version
                 {
                     // TODO : Adapt for custom costs
                     //costSoFar.Add(neighbor, neighbor.EdgeTo(currentNode).Length());
-                    costSoFar.Add(neighbor, GetFrom(costSoFar,currentNode) + currentNode.EdgeTo(neighbor).Length());
+                    //costSoFar.Add(neighbor, newCost);
+
+                    if (costSoFar.ContainsKey(neighbor)) costSoFar.Remove(neighbor);
+                    costSoFar.Add(neighbor, newCost);
+                    
+                    
+                    if (comeFrom.ContainsKey(neighbor)) comeFrom.Remove(neighbor);
+                    comeFrom.Add(neighbor, currentNode);
                     
                     frontier.Add(neighbor);
-                    comeFrom.Add(neighbor, currentNode);
+
+                    //if (currentNode.Equals(endNode)) reachedTarget = true;
                 }
             }
         }
@@ -371,7 +383,7 @@ public class Pathfinder
         {
             tempNode = GetFrom(comeFrom, tempNode);
             reversePath.Add(tempNode);
-        } while (!IsNull(tempNode) && GetFrom(comeFrom, tempNode) != tempNode && !IsNull(GetFrom(comeFrom, tempNode)));
+        } while (!(IsNull(tempNode) || GetFrom(comeFrom, tempNode).Equals(tempNode) || IsNull(GetFrom(comeFrom, tempNode))));
 
         reversePath.Reverse();
         _finalNodes = new Queue<Node>(reversePath);
@@ -386,6 +398,14 @@ public class Pathfinder
         }
         _finalPath = new Queue<IPathway>(pathways);
         _finalNodes.Dequeue();  // Removes the start node from the list of waypoints
+
+        /*
+        if (_finalNodes.ToList()[1].Equals(endNode) && !isStartNodeNew && !isEndNodeNew)
+        {
+            _finalNodes.Dequeue();
+            _finalPath.Dequeue();
+        }
+        */
         
         _nodes = ReinitializeNodes();
         // Removes the nodes of the cellulos

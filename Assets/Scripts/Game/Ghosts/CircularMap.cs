@@ -284,7 +284,16 @@ public class CircularMap
         public Vector2 ClosestTo(Vector2 target)
         {
             //return _smallPoint + Projection(target, _largePoint - _smallPoint);
-            return _smallPoint + Projection(target - _smallPoint, _largePoint - _smallPoint);
+            Vector2 projected = _smallPoint + Projection(target - _smallPoint, _largePoint - _smallPoint);
+            if (!IsOn(projected))
+            {
+                float distance1 = Vector2.Distance(projected, _smallPoint);
+                float distance2 = Vector2.Distance(projected, _largePoint);
+                return distance1 < distance2 ? _smallPoint : _largePoint;
+            }
+
+            return projected;
+
         }
         
         public float DistanceBetween(Vector2 pointA, Vector2 pointB, bool forceDetour = false)
