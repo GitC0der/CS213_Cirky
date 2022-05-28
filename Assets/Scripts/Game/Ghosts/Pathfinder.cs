@@ -408,6 +408,7 @@ public class Pathfinder
         */
         
         _nodes = ReinitializeNodes();
+        
         // Removes the nodes of the cellulos
         //if (isStartNodeNew) RemoveNode(_map.FindClosestPathway(startNode.Position()),startNode);
         //if (isStartNodeNew) RemoveNode(startNode);
