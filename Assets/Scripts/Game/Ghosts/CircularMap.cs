@@ -144,7 +144,7 @@ public class CircularMap
         return closest;
     }
     
-    public IPathway FindClosestPathway(Vector2 target)
+    protected internal IPathway FindClosestPathway(Vector2 target)
     {
         Func<IPathway, float> sorter = p => p.DistanceFromPath(target);
         IPathway closestRing = MinElement(_rings, sorter);
@@ -153,7 +153,7 @@ public class CircularMap
         return MinElement(closestRing, closestPassage, sorter);
     }
 
-    public IList<MapRing> ClosestRings(Vector2 position)
+    protected internal IList<MapRing> ClosestRings(Vector2 position)
     {
         if (_rings.Count <= 1)
         {
@@ -168,7 +168,7 @@ public class CircularMap
         return new List<MapRing> {sorted[0], sorted[1]};
     }
 
-    public IList<Vector2> PassagesPointsOnRing(MapRing ring)
+    protected internal IList<Vector2> PassagesPointsOnRing(MapRing ring)
     {
         ISet<Vector2> list = new HashSet<Vector2>();
         foreach (Passageway p in _passages)
@@ -180,15 +180,15 @@ public class CircularMap
         return list.ToList();
     }
 
-    public List<MapRing> Rings()
+    protected internal List<MapRing> Rings()
     {
         List<MapRing> list = new List<MapRing>(_rings).OrderBy(ring => ring.Radius()).ToList();
         return list;
     }
 
-    public ISet<Passageway> Passages() => new HashSet<Passageway>(_passages);
+    protected internal ISet<Passageway> Passages() => new HashSet<Passageway>(_passages);
 
-    public List<IPathway> Pathways()
+    protected internal List<IPathway> Pathways()
     {
         List<IPathway> pathways = new List<IPathway>(_rings);
         pathways.AddRange(_passages);
@@ -204,12 +204,32 @@ public class CircularMap
     
     public interface IPathway
     {
+        /// <summary>
+        ///     Finds the closest point on the path from a specified position
+        /// </summary>
+        /// <param name="target">The position to find the closest point on the path</param>
+        /// <returns>The closest point on the path</returns>
         public Vector2 ClosestTo(Vector2 target);
 
+        
+        // TODO : Use a default method using the distace to ClosestTo()
+        /// <summary>
+        ///     Computes the distance from a position to the nearest point on the path
+        /// </summary>
+        /// <param name="target">The point to find the distance to the path</param>
+        /// <returns>The distance to the path form a specified point</returns>
         public float DistanceFromPath(Vector2 target);
-
+        
+        /// <summary>
+        ///     Returns the distance between 2 points on the path, with a different behavior if part of the path is blocked
+        /// </summary>
+        /// <param name="pointA">One point on the path</param>
+        /// <param name="pointB">Another point on the path</param>
+        /// <param name="forceDetour">True if the shortest path is blocked, false if not</param>
+        /// <returns>The distance between 2 points on the path</returns>
         public float DistanceBetween(Vector2 pointA, Vector2 pointB, bool forceDetour = false);
 
+        /// Returns the direction of travel of a point given its current position and a target
         public Vector2 Orientate(Vector2 position, Vector2 target);
 
         public bool IsOn(Vector2 point);
@@ -266,13 +286,13 @@ public class CircularMap
             _largePoint = _largeRing.PointAt(angle);
         }
 
-        public ISet<MapRing> Rings() => new HashSet<MapRing> { _smallRing, _largeRing };
+        internal ISet<MapRing> Rings() => new HashSet<MapRing> { _smallRing, _largeRing };
 
         public ISet<Vector2> Points() => new HashSet<Vector2> { _smallPoint, _largePoint };
 
-        public MapRing SmallRing() => _smallRing;
+        internal MapRing SmallRing() => _smallRing;
         
-        public MapRing LargeRing() => _largeRing;
+        internal MapRing LargeRing() => _largeRing;
         
         public Vector2 SmallPoint() => _smallPoint;
         
@@ -394,18 +414,11 @@ public class CircularMap
         {
             return (_center - point).magnitude;
         }
-
         public float DistanceBetween(Vector2 from, Vector2 to, bool forceDetour = false)
         {
             float angle = Vector2.Angle(from - _center, to - _center);
             angle = forceDetour ? 360 - angle : angle;
             return Mathf.Abs(Mathf.PI * angle * _radius / 180f);
-            /*
-            bool isClockwise = !forceDetour || Vector2.Angle(pointA - _center, pointB - _center) < 90;
-            float angle = Mathf.Abs(Vector2.Angle(pointA - _center, pointB - _center));
-            angle = isClockwise ? angle : 360 - angle;
-            return (float)Mathf.Abs(Mathf.PI * angle * _radius / 180f);
-            */
         }
 
         public bool IsOn(Vector2 point)
@@ -414,13 +427,13 @@ public class CircularMap
         }
 
         /// <summary>
-        ///     Finds the point on the ring that has a given angle from the horizontal line
+        ///     Finds the point on the ring that has a given angle from the horizontal line facing the right
         /// </summary>
-        /// <param name="angle">Angle from the horizontal line (trignonmetric direction, i.e. counter-clockwise)</param>
+        /// <param name="angle">Angle from between a vector going from the center of rotation to the returned point and the vector (1,0)</param>
         /// <returns>A point on the ring that has a given angle from the horizontal line</returns>
         public Vector2 PointAt(float angle)
         {
-            return new Vector2((float)(_center.x + _radius * Mathf.Cos(ToRadians(angle))), (float)(_center.y + _radius * Mathf.Sin(ToRadians(angle))));
+            return new Vector2(_center.x + _radius * Mathf.Cos(ToRadians(angle)), _center.y + _radius * Mathf.Sin(ToRadians(angle)));
         }
         
         public float Radius() => _radius;
@@ -433,25 +446,11 @@ public class CircularMap
             bool isClockwise = Vector2.SignedAngle(position - _center, target - _center) < 0;
             
             return Direction(position, isClockwise);
-            //bool isClockwise = !forceDetour || Vector2.Angle(position - _center, target - _center) < 180;
-            //return Direction(position, isClockwise);
-            //bool isClockwise = Vector2.Angle(currentDirection, Direction(position, true)) < 90;
-            //bool isClockwise = Vector2.SignedAngle(currentDirection, Direction(position, true)) < 0;
-            //return Direction(position, isClockwise);
         }
 
-
+        /// Returns the direction of travel (i.e the normalized velocity) on a specified position, with a given rotation direction
         public Vector2 Direction(Vector2 currentPos, bool isClockWise)
         {
-            if (!IsOn(currentPos))
-            {
-                //throw new ArgumentException("Current position must be on ring!");
-            }
-
-            //Vector3 w = new Vector3(0, 1,0);
-            //Vector3 r = ToVector3(currentPos - _center, 0);
-            //w = w * (10/r.magnitude);
-            //Vector3 direction = Vector3.Cross(w, r);
             /*
             Vector3 w = new Vector3(0, 0, 1);
             Vector3 r = new Vector3((currentPos - _center).x, (currentPos - _center).y, 0).normalized * _radius;
