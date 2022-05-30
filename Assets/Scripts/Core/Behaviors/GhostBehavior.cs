@@ -27,9 +27,6 @@ public class GhostBehavior : AgentBehaviour
         _isFleeing = false;
         _map = GenerateMap();
         _pathfinder = new Pathfinder(_map);
-        //_target = _map.Rings()[2].PointAt(130);    // Original Debugging target
-        _target = _map.Rings()[0].PointAt(320);
-        //_pathfinder.GoToTarget(ToVector2(transform.localPosition), _target);
         _player = GameObject.FindGameObjectWithTag("Player");
         GoTo(_player.transform.localPosition);
     }
@@ -42,9 +39,10 @@ public class GhostBehavior : AgentBehaviour
 
     public void GoTo(Vector3 target)
     {
+        // For debugging purposes
         if (Input.GetKeyDown("space"))
         {
-            string stopHere = "Place breakpoint here!";
+            string debugStopHere = "Place breakpoint here!";
         }
         _pathfinder.GoToTarget(ToVector2(transform.localPosition), ToVector2(target));
     }
@@ -52,39 +50,23 @@ public class GhostBehavior : AgentBehaviour
 
     public override Steering GetSteering()
     {
-        // TODO : Use this when merging nodes is working
-        /*
-        const float BUG_MARGIN = 1.5f;
-        float distanceGhost = _pathfinder.DistanceToClosestNode(ToVector2(transform.localPosition));
-        float distancePlayer = _pathfinder.DistanceToClosestNode(ToVector2(_player.transform.localPosition));
-        if (distanceGhost > BUG_MARGIN && distancePlayer > BUG_MARGIN)
-        {
-            GoTo(_player.transform.localPosition);
-        }
-        */
-        
         GoTo(_player.transform.localPosition);
         
-        // This is necessary since the cellulo is going up for no discernable reason
+        // This is necessary since the cellulo is going upwards for no discernible reason
         transform.localPosition = new Vector3(transform.localPosition.x, 0, transform.localPosition.z);
         
-        //Vector3 direction = transform.parent.TransformDirection(ToVector3(ring.Direction(ToVector2(transform.localPosition), true), 0).normalized);
         
-        Vector3 direction = ToVector3(_pathfinder.Orientation(ToVector2(transform.localPosition), _target), 0);
+        Vector3 direction = ToVector3(_pathfinder.Orientation(ToVector2(transform.localPosition)), 0);
         
         Steering steering = new Steering();
-        //steering.linear = Vector3.ClampMagnitude(1000*transform.TransformDirection(direction), agent.maxAccel);
 
-        //steering.linear = Vector3.ClampMagnitude(10000*(direction - agent.GetVelocity()), agent.maxAccel);
         
         /**************************************************************** /
         /       THE HOLY FORMULA : *DO* *NOT* *TOUCH* *THIS*              /
+        /    Also please don't ask how it works because we have no clue   /
         /*****************************************************************/
         steering.linear = Vector3.ClampMagnitude(10000*(2.5f*direction - agent.GetVelocity()), agent.maxAccel);
-        
-        
 
-        //Debug.Log($"Direction is {direction}, Steering is {steering.linear}");
         return steering;
     }
 

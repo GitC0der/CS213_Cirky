@@ -48,6 +48,7 @@ public class UnitTests : MonoBehaviour
         Debug.Log($"Distance5 was {distance5}, expected {1}");
     }
 
+    /*
     private void NeighborsAdd_Test()
     {
         Node node1 = new Node(new Vector2(3, 7));
@@ -67,6 +68,7 @@ public class UnitTests : MonoBehaviour
         Debug.Log($"OtherNode of node1 is {edge.OtherNode(edge.Node1())}");
         Debug.Log($"OtherNode of node2 is {edge.OtherNode(edge.Node2())}");
     }
+
     private void Pathfinder_Connect_Works()
     {
         Node node1 = new Node(new Vector2(4, 7));
@@ -81,6 +83,7 @@ public class UnitTests : MonoBehaviour
         Debug.Log($"Node1 after failed connection is {node1}");
         Debug.Log($"Node2 after failed connection is {node2}");
     }
+    */
 
     private void MapGeneration_Tests()
     {
