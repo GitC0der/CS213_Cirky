@@ -25,6 +25,7 @@ public class GhostBehavior : AgentBehaviour
     {
         tag = "Ghost";
         _isFleeing = false;
+        
         _map = GenerateMap();
         _pathfinder = new Pathfinder(_map);
         _player = GameObject.FindGameObjectWithTag("Player");
@@ -44,7 +45,7 @@ public class GhostBehavior : AgentBehaviour
         {
             string debugStopHere = "Place breakpoint here!";
         }
-        _pathfinder.GoToTarget(ToVector2(transform.localPosition), ToVector2(target));
+        _pathfinder.SetTarget(ToVector2(transform.localPosition), ToVector2(target));
     }
     
 

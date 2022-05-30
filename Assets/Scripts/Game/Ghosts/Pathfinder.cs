@@ -10,6 +10,15 @@ using IPathway = CircularMap.IPathway;
 
 //namespace Game.Ghosts;
 
+/// <summary>
+///     Steps to use the pathfinder as intended :
+///     <list type="number">
+///         <item><term> Create a CircularMap and then initialize a pathfinder with its constructor </term></item>
+///         <item><term> Use the <see cref="SetTarget(Vector2, Vector2)">SetTarget()</see> method to set the target of the pathfinder </term></item>
+///         <item><term> Then use the <see cref="Orientation(Vector2)">Orientation()</see> method to get the orientation (i.e velocity) of the cellulo </term></item>
+///     </list>
+///     See <see cref="GhostBehavior">GhostBehavior</see> for more information and examples
+/// </summary>
 public class Pathfinder
 {
     private const float BASE_COST = 1;
@@ -163,8 +172,8 @@ public class Pathfinder
     {
         if (node.Edges().Count != 2)
         {
-            return;
-            //throw new ArgumentException($"Can only remove edges that do not serve as a junction (i.e it mst have exactly 2 edges). It instead had {node.Edges().Count} edges");
+            //return;
+            throw new ArgumentException($"Can only remove edges that do not serve as a junction (i.e it mst have exactly 2 edges). It instead had {node.Edges().Count} edges");
         }
 
         Node node1 = node.Edges().ToList()[0].OtherNode(node);
@@ -176,9 +185,7 @@ public class Pathfinder
         node.Disconnect(node2);
         _nodes.Remove(node);
         
-        //TODO : Adapt this to allow for custom node cost
-        // TODO : DEBUG
-        float length = pathway.DistanceBetween(node1.Position(), node2.Position());
+        // TODO : Adapt this to allow for custom node cost
         node1.Connect(node2, pathway.DistanceBetween(node1.Position(), node2.Position()), pathway);
     }
 
@@ -259,9 +266,8 @@ public class Pathfinder
     /// <param name="currentPos">Current position of the cellulo</param>
     /// <param name="target">Target position where the cellulo will move towards</param>
     /// <exception cref="Exception">If the map is not correctly initialized</exception>
-    public void GoToTarget(Vector2 currentPos, Vector2 target)
+    public void SetTarget(Vector2 currentPos, Vector2 target)
     {
-        // ------ TODO : DEBUG ----------
         /*
         if (Time.time > 0.1f)
         {
@@ -357,8 +363,10 @@ public class Pathfinder
         // Removes the start node from the list of waypoints since the start node is the current position
         _finalNodes.Dequeue();  
         
-        // Resets the nodes (deleting the start and end nodes if they are new would be much better)
-        _nodes = ResetNodes();
+        // Removes the added start and end nodes from the graph
+        if (isStartNodeNew) RemoveNode(startNode);
+        if (isEndNodeNew) RemoveNode(endNode);
+
     }
 
     /// Freezes the cellulo in its current position

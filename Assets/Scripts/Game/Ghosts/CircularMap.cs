@@ -7,6 +7,19 @@ using UnityEngine;
 using UnityEngine.Diagnostics;
 using Vector2 = UnityEngine.Vector2;
 
+/// <summary>
+///     Steps to create a CircularMap from a real map
+///     <list type="number">
+///         <item><term> Initialize the builder with its constructor </term></item>
+///         <item><term> Use the <see cref="AddRing(Vector2)">AddRing()</see> method to add rings to the map </term></item>
+///         <item>
+///             <term> Then use the <see cref="AddPassage(int,Vector2)">AddPassage()</see> method to add a passage between 2 adjacent rings.
+///                    Due to a technical limitation, each ring must be connected to at least two passages</term>
+///         </item>
+///         <item> There is currently no way to check whether a map is valid or not. So just use the map as is and pray for the best!</item>
+///     </list>
+/// </summary>
+///
 public class CircularMap
 {
     public const float MARGIN = 1.0f;    // "Wiggle room" to prevent collision between a Cellulo and map borders or other cellulos
@@ -21,6 +34,13 @@ public class CircularMap
     public CircularMap(Vector2 center)
     {
         _center = center;
+    }
+
+    private CircularMap(Vector2 center, ICollection<MapRing> rings, ICollection<Passageway> passages)
+    {
+        _center = center;
+        _rings = new List<MapRing>(rings);
+        _passages = new HashSet<Passageway>(passages);
     }
     
     /// Creates a circular map with evenly space rings. ***Not for the current map layout***
