@@ -21,7 +21,15 @@ public class UnitTests : MonoBehaviour
         //Pathfinder_OtherNode_Works();
         //Pathfinder_Connect_Works();
         //MapRing_Direction_Works();
-        DistanceToPassageway();
+        //DistanceToPassageway();
+        SignedAngle();
+    }
+
+    private void SignedAngle()
+    {
+        float angle1 = Vector2.SignedAngle(new Vector2(0.01f, 1), new Vector2(0, -1)) + 180;
+        float angle2 = Vector2.SignedAngle(new Vector2(0.01f, 1), new Vector2(1,1)) + 180;
+        float angle3 = Vector2.SignedAngle(new Vector2(0.01f, 1), new Vector2(-1,1)) + 180;
     }
 
     private void DistanceToPassageway()

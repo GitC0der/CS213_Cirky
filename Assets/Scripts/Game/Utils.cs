@@ -43,6 +43,24 @@ public static class Utils
         return sorter(element1) < sorter(element2) ? element1 : element2;
     }
 
+    public static TElement MaxElement<TElement>(ICollection<TElement> collection, Func<TElement, float> sorter)
+    {
+        if (collection.Count == 0) throw new ArgumentException("Collection is null!");
+        TElement maxElement = collection.ToList()[0];
+        float maxScore = float.MinValue;
+        foreach (TElement element in collection)
+        {
+            float newScore = sorter(element);
+            if (newScore > maxScore)
+            {
+                maxScore = newScore;
+                maxElement = element;
+            }
+        }
+
+        return maxElement;
+    }
+    
     public static TElement MinElement<TElement>(ICollection<TElement> collection, Func<TElement, float> sorter)
     {
         if (collection.Count == 0) throw new ArgumentException("Collection is null!");
@@ -81,6 +99,11 @@ public static class Utils
     {
         float angle = Vector2.SignedAngle(Vector2.right, vector);
         return angle >= 0 ? angle : angle + 360;
+    }
+
+    public static float AngleBetween(Vector2 from, Vector2 to)
+    {
+        return Vector2.SignedAngle(-from, to) + 180;
     }
 
     public static float ToRadians(float degrees) => (float)(degrees * Math.PI / 180);

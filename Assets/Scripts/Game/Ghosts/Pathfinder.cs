@@ -18,7 +18,7 @@ public class Pathfinder
     private const float OCCUPIED_COST = 10e3f;  //TODO: Use this
     private const float TOLERANCE = 0.2f;
     private const float TRIGGER_DIST = 0.1f;
-    private const float MERGE_DIST = 0.3f;
+    private const float MERGE_DIST = 0.2f;
 
     private bool DEBUG_FAILED = false;
     
@@ -133,10 +133,28 @@ public class Pathfinder
         _nodes.Remove(merged);
     }
 
+    private List<Node> FindBoundingNodesOn(IPathway path, Vector2 position, ICollection<Node> allNodes)
+    {
+        List<Node> nodes = FindNearestNodesOn(path, position, allNodes);
+        //nodes = nodes.OrderBy(n => Vector2.SignedAngle(position - _map.Center(), n.Position() - _map.Center())).ToList();
+        nodes = nodes.OrderBy(n => AngleBetween(position - _map.Center(), n.Position() - _map.Center())).ToList();
+        Node node1 = nodes[0];
+        Node node2 = nodes[nodes.Count - 1];
+        //return new List<Node> { node1, node2 }.OrderBy(n => path.DistanceBetween(position, n.Position())).ToList();
+        if (path.DistanceBetween(position, node1.Position()) < path.DistanceBetween(position, node2.Position()))
+        {
+            return new List<Node> { node1, node2 };
+        }
+        return new List<Node> { node2, node1 };
+    }
+
     private Node InsertNode(IPathway path, Vector2 newPosition)
     {
-        List<Node> nodes = FindClosestNodesOn(path, newPosition, _nodes);
+        /*
+        List<Node> nodes = FindNearestNodesOn(path, newPosition, _nodes);
         nodes = new List<Node> { nodes[0], nodes[1] };
+        */
+        List<Node> nodes = FindBoundingNodesOn(path, newPosition, _nodes);
         Edge edge = nodes[0].EdgeTo(nodes[1]);
         if (IsNull(edge) || IsNull(nodes[1].EdgeTo(nodes[0])))
         {
@@ -221,16 +239,10 @@ public class Pathfinder
         return foundNode == null ? ifNotFound : foundNode;
     }
 
-    private List<Node> FindClosestNodesOn(IPathway path, Vector2 position, ICollection<Node> nodes)
+    private List<Node> FindNearestNodesOn(IPathway path, Vector2 position, ICollection<Node> nodes)
     {
         //TODO : Change return type to array
-        /*
-        List<Node> newNodes = new List<Node>(_nodes);
-        newNodes.RemoveAll(n => path.DistanceFromPath(n.Position()) > TOLERANCE);
-        newNodes = newNodes.OrderBy(n => path.DistanceBetween(n.Position(), position)).ToList();
-        if (newNodes.Count < 2) throw new ArgumentException("Only 1 or no node found on pathway. Must be at least 2");
-        return newNodes;
-        */
+        
         ISet<Node> newNodes = new HashSet<Node>();
         foreach (Node node in nodes)
         {
@@ -292,6 +304,7 @@ public class Pathfinder
         _currentPos = currentPos;
 
         // ------ TODO : DEBUG ----------
+        /*
         if (Time.time > 0.1f)
         {
             Debug.Log($"Position = {currentPos}, Target = {target}");
@@ -299,6 +312,7 @@ public class Pathfinder
             Debug.Log($"Path, pathways : {ListToString(_finalPath.ToList())}");
         }
         Debug.Log(DrawGraph());
+        */
         
         Dictionary<Node, float> costSoFar = new Dictionary<Node, float>();
         Dictionary<Node, Node> comeFrom = new Dictionary<Node, Node>();
@@ -331,7 +345,6 @@ public class Pathfinder
         frontier.Add(startNode);
         comeFrom.Add(startNode, startNode);
 
-        bool reachedTarget = false;
         //while (frontier.Count() > 0 || costSoFar.Count <= 2)
         //while (!reachedTarget && frontier.Count() > 0)  
         while (frontier.Count() > 0)   // TODO : Try above version
@@ -384,7 +397,8 @@ public class Pathfinder
             tempNode = GetFrom(comeFrom, tempNode);
             reversePath.Add(tempNode);
         } while (!(IsNull(tempNode) || GetFrom(comeFrom, tempNode).Equals(tempNode) || IsNull(GetFrom(comeFrom, tempNode))));
-
+        //($"Final node (--> path start node) is {tempNode} and isStartNodeNew is {isStartNodeNew}");
+        
         reversePath.Reverse();
         _finalNodes = new Queue<Node>(reversePath);
 
@@ -397,6 +411,7 @@ public class Pathfinder
             pathways.Add(tempNodes[i].EdgeTo(tempNodes[i+1]).Pathway());
         }
         _finalPath = new Queue<IPathway>(pathways);
+        //if (!isStartNodeNew) _finalNodes.Dequeue();  // Removes the start node from the list of waypoints
         _finalNodes.Dequeue();  // Removes the start node from the list of waypoints
 
         /*
@@ -406,6 +421,7 @@ public class Pathfinder
             _finalPath.Dequeue();
         }
         */
+        
         
         _nodes = ReinitializeNodes();
         
