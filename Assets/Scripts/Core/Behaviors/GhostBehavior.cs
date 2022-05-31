@@ -46,6 +46,8 @@ public class GhostBehavior : AgentBehaviour
             string debugStopHere = "Place breakpoint here!";
         }
         _pathfinder.SetTarget(ToVector2(transform.localPosition), ToVector2(target));
+        
+        Debug.Log(_map.IsCheating(ToVector2(target)) ? "Cheating!" : "NOT cheating!");
     }
     
 

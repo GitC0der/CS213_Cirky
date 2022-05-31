@@ -13,16 +13,28 @@ using UnityEngine.Assertions;
 public class UnitTests : MonoBehaviour
 {
     CircularMap map = new CircularMap(new Vector2(3, 3), 9.1f);
-
+    
     private void LaunchTests()
     {
-        //FindExistingNode_Works();
-        //MapGeneration_Tests();
-        //Pathfinder_OtherNode_Works();
-        //Pathfinder_Connect_Works();
-        //MapRing_Direction_Works();
-        //DistanceToPassageway();
-        SignedAngle();
+        //SignedAngle();
+        //ClosestTo_Works();
+    }
+
+    private void ClosestTo_Works()
+    {
+        MapRing ring1 = new MapRing(3, new Vector2(4, 7));
+        MapRing ring2 = new MapRing(5, new Vector2(4, 7));
+        Passageway passage1 = new Passageway(ring1, ring2, new Vector2(8,7));
+        Passageway passage2 = new Passageway(ring1, ring2, new Vector2(4,11));
+
+        Debug.Log($"Expected : {new Vector2(9,7)} | Actual : {passage1.ClosestTo(new Vector2(11, 7))}");
+        Debug.Log($"Expected : {new Vector2(7,7)} | Actual : {passage1.ClosestTo(new Vector2(7,8))}");
+        Debug.Log($"Expected : {new Vector2(4,10)} | Actual : {passage2.ClosestTo(new Vector2(4,8))}");
+        Debug.Log($"Expected : {new Vector2(4,11)} | Actual : {passage2.ClosestTo(new Vector2(6,11))}");
+
+        Debug.Log($"Expected : {new Vector2(4,10)} | Actual : {ring1.ClosestTo(new Vector2(4,13))}");
+        Debug.Log($"Expected : {new Vector2(7,7)} | Actual : {ring1.ClosestTo(new Vector2(6,7))}");
+        Debug.Log($"Expected : {new Vector2(7,10)} | Actual : {ring1.ClosestTo(new Vector2(9,12))}");
     }
 
     private void SignedAngle()

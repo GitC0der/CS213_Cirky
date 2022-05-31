@@ -10,12 +10,10 @@ using Vector2 = UnityEngine.Vector2;
 /// <summary>
 ///     Steps to create a CircularMap from a real map
 ///     <list type="number">
-///         <item><term> Initialize the builder with its constructor </term></item>
-///         <item><term> Use the <see cref="AddRing(Vector2)">AddRing()</see> method to add rings to the map </term></item>
-///         <item>
-///             <term> Then use the <see cref="AddPassage(int,Vector2)">AddPassage()</see> method to add a passage between 2 adjacent rings.
-///                    Due to a technical limitation, each ring must be connected to at least two passages</term>
-///         </item>
+///         <item> Initialize the builder with its constructor </item>
+///         <item> Use the <see cref="AddRing(Vector2)">AddRing()</see> method to add rings to the map </item>
+///         <item> Then use the <see cref="AddPassage(int,Vector2)">AddPassage()</see> method to add a passage between 2 adjacent rings.
+///                    Due to a technical limitation, each ring must be connected to at least two passages</item>
 ///         <item> There is currently no way to check whether a map is valid or not. So just use the map as is and pray for the best!</item>
 ///     </list>
 /// </summary>
@@ -24,7 +22,7 @@ public class CircularMap
 {
     public const float MARGIN = 1.0f;    // "Wiggle room" to prevent collision between a Cellulo and map borders or other cellulos
     private const float EPSILON = 1e-4f;   // Tolerance regarding floating point values equality
-    public const float CHEAT_DETECTION = 0.7f;
+    private const float CHEAT_DETECTION = 0.37f;   // Threshold for the cheat detection mechanism
 
     private Vector2 _center;
     private IList<MapRing> _rings = new List<MapRing>();
@@ -138,9 +136,9 @@ public class CircularMap
     }
 
     /// Finds the closest point on the map from a specified target
-    public Vector2 FindClosestPoint(Vector2 target)
+    private Vector2 FindClosestPoint(Vector2 target)
     {
-        Vector2 closest = new Vector2(0,0);
+        Vector2 closest = new Vector2(999999, 99999);
         float distance = float.MaxValue;
         foreach (MapRing ring in _rings)
         {
@@ -323,7 +321,6 @@ public class CircularMap
 
         public Vector2 ClosestTo(Vector2 target)
         {
-            //return _smallPoint + Projection(target, _largePoint - _smallPoint);
             Vector2 projected = _smallPoint + Projection(target - _smallPoint, _largePoint - _smallPoint);
             if (!IsOn(projected))
             {
@@ -344,12 +341,6 @@ public class CircularMap
         public float DistanceFromPath(Vector2 target)
         {
             /*
-            if (!IsOn(target))
-            {
-                return Mathf.Min(Vector2.Distance(target, _smallPoint), Vector2.Distance(target, _largePoint));
-            }
-            return Vector2.Distance(ClosestTo(target), target);
-            */
             Vector2 projected = _smallPoint + Projection(target - _smallPoint, _largePoint - _smallPoint);
             
             if (IsOn(projected))
@@ -357,9 +348,8 @@ public class CircularMap
                 return Vector2.Distance(projected, target);
             }
             return Mathf.Min(Vector2.Distance(target, _smallPoint), Vector2.Distance(target, _largePoint)); 
-            
-            //return Vector2.Distance(projected, target);
-
+            */
+            return Vector2.Distance(target, ClosestTo(target));
         }
 
         public bool IsOn(Vector2 position)
@@ -432,7 +422,7 @@ public class CircularMap
 
         public float DistanceFromCenter(Vector2 point)
         {
-            return (_center - point).magnitude;
+            return (point - _center).magnitude;
         }
         public float DistanceBetween(Vector2 from, Vector2 to, bool forceDetour = false)
         {
@@ -453,6 +443,7 @@ public class CircularMap
         /// <returns>A point on the ring that has a given angle from the horizontal line</returns>
         public Vector2 PointAt(float angle)
         {
+            //return _center + _radius * new Vector2((float)Math.Cos(ToRadians(angle)), (float)Math.Sin(ToRadians(angle)));
             return new Vector2(_center.x + _radius * Mathf.Cos(ToRadians(angle)), _center.y + _radius * Mathf.Sin(ToRadians(angle)));
         }
         
@@ -487,11 +478,13 @@ public class CircularMap
 
         public Vector2 ClosestTo(Vector2 target)
         {
-            return PointAt(Vector2.Angle(Vector2.right, target - _center));
+            //return PointAt(Vector2.Angle(Vector2.right, target - _center));
+            return PointAt(Angle(target - _center));
         }
 
         public float DistanceFromPath(Vector2 target)
         {
+            //return Vector2.Distance(ClosestTo(target), target);
             return Mathf.Abs(DistanceFromCenter(target) - _radius);
         }
         

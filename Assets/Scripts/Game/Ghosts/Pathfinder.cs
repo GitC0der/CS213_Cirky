@@ -142,9 +142,11 @@ public class Pathfinder
         Edge edge = nodes[0].EdgeTo(nodes[1]);
         if (IsNull(edge) || IsNull(nodes[1].EdgeTo(nodes[0])))
         {
-            //nodes[0].Connect(nodes[1], path.DistanceBetween(nodes[0].Position(), nodes[1].Position()), path);
-            //edge = nodes[0].EdgeTo(nodes[1]);
-            throw new Exception($"Nodes {nodes[0]} and {nodes[1]} should be connected! There may be a problem with graph initialization");
+            // TODO : May prove to cause problems. If true, revert back to resetting the nodes after each frame
+            nodes[0].Connect(nodes[1], path.DistanceBetween(nodes[0].Position(), nodes[1].Position()), path);
+            edge = nodes[0].EdgeTo(nodes[1]);
+            Debug.Log($"Warning! {nodes[0]} and {nodes[1]} were not connected. Correction applied... May need to investigate this later on");
+            //throw new Exception($"Nodes {nodes[0]} and {nodes[1]} should be connected! There may be a problem with graph initialization");
         }
         Node newNode = new Node(newPosition);
         edge.Node1().Disconnect(edge.Node2());
@@ -235,7 +237,7 @@ public class Pathfinder
     }
 
     /// <summary>
-    ///     Computes the (normalized) orientation of the cellulo
+    ///     Computes the (normalized) orientation of the cellulo and removes nodes from the path as the cellulo reaches them
     /// </summary>
     /// <param name="currentPos">The current position of the cellulo</param>
     /// <returns>The (normalized) orientation of the cellulo</returns>
@@ -268,16 +270,6 @@ public class Pathfinder
     /// <exception cref="Exception">If the map is not correctly initialized</exception>
     public void SetTarget(Vector2 currentPos, Vector2 target)
     {
-        /*
-        if (Time.time > 0.1f)
-        {
-            Debug.Log($"Position = {currentPos}, Target = {target}");
-            Debug.Log($"Path, Nodes : {ListToString(_finalNodes.ToList())}");
-            Debug.Log($"Path, pathways : {ListToString(_finalPath.ToList())}");
-        }
-        Debug.Log(DrawGraph());
-        */
-
         _frozen = false;
         Dictionary<Node, float> costSoFar = new Dictionary<Node, float>();
         Dictionary<Node, Node> comeFrom = new Dictionary<Node, Node>();
