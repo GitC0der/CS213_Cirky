@@ -890,7 +890,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 13.110709
+      value: 12.93
       objectReference: {fileID: 0}
     - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
       propertyPath: m_LocalPosition.y
@@ -934,6 +934,80 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
   m_PrefabInstance: {fileID: 148254141}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &174883017
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 2085629186}
+    m_Modifications:
+    - target: {fileID: 175284, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_Name
+      value: 2K_BlueStone_Boulder1 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_RootOrder
+      value: 22
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 3.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 2.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 5.803479
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.35546538
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 8.781871
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+--- !u!4 &174883018 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+  m_PrefabInstance: {fileID: 174883017}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &216178011
 GameObject:
@@ -1176,6 +1250,68 @@ RectTransform:
   m_AnchoredPosition: {x: 2340, y: -942.0869}
   m_SizeDelta: {x: 400, y: 500}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1001 &289368740
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 2085629186}
+    m_Modifications:
+    - target: {fileID: 197490, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_Name
+      value: 2K_BlueStone_Boulder4 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_RootOrder
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 13.217914
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.33670327
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 3.470871
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+--- !u!4 &289368741 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+  m_PrefabInstance: {fileID: 289368740}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &373033879
 GameObject:
   m_ObjectHideFlags: 0
@@ -1253,6 +1389,80 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 373033879}
   m_CullTransparentMesh: 1
+--- !u!1001 &429539677
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 2085629186}
+    m_Modifications:
+    - target: {fileID: 175284, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_Name
+      value: 2K_BlueStone_Boulder1 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_RootOrder
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 5.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.35546258
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -9.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+--- !u!4 &429539678 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+  m_PrefabInstance: {fileID: 429539677}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &431168227
 GameObject:
   m_ObjectHideFlags: 0
@@ -2544,6 +2754,80 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 739979350}
   m_CullTransparentMesh: 1
+--- !u!1001 &747258081
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 2085629186}
+    m_Modifications:
+    - target: {fileID: 197490, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_Name
+      value: 2K_BlueStone_Boulder4 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_RootOrder
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 11.384173
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.33670524
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -3.4780712
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+--- !u!4 &747258082 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+  m_PrefabInstance: {fileID: 747258081}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &801052853
 GameObject:
   m_ObjectHideFlags: 0
@@ -3021,6 +3305,68 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 852131414}
   m_CullTransparentMesh: 1
+--- !u!1001 &856620399
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 2085629186}
+    m_Modifications:
+    - target: {fileID: 197490, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_Name
+      value: 2K_BlueStone_Boulder4 1 (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_RootOrder
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 7.7671366
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.3367053
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -7.4496174
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+--- !u!4 &856620400 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+  m_PrefabInstance: {fileID: 856620399}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &946055080
 GameObject:
   m_ObjectHideFlags: 0
@@ -3155,6 +3501,154 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 946055080}
   m_CullTransparentMesh: 1
+--- !u!1001 &973126208
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 2085629186}
+    m_Modifications:
+    - target: {fileID: 197490, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_Name
+      value: 2K_BlueStone_Boulder4 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_RootOrder
+      value: 21
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 10.149325
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.33670524
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 3.4829092
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+--- !u!4 &973126209 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+  m_PrefabInstance: {fileID: 973126208}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &977084656
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 2085629186}
+    m_Modifications:
+    - target: {fileID: 197490, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_Name
+      value: 2K_BlueStone_Boulder4 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_RootOrder
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -11.236521
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.33670428
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.91812897
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+--- !u!4 &977084657 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+  m_PrefabInstance: {fileID: 977084656}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &995531266
 GameObject:
   m_ObjectHideFlags: 0
@@ -3249,6 +3743,142 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 995531266}
   m_CullTransparentMesh: 1
+--- !u!1001 &1040580351
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 2085629186}
+    m_Modifications:
+    - target: {fileID: 152354, guid: 9c1ec5317210cfe48905f29421850791, type: 3}
+      propertyPath: m_Name
+      value: 2K_BlueStone_Boulder2 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 493584, guid: 9c1ec5317210cfe48905f29421850791, type: 3}
+      propertyPath: m_RootOrder
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 493584, guid: 9c1ec5317210cfe48905f29421850791, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -9.494048
+      objectReference: {fileID: 0}
+    - target: {fileID: 493584, guid: 9c1ec5317210cfe48905f29421850791, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.35328665
+      objectReference: {fileID: 0}
+    - target: {fileID: 493584, guid: 9c1ec5317210cfe48905f29421850791, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -4.170472
+      objectReference: {fileID: 0}
+    - target: {fileID: 493584, guid: 9c1ec5317210cfe48905f29421850791, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 493584, guid: 9c1ec5317210cfe48905f29421850791, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 493584, guid: 9c1ec5317210cfe48905f29421850791, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 493584, guid: 9c1ec5317210cfe48905f29421850791, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 493584, guid: 9c1ec5317210cfe48905f29421850791, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 493584, guid: 9c1ec5317210cfe48905f29421850791, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 493584, guid: 9c1ec5317210cfe48905f29421850791, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 9c1ec5317210cfe48905f29421850791, type: 3}
+--- !u!4 &1040580352 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 493584, guid: 9c1ec5317210cfe48905f29421850791, type: 3}
+  m_PrefabInstance: {fileID: 1040580351}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &1074616719
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 2085629186}
+    m_Modifications:
+    - target: {fileID: 152354, guid: 9c1ec5317210cfe48905f29421850791, type: 3}
+      propertyPath: m_Name
+      value: 2K_BlueStone_Boulder2 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 493584, guid: 9c1ec5317210cfe48905f29421850791, type: 3}
+      propertyPath: m_RootOrder
+      value: 23
+      objectReference: {fileID: 0}
+    - target: {fileID: 493584, guid: 9c1ec5317210cfe48905f29421850791, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 493584, guid: 9c1ec5317210cfe48905f29421850791, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 493584, guid: 9c1ec5317210cfe48905f29421850791, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 493584, guid: 9c1ec5317210cfe48905f29421850791, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 13.87
+      objectReference: {fileID: 0}
+    - target: {fileID: 493584, guid: 9c1ec5317210cfe48905f29421850791, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.35328665
+      objectReference: {fileID: 0}
+    - target: {fileID: 493584, guid: 9c1ec5317210cfe48905f29421850791, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -3.6227474
+      objectReference: {fileID: 0}
+    - target: {fileID: 493584, guid: 9c1ec5317210cfe48905f29421850791, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 493584, guid: 9c1ec5317210cfe48905f29421850791, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 493584, guid: 9c1ec5317210cfe48905f29421850791, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 493584, guid: 9c1ec5317210cfe48905f29421850791, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 493584, guid: 9c1ec5317210cfe48905f29421850791, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 493584, guid: 9c1ec5317210cfe48905f29421850791, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 493584, guid: 9c1ec5317210cfe48905f29421850791, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 9c1ec5317210cfe48905f29421850791, type: 3}
+--- !u!4 &1074616720 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 493584, guid: 9c1ec5317210cfe48905f29421850791, type: 3}
+  m_PrefabInstance: {fileID: 1074616719}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1096405722
 GameObject:
   m_ObjectHideFlags: 0
@@ -3294,6 +3924,142 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1142518112
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 2085629186}
+    m_Modifications:
+    - target: {fileID: 197490, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_Name
+      value: 2K_BlueStone_Boulder4 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_RootOrder
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -11.922083
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.33670333
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -7.7482815
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+--- !u!4 &1142518113 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 449824, guid: 1d77346b4070ec44891030fb3fd3a897, type: 3}
+  m_PrefabInstance: {fileID: 1142518112}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &1194647688
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 2085629186}
+    m_Modifications:
+    - target: {fileID: 152354, guid: 9c1ec5317210cfe48905f29421850791, type: 3}
+      propertyPath: m_Name
+      value: 2K_BlueStone_Boulder2 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 493584, guid: 9c1ec5317210cfe48905f29421850791, type: 3}
+      propertyPath: m_RootOrder
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 493584, guid: 9c1ec5317210cfe48905f29421850791, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 493584, guid: 9c1ec5317210cfe48905f29421850791, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 493584, guid: 9c1ec5317210cfe48905f29421850791, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 493584, guid: 9c1ec5317210cfe48905f29421850791, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -5.9865217
+      objectReference: {fileID: 0}
+    - target: {fileID: 493584, guid: 9c1ec5317210cfe48905f29421850791, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.35328567
+      objectReference: {fileID: 0}
+    - target: {fileID: 493584, guid: 9c1ec5317210cfe48905f29421850791, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 8.431871
+      objectReference: {fileID: 0}
+    - target: {fileID: 493584, guid: 9c1ec5317210cfe48905f29421850791, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 493584, guid: 9c1ec5317210cfe48905f29421850791, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 493584, guid: 9c1ec5317210cfe48905f29421850791, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 493584, guid: 9c1ec5317210cfe48905f29421850791, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 493584, guid: 9c1ec5317210cfe48905f29421850791, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 493584, guid: 9c1ec5317210cfe48905f29421850791, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 493584, guid: 9c1ec5317210cfe48905f29421850791, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 9c1ec5317210cfe48905f29421850791, type: 3}
+--- !u!4 &1194647689 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 493584, guid: 9c1ec5317210cfe48905f29421850791, type: 3}
+  m_PrefabInstance: {fileID: 1194647688}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &1224954904 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1300460603572157315, guid: 6f5f6d7624c2ce5cc8896e584e30f1c5, type: 3}
@@ -3888,6 +4654,130 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1408974246}
   m_CullTransparentMesh: 1
+--- !u!1001 &1471221771
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 2085629186}
+    m_Modifications:
+    - target: {fileID: 100360, guid: e56588cd3c924cc488787856ff35ea3e, type: 3}
+      propertyPath: m_Name
+      value: 2K_BlueStone_Boulder3 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 495982, guid: e56588cd3c924cc488787856ff35ea3e, type: 3}
+      propertyPath: m_RootOrder
+      value: 24
+      objectReference: {fileID: 0}
+    - target: {fileID: 495982, guid: e56588cd3c924cc488787856ff35ea3e, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 11.31524
+      objectReference: {fileID: 0}
+    - target: {fileID: 495982, guid: e56588cd3c924cc488787856ff35ea3e, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.3367053
+      objectReference: {fileID: 0}
+    - target: {fileID: 495982, guid: e56588cd3c924cc488787856ff35ea3e, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.15969563
+      objectReference: {fileID: 0}
+    - target: {fileID: 495982, guid: e56588cd3c924cc488787856ff35ea3e, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 495982, guid: e56588cd3c924cc488787856ff35ea3e, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 495982, guid: e56588cd3c924cc488787856ff35ea3e, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 495982, guid: e56588cd3c924cc488787856ff35ea3e, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 495982, guid: e56588cd3c924cc488787856ff35ea3e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 495982, guid: e56588cd3c924cc488787856ff35ea3e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 495982, guid: e56588cd3c924cc488787856ff35ea3e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: e56588cd3c924cc488787856ff35ea3e, type: 3}
+--- !u!4 &1471221772 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 495982, guid: e56588cd3c924cc488787856ff35ea3e, type: 3}
+  m_PrefabInstance: {fileID: 1471221771}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &1492824961
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 2085629186}
+    m_Modifications:
+    - target: {fileID: 100360, guid: e56588cd3c924cc488787856ff35ea3e, type: 3}
+      propertyPath: m_Name
+      value: 2K_BlueStone_Boulder3 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 495982, guid: e56588cd3c924cc488787856ff35ea3e, type: 3}
+      propertyPath: m_RootOrder
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 495982, guid: e56588cd3c924cc488787856ff35ea3e, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -2.7848787
+      objectReference: {fileID: 0}
+    - target: {fileID: 495982, guid: e56588cd3c924cc488787856ff35ea3e, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.3367053
+      objectReference: {fileID: 0}
+    - target: {fileID: 495982, guid: e56588cd3c924cc488787856ff35ea3e, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -9.358786
+      objectReference: {fileID: 0}
+    - target: {fileID: 495982, guid: e56588cd3c924cc488787856ff35ea3e, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 495982, guid: e56588cd3c924cc488787856ff35ea3e, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 495982, guid: e56588cd3c924cc488787856ff35ea3e, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 495982, guid: e56588cd3c924cc488787856ff35ea3e, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 495982, guid: e56588cd3c924cc488787856ff35ea3e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 495982, guid: e56588cd3c924cc488787856ff35ea3e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 495982, guid: e56588cd3c924cc488787856ff35ea3e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: e56588cd3c924cc488787856ff35ea3e, type: 3}
+--- !u!4 &1492824962 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 495982, guid: e56588cd3c924cc488787856ff35ea3e, type: 3}
+  m_PrefabInstance: {fileID: 1492824961}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1514106306
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4062,6 +4952,68 @@ PrefabInstance:
       objectReference: {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f3557841372524d1283f68a4959d4f7f, type: 3}
+--- !u!1001 &1545294502
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 2085629186}
+    m_Modifications:
+    - target: {fileID: 175284, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_Name
+      value: 2K_BlueStone_Boulder1 1 (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_RootOrder
+      value: 17
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 10.868754
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.3554615
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 6.9269333
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+--- !u!4 &1545294503 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+  m_PrefabInstance: {fileID: 1545294502}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1560148497
 GameObject:
   m_ObjectHideFlags: 0
@@ -4155,6 +5107,154 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 30, y: 120, z: 0}
+--- !u!1001 &1590079314
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 2085629186}
+    m_Modifications:
+    - target: {fileID: 100360, guid: e56588cd3c924cc488787856ff35ea3e, type: 3}
+      propertyPath: m_Name
+      value: 2K_BlueStone_Boulder3 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 495982, guid: e56588cd3c924cc488787856ff35ea3e, type: 3}
+      propertyPath: m_RootOrder
+      value: 19
+      objectReference: {fileID: 0}
+    - target: {fileID: 495982, guid: e56588cd3c924cc488787856ff35ea3e, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 495982, guid: e56588cd3c924cc488787856ff35ea3e, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 495982, guid: e56588cd3c924cc488787856ff35ea3e, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 495982, guid: e56588cd3c924cc488787856ff35ea3e, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 2.965827
+      objectReference: {fileID: 0}
+    - target: {fileID: 495982, guid: e56588cd3c924cc488787856ff35ea3e, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.33670524
+      objectReference: {fileID: 0}
+    - target: {fileID: 495982, guid: e56588cd3c924cc488787856ff35ea3e, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -9.378128
+      objectReference: {fileID: 0}
+    - target: {fileID: 495982, guid: e56588cd3c924cc488787856ff35ea3e, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 495982, guid: e56588cd3c924cc488787856ff35ea3e, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 495982, guid: e56588cd3c924cc488787856ff35ea3e, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 495982, guid: e56588cd3c924cc488787856ff35ea3e, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 495982, guid: e56588cd3c924cc488787856ff35ea3e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 495982, guid: e56588cd3c924cc488787856ff35ea3e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 495982, guid: e56588cd3c924cc488787856ff35ea3e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: e56588cd3c924cc488787856ff35ea3e, type: 3}
+--- !u!4 &1590079315 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 495982, guid: e56588cd3c924cc488787856ff35ea3e, type: 3}
+  m_PrefabInstance: {fileID: 1590079314}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &1593219343
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 2085629186}
+    m_Modifications:
+    - target: {fileID: 175284, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_Name
+      value: 2K_BlueStone_Boulder1 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_RootOrder
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 13.533479
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.35546342
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 7.5132456
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+--- !u!4 &1593219344 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+  m_PrefabInstance: {fileID: 1593219343}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1595215693
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5136,6 +6236,68 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1922654967
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 2085629186}
+    m_Modifications:
+    - target: {fileID: 175284, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_Name
+      value: 2K_BlueStone_Boulder1 1 (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_RootOrder
+      value: 14
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -12.293416
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.35546157
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 3.3226185
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+--- !u!4 &1922654968 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 461302, guid: 4493f5a7c6d067e4b9d233502d0109f3, type: 3}
+  m_PrefabInstance: {fileID: 1922654967}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1951196700
 GameObject:
   m_ObjectHideFlags: 0
@@ -5463,6 +6625,23 @@ Transform:
   - {fileID: 552742937}
   - {fileID: 1240019892}
   - {fileID: 730536193}
+  - {fileID: 1194647689}
+  - {fileID: 429539678}
+  - {fileID: 977084657}
+  - {fileID: 1492824962}
+  - {fileID: 856620400}
+  - {fileID: 1922654968}
+  - {fileID: 1040580352}
+  - {fileID: 289368741}
+  - {fileID: 1545294503}
+  - {fileID: 1593219344}
+  - {fileID: 1590079315}
+  - {fileID: 1142518113}
+  - {fileID: 973126209}
+  - {fileID: 174883018}
+  - {fileID: 1074616720}
+  - {fileID: 1471221772}
+  - {fileID: 747258082}
   m_Father: {fileID: 447285061}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
