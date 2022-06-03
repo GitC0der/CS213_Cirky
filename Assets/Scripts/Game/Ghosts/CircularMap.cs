@@ -20,6 +20,8 @@ using Vector2 = UnityEngine.Vector2;
 ///
 public class CircularMap
 {
+    // TODO : Make CircularMap immutable and create builder
+    
     public const float MARGIN = 1.0f;    // "Wiggle room" to prevent collision between a Cellulo and map borders or other cellulos
     private const float EPSILON = 1e-4f;   // Tolerance regarding floating point values equality
     private const float CHEAT_DETECTION = 0.37f;   // Threshold for the cheat detection mechanism
@@ -41,7 +43,9 @@ public class CircularMap
         _passages = new HashSet<Passageway>(passages);
     }
     
-    /// Creates a circular map with evenly space rings. ***Not for the current map layout***
+    /// <summary> Creates a circular map with evenly space rings. <br/>
+    /// ---- Not for the current map layout ---- <br/>
+    /// </summary>
     public CircularMap(Vector2 center, int ringsCount)
     {
         if (ringsCount < 1) throw new ArgumentException("There must be at least 1 ring");
@@ -52,10 +56,12 @@ public class CircularMap
         }
     }
     
-    [Obsolete("May be deleted later")]
+    /// Generates a map with evenly spaces rings
+    [Obsolete("---- May be deleted later ----")]
     public CircularMap(Vector2 center, float smallestRadius) : this(center, smallestRadius, new HashSet<Passageway>()) {}
 
-    [Obsolete("May be deleted later")]
+    /// Generates a map with evenly spaces rings
+    [Obsolete("---- May be deleted later ----")]
     public CircularMap(Vector2 center, float smallestRadius, ICollection<Passageway> passages)
     {
         if (smallestRadius <= 5 * MARGIN)
@@ -408,11 +414,11 @@ public class CircularMap
             if (!(0 <= ringIndex && ringIndex < map.Rings().Count)) throw new ArgumentException($"Index must be between 0 and {map.Rings().Count} (number of rings - 1)");
             _radius = map.Rings().OrderBy(r => r._radius).ToList()[ringIndex]._radius;
       
-            if (_radius <= 0) throw new ArgumentException($"Negative radius. There is something wrong with {map.Rings()[ringIndex]}");
+            if (_radius <= 0) throw new ArgumentException($"Negative radius. There is something deeply wrong with {map.Rings()[ringIndex]}. It should be check ASAP!");
             _center = map.Rings()[0]._center;
         }
         
-        //[Obsolete("Works only with a map with uniformly spaced rings, i.e linear radii")]
+        
         public MapRing(float radius, Vector2 center)
         {
             if (radius <= 0) throw new ArgumentException("Radius can't be null or negative!");

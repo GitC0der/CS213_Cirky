@@ -95,15 +95,14 @@ public static class Utils
     }
 
     /// Gets a value from a dictionary. Just syntaxic sugar
-    public static TValue GetFrom<TKey, TValue>(Dictionary<TKey, TValue> dictionnary, TKey key)
+    public static TValue GetFrom<TKey, TValue>(Dictionary<TKey, TValue> dictionary, TKey key)
     {
-        TValue value;
-        dictionnary.TryGetValue(key, out value);
+        dictionary.TryGetValue(key, out var value);
         return value;
     }
 
     /// Returns the angle between a given vector and the horizontal right. The output angle is counter-clockwise and
-    /// between in [0,360[. For e.g, the vector (1,0) will have an angle of 0, (-1,0) will be 180, and (0,-1) will be 270
+    /// between in [0,360[. For e.g, the vector going right (1,0) will have an angle of 0, the one going left(-1,0) will be 180, and the one going down (0,-1) will be 270
     public static float Angle(Vector2 vector)
     {
         //float angle = Vector2.SignedAngle(Vector2.right, vector);

@@ -8,7 +8,7 @@ using MapRing = CircularMap.MapRing;
 using Passageway = CircularMap.Passageway;
 using IPathway = CircularMap.IPathway;
 
-//namespace Game.Ghosts;
+namespace Game.Ghosts{
 
 /// <summary>
 ///     Steps to use the pathfinder as intended :
@@ -26,13 +26,9 @@ public class Pathfinder
     private const float TOLERANCE = 0.2f;
     private const float TRIGGER_DIST = 0.1f;
     private const float MERGE_DIST = 0.2f;
-
-    private bool DEBUG_FAILED = false;
     
     private readonly CircularMap _map;
     private ISet<Node> _nodes = new HashSet<Node>();
-    private ISet<Node> _initialNodes = new HashSet<Node>();
-    private ISet<IPathway> _occupied = new HashSet<IPathway>();
 
     private bool _frozen = false;
     private Vector2 _direction;
@@ -90,9 +86,7 @@ public class Pathfinder
                 next.Connect(first, ring.DistanceBetween(next.Position(), first.Position()), ring);
             }
         }
-
-        _initialNodes = new HashSet<Node>(newNodes);
-
+        
         return newNodes;
     }
 
@@ -298,7 +292,7 @@ public class Pathfinder
         comeFrom.Add(startNode, startNode);
         
         // Searches the graph
-        while (frontier.Count() > 0)   // TODO : Try above version
+        while (frontier.Count() > 0)
         {
             Node currentNode = frontier.Peek(); 
             frontier.Dequeue();
@@ -367,43 +361,6 @@ public class Pathfinder
         _frozen = true;
     }
 
-    public float DistanceToClosestNode(Vector2 from)
-    {
-        float distance = float.MaxValue;
-        foreach (Node node in _nodes)
-        {
-            float newDistance = Vector2.Distance(from, node.Position());
-            if (newDistance < distance) distance = newDistance;
-        }
-        return distance;
-    }
-    
-    private Edge FindClosestEdgeFrom(Vector2 position)
-    {
-        Edge closestEdge = null;
-        float distance = float.MaxValue;
-        foreach (Node node in _nodes)
-        {
-            foreach (Edge edge in node.Edges())
-            {
-                float newDistance = edge.Pathway().DistanceFromPath(position);
-                if (newDistance < distance)
-                {
-                    distance = newDistance;
-                    closestEdge = edge;
-                }
-            }
-        }
-        return closestEdge;
-    }
-
-    private float AddNodeToCostSoFar(Dictionary<Node, float> costSoFar, Node node, Node previous)
-    {
-        float totalCost = node.EdgeTo(previous).Length();
-        costSoFar.Add(node, totalCost);
-        return totalCost;
-    }
-
     public override string ToString()
     {
         return $"Pathfinder [nodes = {ListToString(_nodes)}]";
@@ -453,12 +410,12 @@ public class Pathfinder
 
     private class Edge
     {
-        private Node _node1;
-        private Node _node2;
-        private float _length;
-        private float _cost;
-        private bool _isOccupied;
-        private IPathway _pathway;
+        private readonly Node _node1;
+        private readonly Node _node2;
+        private readonly float _length;
+        private readonly float _cost;
+        private readonly bool _isOccupied;
+        private readonly IPathway _pathway;
 
         public Edge(Node node1, Node node2, float length, IPathway path, float cost = BASE_COST, bool isOccupied = false)
         {
@@ -507,9 +464,9 @@ public class Pathfinder
     }
     private class Node
     {
-        private Vector2 _position;
-        private ISet<Edge> _edges = new HashSet<Edge>();
-        private ISet<Node> _neighbors = new HashSet<Node>();
+        private readonly Vector2 _position;
+        private readonly ISet<Edge> _edges;
+        private readonly ISet<Node> _neighbors;
 
         public Node(Vector2 position) : this(position, new HashSet<Edge>()) {}
         public Node(Vector2 position, ICollection<Edge> edges)
@@ -536,15 +493,6 @@ public class Pathfinder
             return possibleEdges;
         }
 
-        public Edge EdgeTo(Node node, Vector2 containing)
-        {
-            List<Edge> edges = EdgesTo(node);
-            edges.RemoveAll(e => e.Pathway().IsOn(containing));
-            if (edges.Count == 0) return null;
-            if (edges.Count > 1) throw new Exception($"Duplicate edges found. Both contain the specified position {containing}. There may be more!");
-            return edges[0];
-        }
-        
         public Edge EdgeTo(Node node)
         {
             List<Edge> edges = EdgesTo(node);
@@ -618,4 +566,5 @@ public class Pathfinder
             return $"Node [position = {_position}]";
         }
     }
+}
 }

@@ -1,9 +1,10 @@
 using System;
 using static Utils;
 using static CircularMap;
-using static Pathfinder;
+using static Game.Ghosts.Pathfinder;
 using System.Collections;
 using System.Collections.Generic;
+using Game.Ghosts;
 using UnityEngine;
 using UnityEngine.Assertions;
 

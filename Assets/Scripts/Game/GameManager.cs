@@ -9,6 +9,22 @@ public class GameManager
     //used to make the game manager instance pop in the scenes
     private GameObject gameObject;
 
+    private static readonly CircularMap _map;
+
+    static GameManager()
+    {
+        CircularMap map = new CircularMap(new Vector2(7.18f, -5.16f));
+        map.AddRing(new Vector2(7.88f, -5.16f));
+        map.AddRing(new Vector2(9.3f, -5.16f));
+        map.AddRing(new Vector2(10.87f, -5.16f));
+        map.AddPassage(new Vector2(9.72f, -3.69f));
+        map.AddPassage(new Vector2(4.73f, -3.69f));
+        map.AddPassage(new Vector2(7.19f, -3.9f));
+        map.AddPassage(new Vector2(7.19f, -6.45f));
+        map.AddPassage(new Vector2(7.19f, -7.94f));
+        _map = map;
+    }
+
     //Singleton system with an instance of this Game Manager
     private static GameManager m_Instance;
     public static GameManager Instance
@@ -41,6 +57,8 @@ public class GameManager
         Time.timeScale = 0;
         Debug.Log("Game Over");
     }
+
+    public CircularMap Map() => _map;
 }
 
 public class Players : MonoBehaviour {
