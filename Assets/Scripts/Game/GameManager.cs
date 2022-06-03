@@ -46,7 +46,7 @@ public class GameManager
     {
         if (_map.IsCheating(m_Players.Get(0).gameObject.transform.position)) {
 
-
+            Debug.Log("The player is cheating!");
         }
 
     }
