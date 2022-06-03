@@ -1,9 +1,6 @@
 using Game.Ghosts;
-using static CircularMap;
 using static Utils;
-using static Game.Ghosts.Pathfinder;
 using UnityEngine;
-using UnityEngine.Assertions.Comparers;
 
 namespace Core.Behaviors {
     

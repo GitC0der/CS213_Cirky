@@ -1,8 +1,6 @@
 using System;
 using static Utils;
 using static CircularMap;
-using static Game.Ghosts.Pathfinder;
-using System.Collections;
 using System.Collections.Generic;
 using Game.Ghosts;
 using UnityEngine;
