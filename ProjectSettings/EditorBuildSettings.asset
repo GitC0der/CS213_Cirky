@@ -9,6 +9,6 @@ EditorBuildSettings:
     path: Assets/Scenes/Sheep_Ghost_Sheep.unity
     guid: ee98f1eb88abe412fbdfb3cfa6fc5ac0
   - enabled: 1
-    path: Assets/Scenes/SpaceGhostSheepGame.unity
+    path: Assets/Scenes/CirkysVenture.unity
     guid: 3152b2c98cca36946be5dbbdc9a558da
   m_configObjects: {}

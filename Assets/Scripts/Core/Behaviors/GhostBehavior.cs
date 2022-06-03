@@ -1,18 +1,15 @@
-﻿using static CircularMap;
+﻿// using Game.Ghosts;
+using static CircularMap;
 using static Utils;
-using static Pathfinder;
+// using static Game.Ghosts.Pathfinder;
 using UnityEngine;
 using UnityEngine.Assertions.Comparers;
 
-//namespace Core.Behaviors;
-
-
+namespace Core.Behaviors {
+    
 public class GhostBehavior : AgentBehaviour
 {
-    public const float _height = 1;
-    private bool _isFleeing;
     private Pathfinder _pathfinder;
-    private Vector2 _target;
     private CircularMap _map;  //TODO : Change this
     private GameObject _player;
     
@@ -24,9 +21,8 @@ public class GhostBehavior : AgentBehaviour
     public void Start()
     {
         tag = "Ghost";
-        _isFleeing = false;
-        
-        _map = GenerateMap();
+
+        _map = GameManager.Instance.Map();
         _pathfinder = new Pathfinder(_map);
         _player = GameObject.FindGameObjectWithTag("Player");
         GoTo(_player.transform.localPosition);
@@ -73,6 +69,7 @@ public class GhostBehavior : AgentBehaviour
         return steering;
     }
 
+    /*
     private CircularMap GenerateMap()
     {
         //DEBUGGING : Ghost position = (9.14, 0, -6)
@@ -89,4 +86,6 @@ public class GhostBehavior : AgentBehaviour
         map.AddPassage(new Vector2(7.19f, -7.94f));
         return map;
     }
+    */
+}
 }
