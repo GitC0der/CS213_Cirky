@@ -41,6 +41,16 @@ public class GameManager
         }
     }
 
+    // Not finished yet
+    public void Update()
+    {
+        if (_map.IsCheating(m_Players.Get(0).gameObject.transform.position)) {
+
+            Debug.Log("The player is cheating!");
+        }
+
+    }
+
     private Players m_Players;
     public Players Players {
         get

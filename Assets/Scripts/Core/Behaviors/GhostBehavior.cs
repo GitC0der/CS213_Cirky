@@ -1,4 +1,4 @@
-﻿using Game.Ghosts;
+using Game.Ghosts;
 using static CircularMap;
 using static Utils;
 using static Game.Ghosts.Pathfinder;
