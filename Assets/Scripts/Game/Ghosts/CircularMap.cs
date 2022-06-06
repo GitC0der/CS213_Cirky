@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Random = UnityEngine.Random;
 using Vector2 = UnityEngine.Vector2;
 
 /// <summary>
@@ -139,6 +140,38 @@ public class CircularMap
         return Vector2.Distance(FindClosestPoint(position), position) > CHEAT_DETECTION;
     }
 
+    /// Randomly selects a position on the map 
+    public Vector2 RandomPosition()
+    {
+        // Randomly selects a pathway, with a probability of being selected that is equal to its length, i.e longer
+        // pathways are more likely to be chosen than shorter ones
+        List<IPathway> pathways = new List<IPathway>();
+        List<float> endDistances = new List<float>();
+        float totalLength = 0;
+        foreach (Passageway passage in _passages)
+        {
+            float length = passage.Length();
+            pathways.Add(passage);
+            totalLength += length;
+            endDistances.Add(totalLength);
+        }
+        foreach (MapRing ring in _rings)
+        {
+            float length = 2 * Mathf.PI * ring.Radius();
+            pathways.Add(ring);
+            totalLength += length;
+            endDistances.Add(totalLength);
+        }
+
+        float number = Random.Range(0, totalLength);
+        for (int i = 0; i < pathways.Count; i++)
+        {
+            if (endDistances[i] >= number) return pathways[i].RandomPosition();
+        }
+        
+        return pathways[pathways.Count - 1].RandomPosition();
+    }
+
     /// Finds the closest point on the map from a specified target
     private Vector2 FindClosestPoint(Vector2 target)
     {
@@ -253,6 +286,9 @@ public class CircularMap
 
         /// Returns the direction of travel of a point given its current position and a target
         public Vector2 Orientate(Vector2 position, Vector2 target);
+
+        /// Returns a randomly chosen point on the path
+        public Vector2 RandomPosition();
 
         public bool IsOn(Vector2 point);
 
@@ -370,6 +406,8 @@ public class CircularMap
             //return (target - position).normalized;
         }
 
+        public Vector2 RandomPosition() => _smallPoint + Random.Range(0f, 1f) * (_largePoint - _smallPoint);
+
         /*
         public Vector2 Direction(Vector2 currentPos, Vector2 nextPos)
         {
@@ -443,7 +481,7 @@ public class CircularMap
         /// <summary>
         ///     Finds the point on the ring that has a given angle from the horizontal line facing the right
         /// </summary>
-        /// <param name="angle">Angle from between a vector going from the center of rotation to the returned point and the vector (1,0)</param>
+        /// <param name="angle">Angle in <b>degrees</b> from between a vector going from the center of rotation to the returned point and the vector (1,0)</param>
         /// <returns>A point on the ring that has a given angle from the horizontal line</returns>
         public Vector2 PointAt(float angle)
         {
@@ -485,6 +523,8 @@ public class CircularMap
             //return PointAt(Vector2.Angle(Vector2.right, target - _center));
             return PointAt(Angle(target - _center));
         }
+
+        public Vector2 RandomPosition() => PointAt(Random.Range(0f, 360f - float.Epsilon));
 
         public float DistanceFromPath(Vector2 target)
         {

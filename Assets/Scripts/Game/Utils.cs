@@ -88,6 +88,23 @@ public static class Utils
         return minElement;
     }
     
+    /// Finds the value of the smallest element in a collection, with a given method to sort them out 
+    public static float MinValue<TElement>(ICollection<TElement> collection, Func<TElement, float> sorter, float ifEmpty)
+    {
+        if (collection.Count == 0) return ifEmpty;
+        float minScore = float.MaxValue;
+        foreach (TElement element in collection)
+        {
+            float newScore = sorter(element);
+            if (newScore < minScore)
+            {
+                minScore = newScore;
+            }
+        }
+
+        return minScore;
+    }
+    
     /// Checks if a given element is null 
     public static bool IsNull<TElement>(TElement element)
     {

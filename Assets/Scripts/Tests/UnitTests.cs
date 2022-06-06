@@ -223,7 +223,7 @@ public class UnitTests : MonoBehaviour
         map.AddPassage(2, direction2);
         map.AddPassage(2, direction1);
         Debug.Log(map);
-        Pathfinder pf = new Pathfinder(map);
+        Pathfinder pf = new Pathfinder(map, new List<GameObject>());
         Debug.Log(pf);
         
     }
