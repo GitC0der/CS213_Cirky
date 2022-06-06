@@ -10,6 +10,12 @@ public class GameManager
 {
     //used to make the game manager instance pop in the scenes
     private GameObject gameObject;
+    //private static readonly PlayerBehavior _player;
+
+    public GameObject GameObject
+    {
+        set => gameObject = value;
+    }
 
     private static readonly CircularMap _map;
 
@@ -25,6 +31,7 @@ public class GameManager
         map.AddPassage(new Vector2(7.19f, -6.45f));
         map.AddPassage(new Vector2(7.19f, -7.94f));
         _map = map;
+        //_player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerBehavior>();
     }
 
     //Singleton system with an instance of this Game Manager
@@ -46,12 +53,15 @@ public class GameManager
     // Not finished yet
     public void Update()
     {
-        if (_map.IsCheating(m_Players.Get(0).gameObject.transform.position)) {
+        // Don't forget to use ToVector2, as implicit casts do not correctly work
+        if (_map.IsCheating(ToVector2(m_Players.Get(0).gameObject.transform.position))) {
 
             Debug.Log("The player is cheating!");
         }
 
     }
+
+    //public PlayerBehavior Player() => _player;
 
     private Players m_Players;
     public Players Players {
