@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Core.Behaviors;
 using UnityEngine;
 using Vector2 = UnityEngine.Vector2;
 using MapRing = CircularMap.MapRing;
@@ -14,32 +15,42 @@ namespace Game.Ghosts{
 ///     Steps to use the pathfinder as intended :
 ///     <list type="number">
 ///         <item><term> Create a CircularMap and then initialize a pathfinder with its constructor </term></item>
+///         <item><term> If obstacles such as other cellulos or objects are present, pass their GameObject to the pathfinder constructor </term></item>
 ///         <item><term> Use the <see cref="SetTarget(Vector2, Vector2)">SetTarget()</see> method to set the target of the pathfinder </term></item>
-///         <item><term> Then use the <see cref="Orientation(Vector2)">Orientation()</see> method to get the orientation (i.e velocity) of the cellulo </term></item>
+///         <item><term> Then use the <see cref="Orientation(Vector2)">Orientation()</see> method to get the orientation (i.e normalized velocity) of the cellulo </term></item>
 ///     </list>
 ///     See <see cref="GhostBehavior">GhostBehavior</see> for more information and examples
 /// </summary>
 public class Pathfinder
 {
+    private const float OBSTACLE_CLEARANCE = 1.35f*CircularMap.MARGIN;
     private const float BASE_COST = 1;
-    private const float OCCUPIED_COST = 10e3f;  //TODO: Use this
-    private const float TOLERANCE = 0.2f;
     private const float TRIGGER_DIST = 0.1f;
     private const float MERGE_DIST = 0.2f;
+
+    public static bool GHOST_IS_BLOCKING = false;
     
     private readonly CircularMap _map;
-    private ISet<Node> _nodes = new HashSet<Node>();
+    private ISet<Node> _nodes;
 
-    private bool _frozen = false;
-    private Vector2 _direction;
+    private bool _frozen;
+    private bool _isWaiting;
     private Queue<Node> _finalNodes;
     private Queue<IPathway> _finalPath;
+    private float _distanceToTarget;
+    private ISet<GameObject> _obstacles;
+    private IList<Node> _obstacleNodes;
 
-    /// You must generate a map before creating the pathfinder!
-    public Pathfinder(CircularMap map)
+    /// *** You must generate a map before creating the pathfinder! ***
+    public Pathfinder(CircularMap map) : this(map, new List<GameObject>()) {}
+    
+    /// *** You must generate a map before creating the pathfinder! ***
+    /// This constructor asks for obstacles, i.e other cellulos or objects that could block the path of this cellulo
+    public Pathfinder(CircularMap map, ICollection<GameObject> obstacles)
     {
         _map = map;
         _nodes = ResetNodes();
+        _obstacles = new HashSet<GameObject>(obstacles);
     }
 
     /// Recomputes the nodes of the map alone, i.e without the start and end nodes 
@@ -48,16 +59,16 @@ public class Pathfinder
         ISet<Node> newNodes = new HashSet<Node>();
         foreach (Passageway passage in _map.Passages())
         {
-            Node node1 = FindExistingNode(new Node(passage.SmallPoint()), null, MERGE_DIST, newNodes);
-            Node node2 = FindExistingNode(new Node(passage.LargePoint()), null, MERGE_DIST, newNodes);
+            Node node1 = FindExistingNode(new Node(passage.SmallPoint(), false), null, MERGE_DIST, newNodes);
+            Node node2 = FindExistingNode(new Node(passage.LargePoint(), false), null, MERGE_DIST, newNodes);
 
             if (IsNull(node1)) {
-                node1 = new Node(passage.SmallPoint());
+                node1 = new Node(passage.SmallPoint(), false);
                 newNodes.Add(node1);
             }
 
             if (IsNull(node2)) {
-                node2 = new Node(passage.LargePoint());
+                node2 = new Node(passage.LargePoint(), false);
                 newNodes.Add(node2);
             }
             node1.Connect(node2, passage.Length(), passage);
@@ -117,7 +128,7 @@ public class Pathfinder
     /// Finds the 2 nodes on a path that are the closest nodes surrounding a specified position 
     private List<Node> FindBoundingNodesOn(IPathway path, Vector2 position, ICollection<Node> allNodes)
     {
-        List<Node> nodes = FindNearestNodesOn(path, position, allNodes);
+        List<Node> nodes = FindNodesOn(path, allNodes);
         if (nodes.Count < 2) throw new Exception($"Pathway {path} should contain at least 2 nodes, instead contained {nodes.Count}");
         nodes = nodes.OrderBy(n => AngleBetween(position - _map.Center(), n.Position() - _map.Center())).ToList();
         Node node1 = nodes[0];
@@ -129,8 +140,8 @@ public class Pathfinder
         return new List<Node> { node2, node1 };
     }
 
-    /// Inserts a new node on a pathway (
-    private Node InsertNode(IPathway path, Vector2 newPosition)
+    /// Inserts a new node on a pathway
+    private Node InsertNode(IPathway path, Vector2 newPosition, bool isBlocking)
     {
         List<Node> nodes = FindBoundingNodesOn(path, newPosition, _nodes);
         Edge edge = nodes[0].EdgeTo(nodes[1]);
@@ -142,7 +153,7 @@ public class Pathfinder
             Debug.Log($"Warning! {nodes[0]} and {nodes[1]} were not connected. Correction applied... May need to investigate this later on");
             //throw new Exception($"Nodes {nodes[0]} and {nodes[1]} should be connected! There may be a problem with graph initialization");
         }
-        Node newNode = new Node(newPosition);
+        Node newNode = new Node(newPosition, isBlocking);
         edge.Node1().Disconnect(edge.Node2());
         
         newNode.Connect(edge.Node1(), path.DistanceBetween(edge.Node1().Position(), newPosition), edge.Pathway());
@@ -215,7 +226,7 @@ public class Pathfinder
         return foundNode == null ? ifNotFound : foundNode;
     }
 
-    private List<Node> FindNearestNodesOn(IPathway path, Vector2 position, ICollection<Node> nodes)
+    private List<Node> FindNodesOn(IPathway path, ICollection<Node> nodes)
     {
         ISet<Node> newNodes = new HashSet<Node>();
         foreach (Node node in nodes)
@@ -237,7 +248,17 @@ public class Pathfinder
     /// <returns>The (normalized) orientation of the cellulo</returns>
     public Vector2 Orientation(Vector2 currentPos)
     {
-        if (_frozen) return new Vector2(0, 0);
+        // TODO : Might need a better method in case of larger obstacles
+        GhostBehavior otherGhost = GameManager.Instance.ClosestGhostTo(currentPos, true).GetComponent<GhostBehavior>();
+        bool closeToGhost = Vector2.Distance(ToVector2(otherGhost.transform.localPosition), currentPos) < OBSTACLE_CLEARANCE;
+        bool otherIsWaiting = otherGhost.IsWaiting();
+        if (closeToGhost && !otherIsWaiting) {
+            if (_distanceToTarget > otherGhost.DistanceToTarget()) _isWaiting = true;
+        } else {
+            _isWaiting = false;
+        } 
+        
+        if (_frozen || _isWaiting) return new Vector2(0, 0);
         if (_finalNodes.Count == 0) return new Vector2(0, 0);
         Node nextNode = _finalNodes.Peek();
         IPathway nextPath = _finalPath.Peek();
@@ -261,30 +282,41 @@ public class Pathfinder
     /// </summary>
     /// <param name="currentPos">Current position of the cellulo</param>
     /// <param name="target">Target position where the cellulo will move towards</param>
+    /// <return> The length of the path </return>
     /// <exception cref="Exception">If the map is not correctly initialized</exception>
-    public void SetTarget(Vector2 currentPos, Vector2 target)
+    public float SetTarget(Vector2 currentPos, Vector2 target)
     {
         _frozen = false;
         Dictionary<Node, float> costSoFar = new Dictionary<Node, float>();
         Dictionary<Node, Node> comeFrom = new Dictionary<Node, Node>();
         PriorityList<Node> frontier = new PriorityList<Node>(n => GetFrom(costSoFar, n));
+        _obstacleNodes = new List<Node>();
         
         // Merge the start node with a existing node if there is one, otherwise creates a new node
-        Node startNode = FindExistingNode(new Node(currentPos), null, MERGE_DIST, _nodes);
-        Node endNode = FindExistingNode(new Node(target), null, MERGE_DIST, _nodes);
+        Node startNode = FindExistingNode(new Node(currentPos, false), null, MERGE_DIST, _nodes);
+        Node endNode = FindExistingNode(new Node(target, false), null, MERGE_DIST, _nodes);
         bool isStartNodeNew = IsNull(startNode);
         bool isEndNodeNew = IsNull(endNode);
         if (isStartNodeNew) {
             if (!IsNull(_finalPath) && _finalPath.Count > 1) {
-                //startNode = InsertNode(MoveToNextPathway(_finalPath.ToList()[1], currentPos), currentPos);
-                startNode = InsertNode(_map.FindClosestPathway(currentPos), currentPos);
+                startNode = InsertNode(_map.FindClosestPathway(currentPos), currentPos, GHOST_IS_BLOCKING);
             } else {
-                startNode = InsertNode(_map.FindClosestPathway(currentPos), currentPos);
+                startNode = InsertNode(_map.FindClosestPathway(currentPos), currentPos, GHOST_IS_BLOCKING);
             }
-            
         }
         if (isEndNodeNew) {
-            endNode = InsertNode(_map.FindClosestPathway(target), target);
+            endNode = InsertNode(_map.FindClosestPathway(target), target, false);
+        }
+        
+        foreach (GameObject gameObject in _obstacles)
+        {
+            Vector2 obstaclePos = ToVector2(gameObject.transform.localPosition);
+            Node obstacleNode = FindExistingNode(new Node(obstaclePos, true), null,
+                MERGE_DIST, _nodes);
+            if (IsNull(obstacleNode))
+            {
+                _obstacleNodes.Add(InsertNode(_map.FindClosestPathway(obstaclePos), obstaclePos, true));
+            }
         }
 
         costSoFar.Add(startNode, 0);
@@ -301,17 +333,21 @@ public class Pathfinder
             
             foreach (Node neighbor in currentNode.Neighbors())
             {
-                float newCost = GetFrom(costSoFar, currentNode) + currentNode.EdgeTo(neighbor).Length();
-                if (!comeFrom.ContainsKey(neighbor) || newCost < GetFrom(costSoFar, neighbor)) 
+                // If the neighboring node is blocked, it is completely avoided
+                if (!neighbor.IsBlocking())
                 {
-                    // TODO : Adapt for custom costs
-                    if (costSoFar.ContainsKey(neighbor)) costSoFar.Remove(neighbor);
-                    costSoFar.Add(neighbor, newCost);
-                    
-                    if (comeFrom.ContainsKey(neighbor)) comeFrom.Remove(neighbor);
-                    comeFrom.Add(neighbor, currentNode);
-                    
-                    frontier.Add(neighbor);
+                    float newCost = GetFrom(costSoFar, currentNode) + currentNode.EdgeTo(neighbor).Length();
+                    if (!comeFrom.ContainsKey(neighbor) || newCost < GetFrom(costSoFar, neighbor))
+                    {
+                        // TODO : Adapt for custom costs
+                        if (costSoFar.ContainsKey(neighbor)) costSoFar.Remove(neighbor);
+                        costSoFar.Add(neighbor, newCost);
+
+                        if (comeFrom.ContainsKey(neighbor)) comeFrom.Remove(neighbor);
+                        comeFrom.Add(neighbor, currentNode);
+
+                        frontier.Add(neighbor);
+                    }
                 }
             }
         }
@@ -322,7 +358,7 @@ public class Pathfinder
             _finalNodes = new Queue<Node>(new List<Node> {startNode});
             _finalPath = new Queue<IPathway>(new List<IPathway> { _map.FindClosestPathway(currentPos) });
             _nodes = ResetNodes();
-            return;
+            return 0;
         }
 
         // Builds the path starting from the end
@@ -341,18 +377,33 @@ public class Pathfinder
         List<IPathway> pathways = new List<IPathway>();
         List<Node> tempNodes = _finalNodes.ToList();
         for (var i = 0; i < _finalNodes.Count - 1; i++)
-        {
-            pathways.Add(tempNodes[i].EdgeTo(tempNodes[i+1]).Pathway());
+        { 
+            pathways.Add(tempNodes[i].EdgeTo(tempNodes[i + 1]).Pathway());
         }
         _finalPath = new Queue<IPathway>(pathways);
-        
-        // Removes the start node from the list of waypoints since the start node is the current position
-        _finalNodes.Dequeue();  
-        
-        // Removes the added start and end nodes from the graph
+
+        // Removes the added start, end nodes, and obstacle nodes from the graph
         if (isStartNodeNew) RemoveNode(startNode);
         if (isEndNodeNew) RemoveNode(endNode);
+        foreach (Node obstacleNode in _obstacleNodes)
+        {
+            RemoveNode(obstacleNode);
+        }
 
+        // Computes the length of the path
+        float length = 0;
+        List<Node> lengthNodes = _finalNodes.ToList();
+        List<IPathway> lengthPathways = _finalPath.ToList();
+        for (int i = 0; i < _finalPath.Count; i++)
+        {
+            length += lengthPathways[i].DistanceBetween(lengthNodes[i].Position(), lengthNodes[i + 1].Position());
+        }
+        
+        // Removes the start node from the list of waypoints since the start node is the current position
+        _finalNodes.Dequeue();
+
+        _distanceToTarget = length;
+        return length;
     }
 
     /// Freezes the cellulo in its current position
@@ -361,6 +412,27 @@ public class Pathfinder
         _frozen = true;
     }
 
+    public bool IsWaiting() => _isWaiting;
+
+    public bool IsFrozen() => _frozen;
+
+    public float DistanceBetween(Vector2 current, Vector2 target)
+    {
+        float previousDistance = _distanceToTarget;
+        //Queue<Node> previousNodes = new Queue<Node>(_finalNodes);
+        Queue<Node> previousNodes = _finalNodes;
+        //Queue<IPathway> previousPathways = new Queue<IPathway>(_finalPath);
+        Queue<IPathway> previousPathways = _finalPath;
+
+        float distance = SetTarget(current, target);
+        _finalNodes = previousNodes;
+        _finalPath = previousPathways;
+        _distanceToTarget = previousDistance;
+        return distance;
+    }
+
+    public float DistanceToCurrentTarget() => _distanceToTarget;
+    
     public override string ToString()
     {
         return $"Pathfinder [nodes = {ListToString(_nodes)}]";
@@ -414,6 +486,8 @@ public class Pathfinder
         private readonly Node _node2;
         private readonly float _length;
         private readonly float _cost;
+        
+        // TODO : Get rid of isOccupied
         private readonly bool _isOccupied;
         private readonly IPathway _pathway;
 
@@ -467,13 +541,15 @@ public class Pathfinder
         private readonly Vector2 _position;
         private readonly ISet<Edge> _edges;
         private readonly ISet<Node> _neighbors;
+        private readonly bool _isBlocking;
 
-        public Node(Vector2 position) : this(position, new HashSet<Edge>()) {}
-        public Node(Vector2 position, ICollection<Edge> edges)
+        public Node(Vector2 position, bool isBlocking) : this(position, new HashSet<Edge>(), isBlocking) {}
+        public Node(Vector2 position, ICollection<Edge> edges, bool isBlocking)
         {
             _position = position;
             _edges = new HashSet<Edge>(edges);
             _neighbors = new HashSet<Node>();
+            _isBlocking = isBlocking;
             foreach (Edge edge in _edges)
             {
                 foreach (Node node in edge.Nodes())
@@ -544,6 +620,8 @@ public class Pathfinder
                 node.Disconnect(this);
             }
         }
+
+        public bool IsBlocking() => _isBlocking;
 
         public Vector2 Position() => _position;
         

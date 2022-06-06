@@ -1,5 +1,7 @@
+using static Utils;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
@@ -69,6 +71,13 @@ public class GameManager
     }
 
     public CircularMap Map() => _map;
+
+    public GameObject ClosestGhostTo(Vector2 position, bool isGhost)
+    {
+        List<GameObject> ghosts = GameObject.FindGameObjectsWithTag("Ghost").ToList();
+        ghosts.RemoveAll(g => ToVector2(g.transform.localPosition).Equals(position));
+        return MinElement(ghosts, g => Vector2.Distance(ToVector2(g.transform.localPosition), position));
+    }
 }
 
 public class Players : MonoBehaviour {
