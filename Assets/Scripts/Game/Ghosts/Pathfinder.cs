@@ -284,7 +284,7 @@ public class Pathfinder
     /// <param name="target">Target position where the cellulo will move towards</param>
     /// <return> The length of the path </return>
     /// <exception cref="Exception">If the map is not correctly initialized</exception>
-    public float SetTarget(Vector2 currentPos, Vector2 target)
+    public float SetTarget(Vector2 currentPos, Vector2 target, bool avoidPlayer)
     {
         _frozen = false;
         Dictionary<Node, float> costSoFar = new Dictionary<Node, float>();
@@ -305,7 +305,7 @@ public class Pathfinder
             }
         }
         if (isEndNodeNew) {
-            endNode = InsertNode(_map.FindClosestPathway(target), target, false);
+            endNode = InsertNode(_map.FindClosestPathway(target), target, avoidPlayer);
         }
         
         foreach (GameObject gameObject in _obstacles)
@@ -419,22 +419,20 @@ public class Pathfinder
     public bool IsFrozen() => _frozen;
 
     /// Computes the length of the path between the current position and a target 
-    public float DistanceBetween(Vector2 current, Vector2 target)
+    public float DistanceBetween(Vector2 current, Vector2 target, bool avoidPlayer)
     {
         float previousDistance = _distanceToTarget;
-        //Queue<Node> previousNodes = new Queue<Node>(_finalNodes);
         Queue<Node> previousNodes = _finalNodes;
-        //Queue<IPathway> previousPathways = new Queue<IPathway>(_finalPath);
         Queue<IPathway> previousPathways = _finalPath;
 
-        float distance = SetTarget(current, target);
+        float distance = SetTarget(current, target, avoidPlayer);
         _finalNodes = previousNodes;
         _finalPath = previousPathways;
         _distanceToTarget = previousDistance;
         return distance;
     }
 
-    /// Returns the distance to the current target 
+    /// Returns the distance to the current target
     public float DistanceToTarget() => _distanceToTarget;
     
     public override string ToString()

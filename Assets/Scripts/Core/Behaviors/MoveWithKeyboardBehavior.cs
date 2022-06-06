@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 
 //Input Keys
+/*
 public enum InputKeyboard{
     Arrows, 
     WASD
 }
+*/
 public class MoveWithKeyboardBehavior : AgentBehaviour
 {
     public InputKeyboard inputKeyboard; 

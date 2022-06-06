@@ -50,7 +50,7 @@ public class GhostBehavior : AgentBehaviour
         {
             Vector2 currentPos = ToVector2(transform.localPosition);
             Vector2 target = new Vector2(7.3f, -7.3f);
-            Debug.Log($"Distance from currentPos{currentPos} to target{target} is {_pathfinder.DistanceBetween(currentPos, target)}");
+            Debug.Log($"Distance from currentPos{currentPos} to target{target} is {_pathfinder.DistanceBetween(currentPos, target, false)}");
         }
 
         if (Input.GetKeyDown("q"))
@@ -65,7 +65,7 @@ public class GhostBehavior : AgentBehaviour
 
     public void GoTo(Vector3 target)
     {
-        _pathfinder.SetTarget(ToVector2(transform.localPosition), ToVector2(target));
+        _pathfinder.SetTarget(ToVector2(transform.localPosition), ToVector2(target), false);
         
         //Debug.Log(_map.IsCheating(ToVector2(target)) ? "Cheating!" : "NOT cheating!");
     }

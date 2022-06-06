@@ -291,14 +291,7 @@ public class CircularMap
         public Vector2 RandomPosition();
 
         public bool IsOn(Vector2 point);
-
-        // TODO: Uncomment this when Unity is updated to newest version
-        /*
-        public bool IsCloseEnoughTo(Vector2 target, float minDistance)
-        {
-            return DistanceTo(target) < minDistance;
-        } 
-        */
+        
     }
     
     public class Passageway : IPathway
