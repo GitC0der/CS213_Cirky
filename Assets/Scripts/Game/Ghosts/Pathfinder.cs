@@ -25,7 +25,7 @@ public class Pathfinder
 {
     private const float OBSTACLE_CLEARANCE = 1.35f*CircularMap.MARGIN;
     private const float BASE_COST = 1;
-    private const float TRIGGER_DIST = 0.1f;
+    private const float TRIGGER_DIST = 0.4f;
     private const float MERGE_DIST = 0.2f;
 
     public static bool GHOST_IS_BLOCKING = false;
@@ -35,6 +35,7 @@ public class Pathfinder
 
     private bool _frozen;
     private bool _isWaiting;
+    private Node _endNode;
     private Queue<Node> _finalNodes;
     private Queue<IPathway> _finalPath;
     private float _distanceToTarget;
@@ -246,7 +247,7 @@ public class Pathfinder
     /// </summary>
     /// <param name="currentPos">The current position of the cellulo</param>
     /// <returns>The (normalized) orientation of the cellulo</returns>
-    public Vector2 Orientation(Vector2 currentPos)
+    public Vector2 Orientation(Vector2 currentPos, bool isFleeing)
     {
         // TODO : Might need a better method in case of larger obstacles
         GhostBehavior otherGhost = GameManager.Instance.ClosestGhostTo(currentPos, true).GetComponent<GhostBehavior>();
@@ -259,24 +260,58 @@ public class Pathfinder
         } 
         
         if (_frozen || _isWaiting) return new Vector2(0, 0);
-        if (_finalNodes.Count == 0) return new Vector2(0, 0);
+        
+        /*
+        if (_finalNodes.Count == 0 && !isFleeing) return new Vector2(0, 0);
+
+        if (_finalNodes.Count == 0 && isFleeing) GenerateFleeingTarget(currentPos);
+        */
         Node nextNode = _finalNodes.Peek();
         IPathway nextPath = _finalPath.Peek();
-   
-        if (Vector2.Distance(currentPos, nextNode.Position()) < TRIGGER_DIST) OnNextPathway();
+
+        if (isFleeing && Vector2.Distance(currentPos, _endNode.Position()) < TRIGGER_DIST)
+        {
+            GenerateFleeingTarget(currentPos);
+        }
+        
+        /*
+        if (Vector2.Distance(currentPos, nextNode.Position()) < TRIGGER_DIST)
+        {
+            _finalPath.Dequeue();
+            _finalNodes.Dequeue();
+        }
+        */
 
         Vector2 newDirection = nextPath.Orientate(currentPos, nextNode.Position());
 
         return newDirection;
     }
-
-    /// Called when the cellulo reached the waypoint and moves to the next pathway 
-    private void OnNextPathway()
-    {
-        _finalPath.Dequeue();
-        _finalNodes.Dequeue();
-    }
     
+    public Vector2 GenerateFleeingTarget(Vector2 currentPos)
+    {
+        float MIN_DISTANCE = 7f;
+        List<GameObject> objects = GameObject.FindGameObjectsWithTag("Ghost").ToList();
+        objects.Add(GameManager.Instance.Player().gameObject);
+        
+        float length = 0;
+        bool isOccupied;
+        Vector2 position;
+        do
+        {
+            isOccupied = false;
+            position = _map.RandomPosition();
+            foreach (GameObject ghost in objects)
+            {
+                isOccupied = isOccupied || position.Equals(ToVector2(ghost.transform.localPosition));
+            }
+
+            //if (!isOccupied) length = SetTarget(currentPos, position, true);
+            if (!isOccupied) length = DistanceBetween(currentPos, position, true);
+        } while (isOccupied || length < MIN_DISTANCE);
+
+        return position;
+    }
+
     /// <summary>
     ///     Sets the path from the current position to a specified target
     /// </summary>
@@ -381,6 +416,7 @@ public class Pathfinder
             pathways.Add(tempNodes[i].EdgeTo(tempNodes[i + 1]).Pathway());
         }
         _finalPath = new Queue<IPathway>(pathways);
+        _endNode = endNode;
 
         // Removes the added start, end nodes, and obstacle nodes from the graph
         if (isStartNodeNew) RemoveNode(startNode);
@@ -411,6 +447,8 @@ public class Pathfinder
     {
         _frozen = true;
     }
+
+    public Vector2 CurrentTarget() => _endNode.Position();
 
     /// Returns true if the cellulo is waiting for another cellulo to move out of the way, false otherwise 
     public bool IsWaiting() => _isWaiting;
@@ -578,9 +616,7 @@ public class Pathfinder
             if (edges.Count > 1) throw new Exception("Duplicate edges. Try using the other method");
             return edges[0];
         }
-
-        public bool IsCloseEnoughTo(Vector2 from) => Vector2.Distance(from, _position) < TRIGGER_DIST;
-
+        
         public ISet<Node> Neighbors() => new HashSet<Node>(_neighbors);
 
         public void Connect(Node otherNode, float length, IPathway path, float cost = BASE_COST)

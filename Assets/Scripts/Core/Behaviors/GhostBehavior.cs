@@ -3,6 +3,7 @@ using System.Linq;
 using Game.Ghosts;
 using static Utils;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Core.Behaviors {
     
@@ -12,9 +13,7 @@ public class GhostBehavior : AgentBehaviour
     private Pathfinder _pathfinder;
     private CircularMap _map;  //TODO : Change this
     private GameObject _player;
-    
-    //DEBUG
-    private static float lastSwitchTime = 0;
+    private Vector2 _fleeingTarget;
 
     public new void Awake()
     {
@@ -33,12 +32,15 @@ public class GhostBehavior : AgentBehaviour
         if (!Pathfinder.GHOST_IS_BLOCKING) obstacles = new List<GameObject>();
         
         _pathfinder = new Pathfinder(_map, obstacles);
-        GoTo(_player.transform.localPosition);
+        GoTo(_player.transform.localPosition, false);
     }
     
     // Update is called once per frame
     void Update()
     {
+
+        // ---------------------------------------
+        
         // TODO : Remove all this, used only for debugging purposes
         if (Input.GetKeyDown("space"))
         {
@@ -63,9 +65,9 @@ public class GhostBehavior : AgentBehaviour
         }
     }
 
-    public void GoTo(Vector3 target)
+    public float GoTo(Vector3 target, bool avoidPlayer)
     {
-        _pathfinder.SetTarget(ToVector2(transform.localPosition), ToVector2(target), false);
+        return _pathfinder.SetTarget(ToVector2(transform.localPosition), ToVector2(target), avoidPlayer);
         
         //Debug.Log(_map.IsCheating(ToVector2(target)) ? "Cheating!" : "NOT cheating!");
     }
@@ -76,13 +78,22 @@ public class GhostBehavior : AgentBehaviour
 
     public override Steering GetSteering()
     {
-        GoTo(_player.transform.localPosition);
+        bool isFleeing = GameManager.Instance.Player().HasPower();
+        if (isFleeing)
+        {
+            //_fleeingTarget = _pathfinder.GenerateFleeingTarget(Position2());
+            _pathfinder.SetTarget(Position2(), _fleeingTarget, true);
+        } else {
+            GoTo(_player.transform.localPosition, false);
+        }
+        
+        // TODO : Call GenerateNewFleeingTarget here instead of in pathfinder.Orientation
         
         // This is necessary since the cellulo is going upwards for no discernible reason
         transform.localPosition = new Vector3(transform.localPosition.x, HEIGHT, transform.localPosition.z);
         
         
-        Vector3 direction = ToVector3(_pathfinder.Orientation(ToVector2(transform.localPosition)), HEIGHT);
+        Vector3 direction = ToVector3(_pathfinder.Orientation(ToVector2(transform.localPosition), isFleeing), HEIGHT);
         
         Steering steering = new Steering();
 
@@ -95,6 +106,8 @@ public class GhostBehavior : AgentBehaviour
 
         return steering;
     }
+    
+    private Vector2 Position2() => ToVector2(transform.localPosition);
 
     /*
     private CircularMap GenerateMap()
