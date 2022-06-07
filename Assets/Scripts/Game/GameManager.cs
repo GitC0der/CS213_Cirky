@@ -93,6 +93,7 @@ public class GameManager
     }
 }
 
+
 public class Players : MonoBehaviour {
 
     List<Player> _players = new List<Player>();
