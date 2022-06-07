@@ -93,14 +93,6 @@ public class GameManager
     }
 }
 
-public class MainPlayer : MonoBehaviour
-{
-    public void Update()
-    {
-        throw new NotImplementedException();
-    }
-}
-
 public class Players : MonoBehaviour {
 
     List<Player> _players = new List<Player>();
