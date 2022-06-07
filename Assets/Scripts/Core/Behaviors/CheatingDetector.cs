@@ -8,15 +8,17 @@ public class CheatingDetector : MonoBehaviour
     private GameObject _player;
     private bool punishmentInProgress = false;
     private float waitingDuration = 3f;
-    // private Timer timer;
-    private float waitEnd = 0;
+    private float waitEnd = 0.0001f;
+    private AudioSource audioSource;
+    public AudioClip cheater;
 
     // Start is called before the first frame update
     void Start()
     {
         _map = GameManager.Instance.Map();
         _player = GameObject.FindGameObjectWithTag("Player");
-        // timer = Timer.Instance;
+        audioSource = (gameObject.GetComponent<AudioSource>() != null) ? gameObject.GetComponent<AudioSource>() : gameObject.AddComponent<AudioSource>();
+        audioSource.playOnAwake = false;
     }
 
     // Update is called once per frame
@@ -28,21 +30,10 @@ public class CheatingDetector : MonoBehaviour
 
         if (_map.IsCheating(_player.gameObject.transform.position) && !punishmentInProgress) {
             startWaiting(waitingDuration);
+            audioSource.Play();
             punishmentInProgress = true;
             GameManager.Instance.Players.Get(0).RemoveScore();
-            Debug.Log("The player is cheating! (CHEATING DETECTOR)");
         }
-
-        // if (Timer.Instance.waitOver()) {
-        //     punishmentInProgress = false;
-        // }
-
-        // if (_map.IsCheating(_player.gameObject.transform.position) && !punishmentInProgress) {
-        //     Timer.Instance.startWaiting(waitingDuration);
-        //     punishmentInProgress = true;
-        //     GameManager.Instance.Players.Get(0).RemoveScore();
-        //     Debug.Log("The player is cheating! (CHEATING DETECTOR)");
-        // }
     }
 
     public void startWaiting(float waitingDuration)
@@ -52,7 +43,6 @@ public class CheatingDetector : MonoBehaviour
 
     public bool waitOver()
     {
-        Debug.Log("waitEnd: " + waitEnd + ", Time.time: " + Time.time);
         return waitEnd < Time.time;
     }
 }
