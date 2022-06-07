@@ -137,6 +137,9 @@ public class CircularMap
     /// <returns>True if the player is cheating, false if not</returns>
     public bool IsCheating(Vector2 position)
     {
+        // Debug.Log("position: " + position + ", FindClosestPoint(position): " + FindClosestPoint(position)
+        //             + ", distance: " + Vector2.Distance(FindClosestPoint(position), position)
+        //             + ", CHEAT_DETECTION: " + CHEAT_DETECTION);
         return Vector2.Distance(FindClosestPoint(position), position) > CHEAT_DETECTION;
     }
 

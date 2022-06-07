@@ -11,7 +11,6 @@ public class Timer : MonoBehaviour
     public float maxTime = 120;
     public GameObject gameOverMenu;
     public GameManager gameManager;
-    private float waitEnd;
 
     public void Awake() {
         initTimerValue = Time.time; 
@@ -47,15 +46,5 @@ public class Timer : MonoBehaviour
     {
         maxTime = max;
         //Debug.Log("Set game duration to " + maxTime);
-    }
-
-    public void startWaiting(float waitingDuration)
-    {
-        waitEnd = Time.time + waitingDuration;
-    }
-
-    public bool waitOver()
-    {
-        return waitEnd < Time.time;
     }
 }
