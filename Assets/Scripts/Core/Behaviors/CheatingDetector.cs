@@ -32,7 +32,7 @@ public class CheatingDetector : MonoBehaviour
             punishmentInProgress = false;
         }
 
-        if (_map.IsCheating(_player.gameObject.transform.position) && !punishmentInProgress) {
+        if (_map.IsCheating(Utils.ToVector2(_player.gameObject.transform.position)) && !punishmentInProgress) {
             startWaiting(waitingDuration);
             audioSource.PlayOneShot(cheater, 07f);
             audioSource.PlayOneShot(pointDeduction, 07f);
