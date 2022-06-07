@@ -45,7 +45,7 @@ public class RealPlayerCellulo : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Ground"))
             return;
-        Debug.Log("other.collider.transform.parent.gameObject: " + other.collider.transform.parent.gameObject + "   other.collider.gameObject: " + other.collider.gameObject);
+        // Debug.Log("other.collider.transform.parent.gameObject: " + other.collider.transform.parent.gameObject + "   other.collider.gameObject: " + other.collider.gameObject);
         if (hasGem && other.collider.transform.parent.gameObject.CompareTag("Player")) {
             HitPlayer(GameManager.Instance.Players.GetClosestPlayer(other.collider.transform));
         }
