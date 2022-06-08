@@ -21,7 +21,7 @@ public class PlayerBehavior : AgentBehaviour
 
     public void Start()
     {
-        GrabPowerUp();
+        // GrabPowerUp();
     }
 
     public void Update()
