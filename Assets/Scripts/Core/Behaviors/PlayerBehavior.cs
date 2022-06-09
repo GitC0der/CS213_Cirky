@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Core.Behaviors;
 using UnityEngine;
 
 //Input Keys
@@ -26,6 +27,12 @@ public class PlayerBehavior : AgentBehaviour
     public void Update()
     {
         
+    }
+
+    void OnCollisionEnter(Collision other)
+    {
+        if (!other.gameObject.CompareTag("Ghost")) return;
+        GhostBehavior ghost = other.gameObject.GetComponent<GhostBehavior>();
     }
 
     public void LosePowerUp()

@@ -363,7 +363,8 @@ public class Pathfinder
             }
             
             //if (!isOccupied) length = SetTarget(currentPos, position, true);
-            if (!isOccupied) length = DistanceBetween(currentPos, position, true);
+            //if (!isOccupied) length = DistanceBetween(currentPos, position, true);
+            if (!isOccupied) length = DistanceBetween(ToVector2(GameManager.Instance.Player().transform.localPosition), position, true);
         } while (isOccupied || length < MIN_DISTANCE);
 
         return position;

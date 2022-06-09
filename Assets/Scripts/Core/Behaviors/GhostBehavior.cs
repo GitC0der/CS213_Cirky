@@ -9,14 +9,16 @@ namespace Core.Behaviors {
     
 public class GhostBehavior : AgentBehaviour
 {
+    private static readonly Color DEAD_COLOR = Color.white;
     private static readonly Vector2 NO_TARGET = new Vector2(99999, 99999);
     private const float HEIGHT = 0;
+
+    private Color _color;
     private Pathfinder _pathfinder;
     private CircularMap _map;  //TODO : Change this
     private GameObject _player;
     private Vector2 _fleeingTarget = NO_TARGET;
-    private Vector2 _previousDirection;
-    private Vector2 _previousPos;
+    private bool isDead;
 
     public new void Awake()
     {
@@ -29,7 +31,6 @@ public class GhostBehavior : AgentBehaviour
         _player = GameObject.FindGameObjectWithTag("Player");
         _map = GameManager.Instance.Map();
         _pathfinder = new Pathfinder(_map, this);
-        _previousPos = ToVector2(transform.localPosition);
         if (!_player.GetComponent<PlayerBehavior>().HasPower()) _pathfinder.SetTarget(ToVector2(transform.localPosition),ToVector2(_player.transform.localPosition), false);
     }
     
@@ -84,6 +85,17 @@ public class GhostBehavior : AgentBehaviour
 
     public float DistanceToTarget() => _pathfinder.DistanceToTarget();
 
+    public void Die()
+    {
+        _pathfinder.Freeze();
+        agent.SetVisualEffect(VisualEffect.VisualEffectConstAll, DEAD_COLOR, 0);
+    }
+
+    public void Relive()
+    {
+        _pathfinder.SetTarget(Position2(), _player.transform.localPosition, false);
+    }
+
     public Vector2 NewFleeingTarget()
     {
         List<GameObject> obstacles = GameObject.FindGameObjectsWithTag("Ghost").ToList();
@@ -92,6 +104,12 @@ public class GhostBehavior : AgentBehaviour
         _fleeingTarget = _pathfinder.GenerateFleeingTarget(Position2());
         _pathfinder.SetTarget(Position2(), _fleeingTarget, true);
         return _fleeingTarget;
+    }
+
+    public void AssignColor(Color newColor)
+    {
+        _color = newColor;
+        agent.SetVisualEffect(VisualEffect.VisualEffectConstAll, _color, 0);
     }
 
     public override Steering GetSteering()
@@ -138,8 +156,7 @@ public class GhostBehavior : AgentBehaviour
         /    Also please don't ask how it works because we have no clue   /
         /*****************************************************************/
         steering.linear = Vector3.ClampMagnitude(10000*(2.5f*direction - agent.GetVelocity()), agent.maxAccel);
-        _previousDirection = ToVector2(steering.linear);
-        _previousPos = ToVector2(transform.localPosition);
+
         return steering;
     }
     
