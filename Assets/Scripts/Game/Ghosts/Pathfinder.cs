@@ -30,7 +30,7 @@ public class Pathfinder
     public const float TRIGGER_DIST = 0.4f;
     private const float MERGE_DIST = 0.2f;
 
-    public static bool GHOST_IS_BLOCKING = true;
+    //public static bool GHOST_IS_BLOCKING = true;
     
     private readonly CircularMap _map;
     private ISet<Node> _nodes;
@@ -109,17 +109,16 @@ public class Pathfinder
         return newNodes;
     }
 
+    public void ChangeBlockingRules(bool otherGhostBlocking, bool playerBlocking)
+    {
+        _obstacles = new List<GameObject>();
+        if (otherGhostBlocking) _obstacles.Add(GameManager.Instance.OtherGhost(_owner.gameObject));
+        if (playerBlocking) _obstacles.Add(GameManager.Instance.Player().gameObject);
+    }
+    
     public void SetObstacles(ICollection<GameObject> newObstacles)
     {
         _obstacles = newObstacles.ToList();
-    }
-
-    public void RemoveObstacles(ICollection<GameObject> removedObstacles)
-    {
-        foreach (GameObject obstacle in removedObstacles)
-        {
-            if (_obstacles.Contains(obstacle)) _obstacles.Remove(obstacle);
-        }
     }
 
     /// Gets the node at a specified position. Note : there must be one and only one node at the position!
@@ -300,8 +299,8 @@ public class Pathfinder
                     int triesCount = 0;
                     do
                     {
-                        _otherGhost.NewFleeingTarget();
-                        _owner.NewFleeingTarget();
+                        _otherGhost.FleePlayer();
+                        _owner.FleePlayer();
                         pathDoIntersect = DoPathsIntersect(_otherGhost.GetPathfinder());
                         triesCount += 1;
                         exceededTriesLimit = triesCount > 10;
@@ -370,7 +369,7 @@ public class Pathfinder
         return position;
     }
 
-    [Obsolete("---- Doesn't work ----")]
+    /*
     public float SetFleeing(Vector2 currentPos, Vector2 currentDirection, Vector2 previousPos)
     {
         // TODO : Modularize this
@@ -443,11 +442,11 @@ public class Pathfinder
         // If no available node
         if (possibleNodes.Count == 0)
         {
-            /*
+            
             _endNode = _obstacleNodes.Contains(previousNode)
                 ? _endNode = _obstacleNodes[Random.Range(0, possibleNodes.Count)]
                 : previousNode;
-                */
+                
             if (removedNode == null)
             {
                 possibleNodes = startNode.Neighbors();
@@ -475,6 +474,7 @@ public class Pathfinder
         _obstacles.Remove(GameManager.Instance.Player().gameObject);
         return _distanceToTarget;
     }
+    */
 
     
     /// <summary>
@@ -500,7 +500,8 @@ public class Pathfinder
         bool isStartNodeNew = IsNull(startNode);
         bool isEndNodeNew = IsNull(endNode);
         if (isStartNodeNew) {
-            startNode = InsertNode(_map.FindClosestPathway(currentPos), currentPos, GHOST_IS_BLOCKING);
+            //startNode = InsertNode(_map.FindClosestPathway(currentPos), currentPos, GHOST_IS_BLOCKING);
+            startNode = InsertNode(_map.FindClosestPathway(currentPos), currentPos, false);
         }
         if (isEndNodeNew) {
             endNode = InsertNode(_map.FindClosestPathway(target), target, false);

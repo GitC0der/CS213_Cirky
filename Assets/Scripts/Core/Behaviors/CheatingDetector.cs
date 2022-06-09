@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Game;
 using UnityEngine;
 
 public class CheatingDetector : MonoBehaviour
@@ -34,15 +35,21 @@ public class CheatingDetector : MonoBehaviour
 
         if (_map.IsCheating(Utils.ToVector2(_player.gameObject.transform.localPosition)) && !punishmentInProgress) {
             startWaiting(waitingDuration);
-            audioSource.PlayOneShot(cheater, 07f);
-            audioSource.PlayOneShot(pointDeduction, 07f);
-            Debug.Log("Cheater!");
-            
-            // audioSource.Play();
             punishmentInProgress = true;
-            GameManager.Instance.Players.Get(0).RemoveScore();
-            GameManager.Instance.Players.Get(0).RemoveScore();
+            audioSource.clip = cheater;
+            audioSource.Play();
+            
+            Debug.Log("Cheater!");
+            Invoke(nameof(ApplyPenalty), 1.8f);
         }
+    }
+
+    private void ApplyPenalty()
+    {
+        audioSource.clip = pointDeduction;
+        audioSource.PlayOneShot(pointDeduction);
+        GameManager.Instance.Players.Get(0).RemoveScore(GameRules.CHEATING_PENALTY);
+
     }
 
     public void startWaiting(float waitingDuration)

@@ -3469,6 +3469,7 @@ MonoBehaviour:
   layerMask:
     serializedVersion: 2
     m_Bits: 1
+  _eatenSound: {fileID: 8300000, guid: 817842f1367d7f941af0c1b8249e31e9, type: 3}
 --- !u!1 &946055080
 GameObject:
   m_ObjectHideFlags: 0
@@ -4546,6 +4547,7 @@ MonoBehaviour:
   layerMask:
     serializedVersion: 2
     m_Bits: 1
+  _eatenSound: {fileID: 8300000, guid: 817842f1367d7f941af0c1b8249e31e9, type: 3}
 --- !u!1001 &1333136709
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5687,8 +5689,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85dae1c51d3d74d9189278d4294d690b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cheater: {fileID: 0}
-  pointDeduction: {fileID: 0}
+  cheater: {fileID: 8300000, guid: 0e9f8a6a52c635c4fb135af9ebc26ea5, type: 3}
+  pointDeduction: {fileID: 8300000, guid: 8bee186c5e9371d468b315a57ad10f3d, type: 3}
 --- !u!4 &1650041551
 Transform:
   m_ObjectHideFlags: 0
@@ -5976,6 +5978,8 @@ MonoBehaviour:
   layerMask:
     serializedVersion: 2
     m_Bits: 1
+  _hurtSound: {fileID: 8300000, guid: 648f42f286bc8404ba8442db7371c181, type: 3}
+  _hitMetalSound: {fileID: 8300000, guid: cb339989c73b7714e9d15ce1f4b2aa1c, type: 3}
   inputKeyboard: 0
 --- !u!1 &1744614362
 GameObject:

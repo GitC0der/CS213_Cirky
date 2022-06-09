@@ -3,6 +3,7 @@ using static Utils;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Core.Behaviors;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
@@ -12,6 +13,8 @@ public class GameManager
     //used to make the game manager instance pop in the scenes
     private GameObject gameObject;
     private static readonly PlayerBehavior _player;
+    private Dictionary<GameObject, Color> ghostColors;
+    private List<GhostBehavior> _ghosts = new List<GhostBehavior>();
 
     public GameObject GameObject
     {
@@ -50,6 +53,29 @@ public class GameManager
             return m_Instance;
         }
     }
+    
+    public List<GhostBehavior> Ghosts()
+    {
+        if (_ghosts.Count == 0)
+        {
+            foreach (GameObject o in GameObject.FindGameObjectsWithTag("Ghost"))
+            {
+                _ghosts.Add(o.GetComponent<GhostBehavior>());
+            }
+        }
+        return _ghosts;
+    }
+
+    public bool AllGhostsDead()
+    {
+        bool allDead = true;
+        foreach (GhostBehavior ghost in _ghosts)
+        {
+            allDead = allDead && !ghost.IsAlive();
+        }
+
+        return allDead;
+    }
 
     // Not finished yet
     public void Update()
@@ -63,6 +89,8 @@ public class GameManager
         }
 
     }
+
+    public Color ghostColor(GameObject ghost) => GetFrom(ghostColors, ghost);
 
     public PlayerBehavior Player() => _player;
 
