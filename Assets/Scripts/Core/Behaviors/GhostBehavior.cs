@@ -93,7 +93,7 @@ public class GhostBehavior : AgentBehaviour
 
     public void Relive()
     {
-        _pathfinder.SetTarget(Position2(), _player.transform.localPosition, false);
+        _pathfinder.SetTarget(Position2(), ToVector2(_player.transform.localPosition), false);
     }
 
     public Vector2 NewFleeingTarget()
