@@ -84,26 +84,41 @@ public class GhostBehavior : AgentBehaviour
 
     public float DistanceToTarget() => _pathfinder.DistanceToTarget();
 
+    public Vector2 NewFleeingTarget()
+    {
+        List<GameObject> obstacles = GameObject.FindGameObjectsWithTag("Ghost").ToList();
+        obstacles.Add(GameObject.FindGameObjectWithTag("Player"));
+        _pathfinder.SetObstacles(obstacles);
+        _fleeingTarget = _pathfinder.GenerateFleeingTarget(Position2());
+        _pathfinder.SetTarget(Position2(), _fleeingTarget, true);
+        return _fleeingTarget;
+    }
+
     public override Steering GetSteering()
     {
         bool isFleeing = GameManager.Instance.Player().HasPower();
         if (isFleeing && _fleeingTarget.Equals(NO_TARGET))
         {
-            //_fleeingTarget = _pathfinder.GenerateFleeingTarget(Position2());
+            List<GameObject> obstacles = GameObject.FindGameObjectsWithTag("Ghost").ToList();
+            obstacles.Add(GameObject.FindGameObjectWithTag("Player"));
+            _pathfinder.SetObstacles(obstacles);
+            _fleeingTarget = _pathfinder.GenerateFleeingTarget(Position2());
         }
         if (isFleeing)
         {
             //_fleeingTarget = _pathfinder.GenerateFleeingTarget(Position2());
             Pathfinder.GHOST_IS_BLOCKING = true;
-            //_pathfinder.SetTarget(Position2(), _fleeingTarget, true);
-            _pathfinder.SetFleeing(Position2(), _previousDirection, _previousPos);
-        } else {
+            _pathfinder.SetTarget(Position2(), _fleeingTarget, true);
+            //_pathfinder.SetFleeing(Position2(), _previousDirection, _previousPos);
+        } else
+        {
+            _fleeingTarget = NO_TARGET;
             _pathfinder.SetTarget(Position2(), ToVector2(_player.transform.localPosition), false);
         }
         
         if (isFleeing && Vector2.Distance(Position2(), _fleeingTarget) < Pathfinder.TRIGGER_DIST)
         {
-            //_fleeingTarget = _pathfinder.GenerateFleeingTarget(Position2());
+            _fleeingTarget = _pathfinder.GenerateFleeingTarget(Position2());
             //Debug.Log($"New fleeing target is {_fleeingTarget}");
         }
         
@@ -129,6 +144,8 @@ public class GhostBehavior : AgentBehaviour
     }
     
     private Vector2 Position2() => ToVector2(transform.localPosition);
+
+    public Pathfinder GetPathfinder() => _pathfinder;
 
     /*
     private CircularMap GenerateMap()

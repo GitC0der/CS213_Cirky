@@ -44,6 +44,8 @@ public class Pathfinder
     private float _distanceToTarget;
     private List<GameObject> _obstacles;
     private IList<Node> _obstacleNodes;
+    private GhostBehavior _otherGhost;
+
 
     /// *** You must generate a map before creating the pathfinder! ***
     public Pathfinder(CircularMap map, GhostBehavior owner) : this(map, new List<GameObject>(), owner) {}
@@ -56,6 +58,7 @@ public class Pathfinder
         _nodes = ResetNodes();
         _obstacles = new List<GameObject>(obstacles);
         _owner = owner;
+        _otherGhost = GameManager.Instance.OtherGhost(_owner.gameObject).GetComponent<GhostBehavior>();
     }
 
     /// Recomputes the nodes of the map alone, i.e without the start and end nodes 
@@ -244,6 +247,17 @@ public class Pathfinder
         return foundNode == null ? ifNotFound : foundNode;
     }
 
+    private bool DoPathsIntersect(Pathfinder otherPathfinder)
+    {
+        bool containsNode = false;
+        foreach (Node node in _finalNodes)
+        {
+            containsNode = containsNode || otherPathfinder._finalNodes.Contains(node);
+        }
+
+        return containsNode;
+    }
+
     private List<Node> FindNodesOn(IPathway path, ICollection<Node> nodes)
     {
         ISet<Node> newNodes = new HashSet<Node>();
@@ -263,20 +277,45 @@ public class Pathfinder
     ///     Computes the (normalized) orientation of the cellulo and removes nodes from the path as the cellulo reaches them
     /// </summary>
     /// <param name="currentPos">The current position of the cellulo</param>
+    /// <param name="isFleeing">True if the ghost is fleeing the player</param>
     /// <returns>The (normalized) orientation of the cellulo</returns>
     public Vector2 Orientation(Vector2 currentPos, bool isFleeing)
     {
         // TODO : Might need a better method in case of larger obstacles
-        GhostBehavior otherGhost = GameManager.Instance.ClosestGhostTo(currentPos, true).GetComponent<GhostBehavior>();
-        bool closeToGhost = Vector2.Distance(ToVector2(otherGhost.transform.localPosition), currentPos) < OBSTACLE_CLEARANCE;
-        bool otherIsWaiting = otherGhost.IsWaiting();
-        if (closeToGhost && !otherIsWaiting) {
-            //if (_distanceToTarget > otherGhost.DistanceToTarget()) _isWaiting = true;
-            _isWaiting = !otherGhost.IsWaiting();
-            if (!isFleeing)
+        GhostBehavior _otherGhost = GameManager.Instance.ClosestGhostTo(currentPos, true).GetComponent<GhostBehavior>();
+        float airDistance = Vector2.Distance(ToVector2(_otherGhost.transform.localPosition), currentPos);
+        float groundDistance = DistanceBetween(ToVector2(_otherGhost.transform.localPosition), currentPos, false);
+        bool closeToGhost = airDistance < OBSTACLE_CLEARANCE;
+        
+        //if ((airDistance < OBSTACLE_CLEARANCE) && !_otherGhost.IsWaiting()) {
+        if ((groundDistance < 1.5f*OBSTACLE_CLEARANCE) && !_otherGhost.IsWaiting()) {
+            //if (_distanceToTarget > _otherGhost.DistanceToTarget()) _isWaiting = true;
+            if (isFleeing)
             {
-                _isWaiting = _distanceToTarget > otherGhost.DistanceToTarget();
+                //_isWaiting = !_otherGhost.IsWaiting();
+                if (DoPathsIntersect(_otherGhost.GetPathfinder()))
+                {
+                    bool pathDoIntersect;
+                    bool exceededTriesLimit = false;
+                    int triesCount = 0;
+                    do
+                    {
+                        _otherGhost.NewFleeingTarget();
+                        _owner.NewFleeingTarget();
+                        pathDoIntersect = DoPathsIntersect(_otherGhost.GetPathfinder());
+                        triesCount += 1;
+                        exceededTriesLimit = triesCount > 10;
+                    } while (pathDoIntersect && !exceededTriesLimit);
+
+                    if (exceededTriesLimit) _isWaiting = true;
+                }
             }
+            else
+            {
+                _isWaiting = _distanceToTarget > _otherGhost.DistanceToTarget();
+
+            }
+                
         } else {
             _isWaiting = false;
         } 
@@ -322,7 +361,7 @@ public class Pathfinder
             {
                 isOccupied = isOccupied || position.Equals(ToVector2(ghost.transform.localPosition));
             }
-
+            
             //if (!isOccupied) length = SetTarget(currentPos, position, true);
             if (!isOccupied) length = DistanceBetween(currentPos, position, true);
         } while (isOccupied || length < MIN_DISTANCE);
@@ -330,6 +369,7 @@ public class Pathfinder
         return position;
     }
 
+    [Obsolete("---- Doesn't work ----")]
     public float SetFleeing(Vector2 currentPos, Vector2 currentDirection, Vector2 previousPos)
     {
         // TODO : Modularize this
@@ -412,12 +452,9 @@ public class Pathfinder
                 possibleNodes = startNode.Neighbors();
                 if (possibleNodes.Contains(playerNode)) possibleNodes.Remove(playerNode);
                 _endNode = possibleNodes.ToList()[Random.Range(0, possibleNodes.Count)];
-            }
-            else
-            {
+            } else {
                 _endNode = removedNode;
             }
-            
         }
         else
         {

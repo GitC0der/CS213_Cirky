@@ -91,6 +91,16 @@ public class GameManager
         ghosts.RemoveAll(g => ToVector2(g.transform.localPosition).Equals(position));
         return MinElement(ghosts, g => Vector2.Distance(ToVector2(g.transform.localPosition), position));
     }
+
+    public GameObject OtherGhost(GameObject ghost)
+    {
+        List<GameObject> ghosts = GameObject.FindGameObjectsWithTag("Ghost").ToList();
+        foreach (GameObject otherGhost in ghosts)
+        {
+            if (otherGhost != ghost) return otherGhost;
+        }
+        return null;
+    }
 }
 
 

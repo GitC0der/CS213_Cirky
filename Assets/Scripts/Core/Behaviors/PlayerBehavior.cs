@@ -11,7 +11,7 @@ public enum InputKeyboard{
 public class PlayerBehavior : AgentBehaviour
 {
     // TODO : Create power up object
-    const float POWER_DURATION = 30f;
+    const float POWER_DURATION = 60f;
     
     public InputKeyboard inputKeyboard;
 
