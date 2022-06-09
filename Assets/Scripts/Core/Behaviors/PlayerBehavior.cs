@@ -15,31 +15,30 @@ public class PlayerBehavior : AgentBehaviour
     
     public InputKeyboard inputKeyboard;
 
-    private float _grabbedPowerTime;
-    private bool _hasPower;
-    
+    private float _grabbedPowerTime = -2*POWER_DURATION;
 
     public void Start()
     {
-        // GrabPowerUp();
+        
+        GrabPowerUp();
     }
 
     public void Update()
     {
         
-        if (Time.time - _grabbedPowerTime > POWER_DURATION)
-        {
-            _hasPower = false;
-        }
+    }
+
+    public void LosePowerUp()
+    {
+        _grabbedPowerTime = Time.time - 2 * POWER_DURATION;
     }
 
     public void GrabPowerUp()
     {
-        _hasPower = true;
         _grabbedPowerTime = Time.time;
     }
 
-    public bool HasPower() => _hasPower;
+    public bool HasPower() => Time.time - _grabbedPowerTime <= POWER_DURATION;
 
     public float PowerTimeLeft() => POWER_DURATION - (Time.time - _grabbedPowerTime);
 

@@ -8,6 +8,8 @@ using Vector2 = UnityEngine.Vector2;
 using MapRing = CircularMap.MapRing;
 using Passageway = CircularMap.Passageway;
 using IPathway = CircularMap.IPathway;
+using Random = UnityEngine.Random;
+
 
 namespace Game.Ghosts{
 
@@ -25,33 +27,35 @@ public class Pathfinder
 {
     private const float OBSTACLE_CLEARANCE = 1.35f*CircularMap.MARGIN;
     private const float BASE_COST = 1;
-    private const float TRIGGER_DIST = 0.4f;
+    public const float TRIGGER_DIST = 0.4f;
     private const float MERGE_DIST = 0.2f;
 
-    public static bool GHOST_IS_BLOCKING = false;
+    public static bool GHOST_IS_BLOCKING = true;
     
     private readonly CircularMap _map;
     private ISet<Node> _nodes;
 
+    private readonly GhostBehavior _owner;
     private bool _frozen;
     private bool _isWaiting;
     private Node _endNode;
     private Queue<Node> _finalNodes;
     private Queue<IPathway> _finalPath;
     private float _distanceToTarget;
-    private ISet<GameObject> _obstacles;
+    private List<GameObject> _obstacles;
     private IList<Node> _obstacleNodes;
 
     /// *** You must generate a map before creating the pathfinder! ***
-    public Pathfinder(CircularMap map) : this(map, new List<GameObject>()) {}
+    public Pathfinder(CircularMap map, GhostBehavior owner) : this(map, new List<GameObject>(), owner) {}
     
     /// *** You must generate a map before creating the pathfinder! ***
     /// This constructor asks for obstacles, i.e other cellulos or objects that could block the path of this cellulo
-    public Pathfinder(CircularMap map, ICollection<GameObject> obstacles)
+    public Pathfinder(CircularMap map, ICollection<GameObject> obstacles, GhostBehavior owner)
     {
         _map = map;
         _nodes = ResetNodes();
-        _obstacles = new HashSet<GameObject>(obstacles);
+        _obstacles = new List<GameObject>(obstacles);
+        _owner = owner;
     }
 
     /// Recomputes the nodes of the map alone, i.e without the start and end nodes 
@@ -100,6 +104,19 @@ public class Pathfinder
         }
         
         return newNodes;
+    }
+
+    public void SetObstacles(ICollection<GameObject> newObstacles)
+    {
+        _obstacles = newObstacles.ToList();
+    }
+
+    public void RemoveObstacles(ICollection<GameObject> removedObstacles)
+    {
+        foreach (GameObject obstacle in removedObstacles)
+        {
+            if (_obstacles.Contains(obstacle)) _obstacles.Remove(obstacle);
+        }
     }
 
     /// Gets the node at a specified position. Note : there must be one and only one node at the position!
@@ -254,7 +271,12 @@ public class Pathfinder
         bool closeToGhost = Vector2.Distance(ToVector2(otherGhost.transform.localPosition), currentPos) < OBSTACLE_CLEARANCE;
         bool otherIsWaiting = otherGhost.IsWaiting();
         if (closeToGhost && !otherIsWaiting) {
-            if (_distanceToTarget > otherGhost.DistanceToTarget()) _isWaiting = true;
+            //if (_distanceToTarget > otherGhost.DistanceToTarget()) _isWaiting = true;
+            _isWaiting = !otherGhost.IsWaiting();
+            if (!isFleeing)
+            {
+                _isWaiting = _distanceToTarget > otherGhost.DistanceToTarget();
+            }
         } else {
             _isWaiting = false;
         } 
@@ -266,13 +288,9 @@ public class Pathfinder
 
         if (_finalNodes.Count == 0 && isFleeing) GenerateFleeingTarget(currentPos);
         */
+
         Node nextNode = _finalNodes.Peek();
         IPathway nextPath = _finalPath.Peek();
-
-        if (isFleeing && Vector2.Distance(currentPos, _endNode.Position()) < TRIGGER_DIST)
-        {
-            GenerateFleeingTarget(currentPos);
-        }
         
         /*
         if (Vector2.Distance(currentPos, nextNode.Position()) < TRIGGER_DIST)
@@ -312,11 +330,121 @@ public class Pathfinder
         return position;
     }
 
+    public float SetFleeing(Vector2 currentPos, Vector2 currentDirection, Vector2 previousPos)
+    {
+        // TODO : Modularize this
+        _frozen = false;
+        _obstacleNodes = new List<Node>();
+        //Node previousNode = MinElement(_nodes, n => Vector2.Distance(n.Position(), _endNode.Position()));
+        
+        
+        // Merge the start node with a existing node if there is one, otherwise creates a new node
+        Node startNode = FindExistingNode(new Node(currentPos, false), null, MERGE_DIST, _nodes);
+        bool isStartNodeNew = IsNull(startNode);
+        if (isStartNodeNew) {
+            startNode = InsertNode(_map.FindClosestPathway(currentPos), currentPos, GHOST_IS_BLOCKING);
+        }
+
+        //if (previousPos.Equals(startNode.Position())) return _distanceToTarget;
+        
+        Vector2 playerPos = ToVector2(GameManager.Instance.Player().gameObject.transform.localPosition);
+        Node playerNode = FindExistingNode(new Node(playerPos, true), null, MERGE_DIST, _nodes);
+        bool isPlayerNodeNew = IsNull(playerNode);
+        if (isPlayerNodeNew)
+        {
+            playerNode = InsertNode(_map.FindClosestPathway(playerPos), playerPos, GHOST_IS_BLOCKING);
+        }
+        
+        // Adds nodes at obstacles
+        foreach (GameObject gameObject in _obstacles)
+        {
+            Vector2 obstaclePos = ToVector2(gameObject.transform.localPosition);
+            Node obstacleNode = FindExistingNode(new Node(obstaclePos, true), null,
+                MERGE_DIST, _nodes);
+            if (IsNull(obstacleNode))
+            {
+                _obstacleNodes.Add(InsertNode(_map.FindClosestPathway(obstaclePos), obstaclePos, true));
+            }
+        }
+
+        
+        ISet<Node> possibleNodes = startNode.Neighbors();
+        if (possibleNodes.Contains(playerNode)) possibleNodes.Remove(playerNode);
+        Node removedNode = null;
+        //if (possibleNodes.Contains(previousNode)) possibleNodes.Remove(previousNode);
+
+        foreach (Node obstacleNode in _obstacleNodes)
+        {
+            if (possibleNodes.Contains(obstacleNode)) possibleNodes.Remove(obstacleNode);
+        }
+        Debug.Log($"{_owner} : Possible nodes are {ListToString(possibleNodes)}, player node is {playerNode}");
+
+        
+        if (!currentDirection.Equals(default))
+        {
+            foreach (Node node in new List<Node>(possibleNodes))
+            {
+                IPathway pathway = startNode.EdgeTo(node).Pathway();
+                //float angle = AngleBetween(currentDirection, pathway.Orientate(startNode.Position(), node.Position()));
+                float angle = Vector2.Angle(currentDirection, pathway.Orientate(startNode.Position(), node.Position()));
+                Debug.Log($"{_owner} : Angle is {angle}");
+                Debug.Log($"Current direction is {currentDirection}");
+                if (angle < 30)
+                {
+                    removedNode = node;
+                    possibleNodes.Remove(node);
+                }
+            }
+        }
+        
+
+
+        // If no available node
+        if (possibleNodes.Count == 0)
+        {
+            /*
+            _endNode = _obstacleNodes.Contains(previousNode)
+                ? _endNode = _obstacleNodes[Random.Range(0, possibleNodes.Count)]
+                : previousNode;
+                */
+            if (removedNode == null)
+            {
+                possibleNodes = startNode.Neighbors();
+                if (possibleNodes.Contains(playerNode)) possibleNodes.Remove(playerNode);
+                _endNode = possibleNodes.ToList()[Random.Range(0, possibleNodes.Count)];
+            }
+            else
+            {
+                _endNode = removedNode;
+            }
+            
+        }
+        else
+        {
+            _endNode = possibleNodes.ToList()[Random.Range(0, possibleNodes.Count)];
+        }
+
+        if (isStartNodeNew) _nodes.Remove(startNode);
+        if (isPlayerNodeNew) _nodes.Remove(playerNode);
+        
+        _finalNodes = new Queue<Node>();
+        _finalNodes.Enqueue(_endNode);
+        _finalPath = new Queue<IPathway>();
+        _finalPath.Enqueue(startNode.EdgeTo(_endNode).Pathway());
+        _distanceToTarget = startNode.EdgeTo(_endNode).Length();
+
+        
+        _obstacles.Remove(GameManager.Instance.Player().gameObject);
+        return _distanceToTarget;
+    }
+
+    
     /// <summary>
     ///     Sets the path from the current position to a specified target
     /// </summary>
     /// <param name="currentPos">Current position of the cellulo</param>
     /// <param name="target">Target position where the cellulo will move towards</param>
+    /// <param name="avoidPlayer">True if the cellulo flees the player, false if not</param>
     /// <return> The length of the path </return>
     /// <exception cref="Exception">If the map is not correctly initialized</exception>
     public float SetTarget(Vector2 currentPos, Vector2 target, bool avoidPlayer)
@@ -326,23 +454,21 @@ public class Pathfinder
         Dictionary<Node, Node> comeFrom = new Dictionary<Node, Node>();
         PriorityList<Node> frontier = new PriorityList<Node>(n => GetFrom(costSoFar, n));
         _obstacleNodes = new List<Node>();
+        if (avoidPlayer) _obstacles.Add(GameManager.Instance.Player().gameObject);
         
-        // Merge the start node with a existing node if there is one, otherwise creates a new node
+        // Merge the start and end node with a existing node if there is one, otherwise creates a new node
         Node startNode = FindExistingNode(new Node(currentPos, false), null, MERGE_DIST, _nodes);
         Node endNode = FindExistingNode(new Node(target, false), null, MERGE_DIST, _nodes);
         bool isStartNodeNew = IsNull(startNode);
         bool isEndNodeNew = IsNull(endNode);
         if (isStartNodeNew) {
-            if (!IsNull(_finalPath) && _finalPath.Count > 1) {
-                startNode = InsertNode(_map.FindClosestPathway(currentPos), currentPos, GHOST_IS_BLOCKING);
-            } else {
-                startNode = InsertNode(_map.FindClosestPathway(currentPos), currentPos, GHOST_IS_BLOCKING);
-            }
+            startNode = InsertNode(_map.FindClosestPathway(currentPos), currentPos, GHOST_IS_BLOCKING);
         }
         if (isEndNodeNew) {
-            endNode = InsertNode(_map.FindClosestPathway(target), target, avoidPlayer);
+            endNode = InsertNode(_map.FindClosestPathway(target), target, false);
         }
         
+        // Generates obstacle nodes
         foreach (GameObject gameObject in _obstacles)
         {
             Vector2 obstaclePos = ToVector2(gameObject.transform.localPosition);
@@ -425,6 +551,7 @@ public class Pathfinder
         {
             RemoveNode(obstacleNode);
         }
+        if (avoidPlayer) _obstacles.Remove(GameManager.Instance.Player().gameObject);
 
         // Computes the length of the path
         float length = 0;
@@ -432,6 +559,7 @@ public class Pathfinder
         List<IPathway> lengthPathways = _finalPath.ToList();
         for (int i = 0; i < _finalPath.Count; i++)
         {
+            // TODO : Use edges instead
             length += lengthPathways[i].DistanceBetween(lengthNodes[i].Position(), lengthNodes[i + 1].Position());
         }
         

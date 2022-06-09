@@ -9,11 +9,14 @@ namespace Core.Behaviors {
     
 public class GhostBehavior : AgentBehaviour
 {
+    private static readonly Vector2 NO_TARGET = new Vector2(99999, 99999);
     private const float HEIGHT = 0;
     private Pathfinder _pathfinder;
     private CircularMap _map;  //TODO : Change this
     private GameObject _player;
-    private Vector2 _fleeingTarget;
+    private Vector2 _fleeingTarget = NO_TARGET;
+    private Vector2 _previousDirection;
+    private Vector2 _previousPos;
 
     public new void Awake()
     {
@@ -25,14 +28,9 @@ public class GhostBehavior : AgentBehaviour
         tag = "Ghost";
         _player = GameObject.FindGameObjectWithTag("Player");
         _map = GameManager.Instance.Map();
-
-        ICollection<GameObject> obstacles = GameObject.FindGameObjectsWithTag("Ghost").ToList();
-        obstacles.Remove(gameObject);
-        obstacles.Remove(_player);
-        if (!Pathfinder.GHOST_IS_BLOCKING) obstacles = new List<GameObject>();
-        
-        _pathfinder = new Pathfinder(_map, obstacles);
-        GoTo(_player.transform.localPosition, false);
+        _pathfinder = new Pathfinder(_map, this);
+        _previousPos = ToVector2(transform.localPosition);
+        if (!_player.GetComponent<PlayerBehavior>().HasPower()) _pathfinder.SetTarget(ToVector2(transform.localPosition),ToVector2(_player.transform.localPosition), false);
     }
     
     // Update is called once per frame
@@ -42,6 +40,12 @@ public class GhostBehavior : AgentBehaviour
         // ---------------------------------------
         
         // TODO : Remove all this, used only for debugging purposes
+
+        if (Input.GetKeyDown("e"))
+        {
+            string place_breakpoint_here = "For debugging";
+        }
+        
         if (Input.GetKeyDown("space"))
         {
             transform.localPosition = ToVector3(GameManager.Instance.Map().RandomPosition(), HEIGHT);
@@ -57,19 +61,23 @@ public class GhostBehavior : AgentBehaviour
 
         if (Input.GetKeyDown("q"))
         {
-            Pathfinder.GHOST_IS_BLOCKING = true;
+            Pathfinder.GHOST_IS_BLOCKING = false;
             foreach (GameObject ghost in GameObject.FindGameObjectsWithTag("Ghost"))
             {
                 ghost.GetComponent<GhostBehavior>().Start();
             }
+            Debug.Log($"Ghosts are now NOT blocking!");
         }
-    }
 
-    public float GoTo(Vector3 target, bool avoidPlayer)
-    {
-        return _pathfinder.SetTarget(ToVector2(transform.localPosition), ToVector2(target), avoidPlayer);
-        
-        //Debug.Log(_map.IsCheating(ToVector2(target)) ? "Cheating!" : "NOT cheating!");
+        if (Input.GetKeyDown("p"))
+        {
+            _player.GetComponent<PlayerBehavior>().LosePowerUp();
+            ICollection<GameObject> obstacles = GameObject.FindGameObjectsWithTag("Ghost").ToList();
+            obstacles.Remove(gameObject);
+            obstacles.Remove(_player);
+            _pathfinder.SetObstacles(obstacles);
+            Debug.Log($"Player has power-up is {_player.GetComponent<PlayerBehavior>().HasPower()}");
+        }
     }
 
     public bool IsWaiting() => _pathfinder.IsWaiting();
@@ -79,12 +87,24 @@ public class GhostBehavior : AgentBehaviour
     public override Steering GetSteering()
     {
         bool isFleeing = GameManager.Instance.Player().HasPower();
+        if (isFleeing && _fleeingTarget.Equals(NO_TARGET))
+        {
+            //_fleeingTarget = _pathfinder.GenerateFleeingTarget(Position2());
+        }
         if (isFleeing)
         {
             //_fleeingTarget = _pathfinder.GenerateFleeingTarget(Position2());
-            _pathfinder.SetTarget(Position2(), _fleeingTarget, true);
+            Pathfinder.GHOST_IS_BLOCKING = true;
+            //_pathfinder.SetTarget(Position2(), _fleeingTarget, true);
+            _pathfinder.SetFleeing(Position2(), _previousDirection, _previousPos);
         } else {
-            GoTo(_player.transform.localPosition, false);
+            _pathfinder.SetTarget(Position2(), ToVector2(_player.transform.localPosition), false);
+        }
+        
+        if (isFleeing && Vector2.Distance(Position2(), _fleeingTarget) < Pathfinder.TRIGGER_DIST)
+        {
+            //_fleeingTarget = _pathfinder.GenerateFleeingTarget(Position2());
+            //Debug.Log($"New fleeing target is {_fleeingTarget}");
         }
         
         // TODO : Call GenerateNewFleeingTarget here instead of in pathfinder.Orientation
@@ -103,7 +123,8 @@ public class GhostBehavior : AgentBehaviour
         /    Also please don't ask how it works because we have no clue   /
         /*****************************************************************/
         steering.linear = Vector3.ClampMagnitude(10000*(2.5f*direction - agent.GetVelocity()), agent.maxAccel);
-
+        _previousDirection = ToVector2(steering.linear);
+        _previousPos = ToVector2(transform.localPosition);
         return steering;
     }
     

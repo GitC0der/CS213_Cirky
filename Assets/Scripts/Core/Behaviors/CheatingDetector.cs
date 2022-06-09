@@ -41,6 +41,7 @@ public class CheatingDetector : MonoBehaviour
             // audioSource.Play();
             punishmentInProgress = true;
             GameManager.Instance.Players.Get(0).RemoveScore();
+            GameManager.Instance.Players.Get(0).RemoveScore();
         }
     }
 
