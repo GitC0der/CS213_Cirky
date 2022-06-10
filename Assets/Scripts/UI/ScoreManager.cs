@@ -8,7 +8,8 @@ public class ScoreManager : MonoBehaviour
     public static ScoreManager instance;
 
     public Text scoreTextPlayer;
-    int scorePlayer = 0;
+
+    List<Text> scoreEntries = new List<Text>();
 
     private void Awake() {
         instance = this;
@@ -17,19 +18,24 @@ public class ScoreManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        scoreTextPlayer.text = "P1: " + scorePlayer.ToString() + " Points";
+        UpdateScoreboard();
     }
 
-    // Update is called once per frame
-    public void AddPoint(string name)
+    public void UpdateScoreboard()
     {
-        scorePlayer += 1;
-        scoreTextPlayer.text = scorePlayer.ToString() + " Points";  
+        int i = 0;
+        foreach(Players.Player p in GameManager.Instance.Players.players)
+        {
+            if (scoreEntries.Count <= i){
+                Debug.Log("Added text instance to scoreboard ");
+                scoreEntries.Add(Instantiate(scoreTextPlayer, GameObject.Find("Points").transform));
+            }
+            scoreEntries[i].text = FormatScore(p);
+        }
     }
 
-    public void RemovePoint(string name)
+    public string FormatScore(Players.Player player)
     {
-        scorePlayer -= 1;
-        scoreTextPlayer.text = scorePlayer.ToString() + " Points";
+        return string.Format("{0}: {1}", player.name, player.Score);
     }
 }

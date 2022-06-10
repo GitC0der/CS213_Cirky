@@ -13,6 +13,7 @@ public class GameManager
     //used to make the game manager instance pop in the scenes
     private GameObject gameObject;
     private static readonly PlayerBehavior _player;
+    private static float _roundTime;
     private List<GhostBehavior> _ghosts = new List<GhostBehavior>();
 
     public GameObject GameObject
@@ -20,6 +21,11 @@ public class GameManager
         set => gameObject = value;
     }
 
+    public float RoundTime
+    {
+        set => _roundTime = value;
+        get => _roundTime;
+    }
     private static readonly CircularMap _map;
 
     static GameManager()
@@ -36,6 +42,7 @@ public class GameManager
         map.AddPassage(new Vector2(7.19f, -7.94f));
         _map = map;
         _player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerBehavior>();
+        _roundTime = 300f;
     }
 
     //Singleton system with an instance of this Game Manager
@@ -149,7 +156,7 @@ public class Players : MonoBehaviour {
             }
         }
 
-        private GameObject _gameObject = new GameObject();
+        private GameObject _gameObject;
         public GameObject gameObject
         {
             get
@@ -186,7 +193,7 @@ public class Players : MonoBehaviour {
             //Debug.Log("Added " + n + " points to " + _name +", total score is: " + Score);
 
             // Update the displayed score
-            for (int i = 0; i < n; ++i) ScoreManager.instance.AddPoint(name);
+            ScoreManager.instance.UpdateScoreboard();
         }
 
         public void RemoveScore()
@@ -200,7 +207,7 @@ public class Players : MonoBehaviour {
             //Debug.Log("Removed " + n + " points from " + _name +", total score is: " + Score);
 
             // Update the displayed score
-            for (int i = 0; i < n; ++i) ScoreManager.instance.RemovePoint(name);
+            ScoreManager.instance.UpdateScoreboard();
         }
 
         public Player():this(new GameObject()){}
@@ -212,6 +219,7 @@ public class Players : MonoBehaviour {
             gameObject = g;
             Score = score;
             _name += name;
+            gameObject.name = _name;
         }
 
         public Player GetOtherPlayer() {
@@ -223,24 +231,33 @@ public class Players : MonoBehaviour {
     
     public Player Get(int index = 0) {
         if (_players.Count - 1 < index)
-            return new Player();
+            return AddPlayer();
         return _players[index];
     }
 
-    
-    public int AddPlayer(GameObject player)
+    public Player AddPlayer()
     {
-        _players.Add(new Player(player));
-
-
-        return 0;
+        Player p = new Player();
+        _players.Add(p);
+        return p;
     }
 
-    public int AddPlayer(GameObject player, string name)
+    public Player AddPlayer(GameObject player)
     {
-        _players.Add(new Player(player, 0, name));
-        //Debug.Log("Added player " + name);
-        return 0;
+        Player p = new Player(player);
+        _players.Add(p);
+
+        return p;
+    }
+
+    public Player AddPlayer(GameObject player, string name)
+    {
+        Player p = new Player(player, 0, name);
+        _players.Add(p);
+
+        Debug.Log("Added player " + name);
+
+        return p;
     }
 
     private Player GetFirstOrDefault() { return Get(0); }

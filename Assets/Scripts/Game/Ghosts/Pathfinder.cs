@@ -167,7 +167,7 @@ public class Pathfinder
             // TODO : May prove to cause problems. If true, revert back to resetting the nodes after each frame
             nodes[0].Connect(nodes[1], path.DistanceBetween(nodes[0].Position(), nodes[1].Position()), path);
             edge = nodes[0].EdgeTo(nodes[1]);
-            Debug.Log($"Warning! {nodes[0]} and {nodes[1]} were not connected. Correction applied... May need to investigate this later on");
+            //Debug.Log($"Warning! {nodes[0]} and {nodes[1]} were not connected. Correction applied... May need to investigate this later on");
             //throw new Exception($"Nodes {nodes[0]} and {nodes[1]} should be connected! There may be a problem with graph initialization");
         }
         Node newNode = new Node(newPosition, isBlocking);
