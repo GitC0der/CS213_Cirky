@@ -25,13 +25,13 @@ namespace Game.Ghosts{
 /// </summary>
 public class Pathfinder
 {
-    private const float OBSTACLE_CLEARANCE = 1.35f*CircularMap.MARGIN;
+    //private const float OBSTACLE_CLEARANCE = 1.5f*1.35f*CircularMap.MARGIN;
+    private const float OBSTACLE_CLEARANCE = 2*CircularMap.MARGIN;
     private const float BASE_COST = 1;
     public const float TRIGGER_DIST = 0.4f;
     private const float MERGE_DIST = 0.2f;
+    private const float MIN_FLEEING_DISTANCE = 7f;
 
-    public static bool GHOST_IS_BLOCKING = true;
-    
     private readonly CircularMap _map;
     private ISet<Node> _nodes;
 
@@ -44,7 +44,6 @@ public class Pathfinder
     private float _distanceToTarget;
     private List<GameObject> _obstacles;
     private IList<Node> _obstacleNodes;
-    private GhostBehavior _otherGhost;
 
 
     /// *** You must generate a map before creating the pathfinder! ***
@@ -58,7 +57,6 @@ public class Pathfinder
         _nodes = ResetNodes();
         _obstacles = new List<GameObject>(obstacles);
         _owner = owner;
-        _otherGhost = GameManager.Instance.OtherGhost(_owner.gameObject).GetComponent<GhostBehavior>();
     }
 
     /// Recomputes the nodes of the map alone, i.e without the start and end nodes 
@@ -109,17 +107,16 @@ public class Pathfinder
         return newNodes;
     }
 
-    public void SetObstacles(ICollection<GameObject> newObstacles)
+    /// <summary>
+    ///     Changes the the pathfinding rules such that some elements will or no longer will be blocking the path
+    /// </summary>
+    /// <param name="otherGhostBlocking">True if other ghosts will now be blocking the path, false otherwise</param>
+    /// <param name="playerBlocking">True if the player will now be blocking the path, false otherwise (useful if the ghost flees the player)</param>
+    public void ChangeBlockingRules(bool otherGhostBlocking, bool playerBlocking)
     {
-        _obstacles = newObstacles.ToList();
-    }
-
-    public void RemoveObstacles(ICollection<GameObject> removedObstacles)
-    {
-        foreach (GameObject obstacle in removedObstacles)
-        {
-            if (_obstacles.Contains(obstacle)) _obstacles.Remove(obstacle);
-        }
+        _obstacles = new List<GameObject>();
+        if (otherGhostBlocking) _obstacles.Add(GameManager.Instance.OtherGhost(_owner.gameObject));
+        if (playerBlocking) _obstacles.Add(GameManager.Instance.Player().gameObject);
     }
 
     /// Gets the node at a specified position. Note : there must be one and only one node at the position!
@@ -135,7 +132,6 @@ public class Pathfinder
 
     private void MergeNodes(Node original, Node merged)
     {
-        //TODO: Implement this if necessary
         foreach (Node neighbor in merged.Neighbors())
         {
             Edge edge = merged.EdgeTo(neighbor);
@@ -171,7 +167,7 @@ public class Pathfinder
             // TODO : May prove to cause problems. If true, revert back to resetting the nodes after each frame
             nodes[0].Connect(nodes[1], path.DistanceBetween(nodes[0].Position(), nodes[1].Position()), path);
             edge = nodes[0].EdgeTo(nodes[1]);
-            Debug.Log($"Warning! {nodes[0]} and {nodes[1]} were not connected. Correction applied... May need to investigate this later on");
+            //Debug.Log($"Warning! {nodes[0]} and {nodes[1]} were not connected. Correction applied... May need to investigate this later on");
             //throw new Exception($"Nodes {nodes[0]} and {nodes[1]} should be connected! There may be a problem with graph initialization");
         }
         Node newNode = new Node(newPosition, isBlocking);
@@ -247,6 +243,7 @@ public class Pathfinder
         return foundNode == null ? ifNotFound : foundNode;
     }
 
+    /// Checks if the path of this pathfinder intersects with the path of a specified pathfinder 
     private bool DoPathsIntersect(Pathfinder otherPathfinder)
     {
         bool containsNode = false;
@@ -283,13 +280,10 @@ public class Pathfinder
     {
         // TODO : Might need a better method in case of larger obstacles
         GhostBehavior _otherGhost = GameManager.Instance.ClosestGhostTo(currentPos, true).GetComponent<GhostBehavior>();
-        float airDistance = Vector2.Distance(ToVector2(_otherGhost.transform.localPosition), currentPos);
         float groundDistance = DistanceBetween(ToVector2(_otherGhost.transform.localPosition), currentPos, false);
-        bool closeToGhost = airDistance < OBSTACLE_CLEARANCE;
         
-        //if ((airDistance < OBSTACLE_CLEARANCE) && !_otherGhost.IsWaiting()) {
-        if ((groundDistance < 1.5f*OBSTACLE_CLEARANCE) && !_otherGhost.IsWaiting()) {
-            //if (_distanceToTarget > _otherGhost.DistanceToTarget()) _isWaiting = true;
+        // Tries to generate a new path that do not intersect with the path of the other ghost
+        if (groundDistance < OBSTACLE_CLEARANCE && !_otherGhost.IsWaiting()) {
             if (isFleeing)
             {
                 //_isWaiting = !_otherGhost.IsWaiting();
@@ -300,8 +294,8 @@ public class Pathfinder
                     int triesCount = 0;
                     do
                     {
-                        _otherGhost.NewFleeingTarget();
-                        _owner.NewFleeingTarget();
+                        _otherGhost.FleePlayer(true);
+                        _owner.FleePlayer(true);
                         pathDoIntersect = DoPathsIntersect(_otherGhost.GetPathfinder());
                         triesCount += 1;
                         exceededTriesLimit = triesCount > 10;
@@ -313,45 +307,29 @@ public class Pathfinder
             else
             {
                 _isWaiting = _distanceToTarget > _otherGhost.DistanceToTarget();
-
             }
-                
         } else {
             _isWaiting = false;
         } 
         
         if (_frozen || _isWaiting) return new Vector2(0, 0);
         
-        /*
-        if (_finalNodes.Count == 0 && !isFleeing) return new Vector2(0, 0);
-
-        if (_finalNodes.Count == 0 && isFleeing) GenerateFleeingTarget(currentPos);
-        */
-
         Node nextNode = _finalNodes.Peek();
         IPathway nextPath = _finalPath.Peek();
-        
-        /*
-        if (Vector2.Distance(currentPos, nextNode.Position()) < TRIGGER_DIST)
-        {
-            _finalPath.Dequeue();
-            _finalNodes.Dequeue();
-        }
-        */
-
         Vector2 newDirection = nextPath.Orientate(currentPos, nextNode.Position());
 
         return newDirection;
     }
     
+    /// Generates a fleeing target that is not on an already occupied spot and that is not too close to the player 
     public Vector2 GenerateFleeingTarget(Vector2 currentPos)
     {
-        float MIN_DISTANCE = 7f;
         List<GameObject> objects = GameObject.FindGameObjectsWithTag("Ghost").ToList();
         objects.Add(GameManager.Instance.Player().gameObject);
         
         float length = 0;
         bool isOccupied;
+        //bool isCloseToCurrentPos = false;
         Vector2 position;
         do
         {
@@ -361,19 +339,24 @@ public class Pathfinder
             {
                 isOccupied = isOccupied || position.Equals(ToVector2(ghost.transform.localPosition));
             }
-            
-            //if (!isOccupied) length = SetTarget(currentPos, position, true);
-            //if (!isOccupied) length = DistanceBetween(currentPos, position, true);
-            if (!isOccupied) length = DistanceBetween(ToVector2(GameManager.Instance.Player().transform.localPosition), position, true);
-        } while (isOccupied || length < MIN_DISTANCE);
+
+            if (!isOccupied)
+            {
+                //isCloseToCurrentPos = DistanceBetween(currentPos, position, true) < MIN_FLEEING_DISTANCE;
+                //length = DistanceBetween(ToVector2(GameManager.Instance.Player().transform.localPosition), position, false);
+                length = DistanceBetween(ToVector2(GameManager.Instance.Player().transform.localPosition), position, true);
+            }
+        } while (isOccupied || length < MIN_FLEEING_DISTANCE);
 
         return position;
     }
 
-    [Obsolete("---- Doesn't work ----")]
+    // An old algorithm that do not work for unknown reasons. It could be useful in the future, so it is kept here just
+    // in case (and to remind us of our own failures, but that is secondary)
+    
+    /*
     public float SetFleeing(Vector2 currentPos, Vector2 currentDirection, Vector2 previousPos)
     {
-        // TODO : Modularize this
         _frozen = false;
         _obstacleNodes = new List<Node>();
         //Node previousNode = MinElement(_nodes, n => Vector2.Distance(n.Position(), _endNode.Position()));
@@ -438,16 +421,14 @@ public class Pathfinder
             }
         }
         
-
-
         // If no available node
         if (possibleNodes.Count == 0)
         {
-            /*
+            
             _endNode = _obstacleNodes.Contains(previousNode)
                 ? _endNode = _obstacleNodes[Random.Range(0, possibleNodes.Count)]
                 : previousNode;
-                */
+                
             if (removedNode == null)
             {
                 possibleNodes = startNode.Neighbors();
@@ -475,6 +456,7 @@ public class Pathfinder
         _obstacles.Remove(GameManager.Instance.Player().gameObject);
         return _distanceToTarget;
     }
+    */
 
     
     /// <summary>
@@ -500,7 +482,8 @@ public class Pathfinder
         bool isStartNodeNew = IsNull(startNode);
         bool isEndNodeNew = IsNull(endNode);
         if (isStartNodeNew) {
-            startNode = InsertNode(_map.FindClosestPathway(currentPos), currentPos, GHOST_IS_BLOCKING);
+            //startNode = InsertNode(_map.FindClosestPathway(currentPos), currentPos, GHOST_IS_BLOCKING);
+            startNode = InsertNode(_map.FindClosestPathway(currentPos), currentPos, false);
         }
         if (isEndNodeNew) {
             endNode = InsertNode(_map.FindClosestPathway(target), target, false);
@@ -573,14 +556,24 @@ public class Pathfinder
         _finalNodes = new Queue<Node>(reversePath);
 
         // Builds the final path
-        List<IPathway> pathways = new List<IPathway>();
-        List<Node> tempNodes = _finalNodes.ToList();
-        for (var i = 0; i < _finalNodes.Count - 1; i++)
-        { 
-            pathways.Add(tempNodes[i].EdgeTo(tempNodes[i + 1]).Pathway());
+        if (_finalNodes.Count > 1)
+        {
+            List<IPathway> pathways = new List<IPathway>();
+            List<Node> tempNodes = _finalNodes.ToList();
+            for (var i = 0; i < _finalNodes.Count - 1; i++)
+            { 
+                pathways.Add(tempNodes[i].EdgeTo(tempNodes[i + 1]).Pathway());
+            }
+            _finalPath = new Queue<IPathway>(pathways);
+            _endNode = endNode;
         }
-        _finalPath = new Queue<IPathway>(pathways);
-        _endNode = endNode;
+        else
+        {
+            _endNode = _finalNodes.Peek();
+            IPathway pathway = startNode.EdgeTo(_endNode).Pathway();
+            _finalPath = new Queue<IPathway>(new List<IPathway> { pathway });
+        }
+        
 
         // Removes the added start, end nodes, and obstacle nodes from the graph
         if (isStartNodeNew) RemoveNode(startNode);

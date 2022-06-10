@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Game;
 using UnityEngine;
 
 public class CheatingDetector : MonoBehaviour
@@ -19,7 +20,6 @@ public class CheatingDetector : MonoBehaviour
         _map = GameManager.Instance.Map();
         _player = GameObject.FindGameObjectWithTag("Player");
 
-        // Audio sources initialisation (two are needed due to switching audio source processing delays)
         audioSource = (gameObject.GetComponent<AudioSource>() != null) ? gameObject.GetComponent<AudioSource>() : gameObject.AddComponent<AudioSource>();
         audioSource.playOnAwake = false;
         audioSource.clip = cheater;
@@ -28,29 +28,34 @@ public class CheatingDetector : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (waitOver()) {
+        if (WaitOver()) {
             punishmentInProgress = false;
         }
 
         if (_map.IsCheating(Utils.ToVector2(_player.gameObject.transform.localPosition)) && !punishmentInProgress) {
-            startWaiting(waitingDuration);
-            audioSource.PlayOneShot(cheater, 07f);
-            audioSource.PlayOneShot(pointDeduction, 07f);
-            Debug.Log("Cheater!");
-            
-            // audioSource.Play();
+            StartWaiting(waitingDuration);
             punishmentInProgress = true;
-            GameManager.Instance.Players.Get(0).RemoveScore();
-            GameManager.Instance.Players.Get(0).RemoveScore();
+            audioSource.clip = cheater;
+            audioSource.Play();
+            
+            Invoke(nameof(ApplyPenalty), 1.8f);
         }
     }
 
-    public void startWaiting(float waitingDuration)
+    private void ApplyPenalty()
     {
-        waitEnd = Time.time + waitingDuration;
+        audioSource.clip = pointDeduction;
+        audioSource.PlayOneShot(pointDeduction);
+        GameManager.Instance.Players.Get(0).RemoveScore(GameRules.CHEATING_PENALTY);
+
     }
 
-    public bool waitOver()
+    public void StartWaiting(float newWaitingDuration)
+    {
+        waitEnd = Time.time + newWaitingDuration;
+    }
+
+    public bool WaitOver()
     {
         return waitEnd < Time.time;
     }

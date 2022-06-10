@@ -3,6 +3,7 @@ using static Utils;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Core.Behaviors;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
@@ -13,6 +14,7 @@ public class GameManager
     private GameObject gameObject;
     private static readonly PlayerBehavior _player;
     private static float _roundTime;
+    private List<GhostBehavior> _ghosts = new List<GhostBehavior>();
 
     public GameObject GameObject
     {
@@ -29,6 +31,7 @@ public class GameManager
 
     static GameManager()
     {
+        // Representation of the map with the pathfinder. Values found manually
         CircularMap map = new CircularMap(new Vector2(7.18f, -5.16f));
         map.AddRing(new Vector2(7.88f, -5.16f));
         map.AddRing(new Vector2(9.3f, -5.16f));
@@ -58,20 +61,30 @@ public class GameManager
             return m_Instance;
         }
     }
-
-    // Not finished yet
-    public void Update()
+    
+    public List<GhostBehavior> Ghosts()
     {
-        // Don't forget to use ToVector2, as implicit casts do not correctly work
-        
-        //if (_map.IsCheating(ToVector2(m_Players.Get(0).gameObject.transform.position))) {
-        if (_map.IsCheating(m_Players.Get(0).gameObject.transform.position)) {
-
-            Debug.Log("The player is cheating!");
+        if (_ghosts.Count == 0)
+        {
+            foreach (GameObject o in GameObject.FindGameObjectsWithTag("Ghost"))
+            {
+                _ghosts.Add(o.GetComponent<GhostBehavior>());
+            }
         }
-
+        return _ghosts;
     }
 
+    public bool AllGhostsDead()
+    {
+        bool allDead = true;
+        foreach (GhostBehavior ghost in _ghosts)
+        {
+            allDead = allDead && !ghost.IsAlive();
+        }
+
+        return allDead;
+    }
+    
     public PlayerBehavior Player() => _player;
 
     private Players m_Players;
@@ -144,7 +157,7 @@ public class Players : MonoBehaviour {
             }
         }
 
-        private GameObject _gameObject = new GameObject();
+        private GameObject _gameObject;
         public GameObject gameObject
         {
             get
@@ -181,7 +194,7 @@ public class Players : MonoBehaviour {
             //Debug.Log("Added " + n + " points to " + _name +", total score is: " + Score);
 
             // Update the displayed score
-            for (int i = 0; i < n; ++i) ScoreManager.instance.AddPoint(name);
+            ScoreManager.instance.UpdateScoreboard();
         }
 
         public void RemoveScore()
@@ -195,7 +208,7 @@ public class Players : MonoBehaviour {
             //Debug.Log("Removed " + n + " points from " + _name +", total score is: " + Score);
 
             // Update the displayed score
-            for (int i = 0; i < n; ++i) ScoreManager.instance.RemovePoint(name);
+            ScoreManager.instance.UpdateScoreboard();
         }
 
         public Player():this(new GameObject()){}
@@ -207,6 +220,7 @@ public class Players : MonoBehaviour {
             gameObject = g;
             Score = score;
             _name += name;
+            gameObject.name = _name;
         }
 
         public Player GetOtherPlayer() {
@@ -218,24 +232,33 @@ public class Players : MonoBehaviour {
     
     public Player Get(int index = 0) {
         if (_players.Count - 1 < index)
-            return new Player();
+            return AddPlayer();
         return _players[index];
     }
 
-    
-    public int AddPlayer(GameObject player)
+    public Player AddPlayer()
     {
-        _players.Add(new Player(player));
-
-
-        return 0;
+        Player p = new Player();
+        _players.Add(p);
+        return p;
     }
 
-    public int AddPlayer(GameObject player, string name)
+    public Player AddPlayer(GameObject player)
     {
-        _players.Add(new Player(player, 0, name));
-        //Debug.Log("Added player " + name);
-        return 0;
+        Player p = new Player(player);
+        _players.Add(p);
+
+        return p;
+    }
+
+    public Player AddPlayer(GameObject player, string name)
+    {
+        Player p = new Player(player, 0, name);
+        _players.Add(p);
+
+        Debug.Log("Added player " + name);
+
+        return p;
     }
 
     private Player GetFirstOrDefault() { return Get(0); }
