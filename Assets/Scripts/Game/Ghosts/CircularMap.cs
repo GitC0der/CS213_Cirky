@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Core.Behaviors;
 using UnityEngine;
 using Random = UnityEngine.Random;
 using Vector2 = UnityEngine.Vector2;
@@ -143,33 +144,42 @@ public class CircularMap
     /// Randomly selects a position on the map 
     public Vector2 RandomPosition()
     {
-        // Randomly selects a pathway, with a probability of being selected that is equal to its length, i.e longer
-        // pathways are more likely to be chosen than shorter ones
-        List<IPathway> pathways = new List<IPathway>();
-        List<float> endDistances = new List<float>();
-        float totalLength = 0;
-        foreach (Passageway passage in _passages)
-        {
-            float length = passage.Length();
-            pathways.Add(passage);
-            totalLength += length;
-            endDistances.Add(totalLength);
-        }
-        foreach (MapRing ring in _rings)
-        {
-            float length = 2 * Mathf.PI * ring.Radius();
-            pathways.Add(ring);
-            totalLength += length;
-            endDistances.Add(totalLength);
-        }
+        while (true) {
+            // Randomly selects a pathway, with a probability of being selected that is equal to its length, i.e longer
+            // pathways are more likely to be chosen than shorter ones
+            List<IPathway> pathways = new List<IPathway>();
+            List<float> endDistances = new List<float>();
+            float totalLength = 0;
+            foreach (Passageway passage in _passages)
+            {
+                float length = passage.Length();
+                pathways.Add(passage);
+                totalLength += length;
+                endDistances.Add(totalLength);
+            }
 
-        float number = Random.Range(0, totalLength);
-        for (int i = 0; i < pathways.Count; i++)
-        {
-            if (endDistances[i] >= number) return pathways[i].RandomPosition();
-        }
-        
-        return pathways[pathways.Count - 1].RandomPosition();
+            foreach (MapRing ring in _rings)
+            {
+                float length = 2 * Mathf.PI * ring.Radius();
+                pathways.Add(ring);
+                totalLength += length;
+                endDistances.Add(totalLength);
+            }
+
+            float number = Random.Range(0, totalLength);
+            for (int i = 0; i < pathways.Count; i++)
+            {
+                if (endDistances[i] >= number) return pathways[i].RandomPosition();
+            }
+            Vector2 position = pathways[pathways.Count - 1].RandomPosition();
+            bool alreadyOccupied = false;
+            foreach (GhostBehavior ghost in GameManager.Instance.Ghosts())
+            {
+                alreadyOccupied = alreadyOccupied || Vector2.Distance(position, ToVector2(ghost.transform.localPosition)) < MARGIN;
+            }
+            alreadyOccupied = alreadyOccupied || Vector2.Distance(position, ToVector2(GameManager.Instance.Player().transform.localPosition)) < MARGIN;
+            if (!alreadyOccupied) return position;
+        } 
     }
 
     /// Finds the closest point on the map from a specified target
