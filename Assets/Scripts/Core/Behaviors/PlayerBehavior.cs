@@ -38,7 +38,7 @@ public class PlayerBehavior : AgentBehaviour
         SetColor(_color);
 
         // TODO : Used for debugging
-        GrabPowerUp();
+        GrabPowerUp(19f);
         GameManager.Instance.Players.AddPlayer(gameObject, gameObject.name);
         
         _audioSource = (gameObject.GetComponent<AudioSource>() != null) ? gameObject.GetComponent<AudioSource>() : gameObject.AddComponent<AudioSource>();
@@ -138,12 +138,24 @@ public class PlayerBehavior : AgentBehaviour
     {
         StopImmunity();
         _hasPower = true;
-        _grabbedPowerTime = Time.time-15f;
+        _grabbedPowerTime = Time.time;
         foreach (GhostBehavior ghost in GameManager.Instance.Ghosts())
         {
             ghost.FleePlayer(false);
         }
     }
+
+    public void GrabPowerUp(float t)
+    {
+        StopImmunity();
+        _hasPower = true;
+        _grabbedPowerTime = Time.time-t;
+        foreach (GhostBehavior ghost in GameManager.Instance.Ghosts())
+        {
+            ghost.FleePlayer(false);
+        }
+    }
+
 
     public bool HasPower() => _hasPower;
 
