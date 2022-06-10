@@ -267,7 +267,7 @@ public class CircularMap
         public Vector2 ClosestTo(Vector2 target);
 
         
-        // TODO : Use a default method using the distace to ClosestTo()
+        // TODO : Use a default method using the distance to ClosestTo (may need to update Unity)
         /// <summary>
         ///     Computes the distance from a position to the nearest point on the path
         /// </summary>
@@ -313,7 +313,6 @@ public class CircularMap
         /// The passageway is assumed to radiate from the center of the rings
         public Passageway(MapRing ring1, MapRing ring2, Vector2 position)
         {
-            //TODO : Change to direction instead of position
             if (ring1 == null || ring2 == null) throw new ArgumentException("Rings must NOT be null!");
             if (ring1.Equals(ring2)) throw new ArgumentException("Rings must be different from each other!");
             if (Mathf.Abs(Vector2.Distance(position, ring1.Center()) - ring1.Radius()) < EPSILON)
@@ -393,7 +392,6 @@ public class CircularMap
 
         public Vector2 Orientate(Vector2 position, Vector2 target)
         {
-            //TODO : Implement this
             Vector2 orientation = (_largePoint - _smallPoint).normalized;
             return Vector2.Dot(target - position, orientation) > 0 ? orientation : -orientation;
             //return (target - position).normalized;

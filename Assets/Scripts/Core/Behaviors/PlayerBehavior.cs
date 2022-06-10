@@ -11,7 +11,6 @@ public enum InputKeyboard{
 }
 public class PlayerBehavior : AgentBehaviour
 {
-    // TODO : Create power up object
     private AudioSource _audioSource;
     public AudioClip _hurtSound;
     public AudioClip _hitMetalSound;
@@ -31,24 +30,26 @@ public class PlayerBehavior : AgentBehaviour
     public void Start()
     {
         SetColor(_color);
+        
+        // TODO : Used for debugging
         GrabPowerUp();
+        
         _audioSource = (gameObject.GetComponent<AudioSource>() != null) ? gameObject.GetComponent<AudioSource>() : gameObject.AddComponent<AudioSource>();
         _audioSource.playOnAwake = false;
     }
 
     public void Update()
     {
-        if (_isHurt && Time.time - _hurtTime > GameRules.PLAYER_IMMUNITY_DURATION) StopImmunity();
-        
-        if (_hasPower && Time.time - _grabbedPowerTime > GameRules.POWERUP_DURATION) LosePowerUp();
-        
-        /*
-        if (_isDead && Time.time - _deathTime > GameRules.GHOST_DEATH_DURATION)
+        if (_isHurt && Time.time - _hurtTime > GameRules.PLAYER_IMMUNITY_DURATION)
         {
-            Relive();
+            StopImmunity();
         }
-        */
-        
+
+        if (_hasPower && Time.time - _grabbedPowerTime > GameRules.POWERUP_DURATION)
+        {
+            LosePowerUp();
+        }
+
         if (HasPower())
         {
             BlinkPowerUp();
@@ -62,12 +63,8 @@ public class PlayerBehavior : AgentBehaviour
         SetColor(_color);
     }
 
-    // TODO : Complete both of these
-    public bool IsHurt()
-    {
-        return _isHurt;
-    }
-    
+    public bool IsHurt() => _isHurt;
+
     public void GetHurt()
     {
         _hurtTime = Time.time;
@@ -97,6 +94,7 @@ public class PlayerBehavior : AgentBehaviour
     {
         if (!other.gameObject.CompareTag("Ghost")) return;
         GhostBehavior ghost = other.gameObject.GetComponent<GhostBehavior>();
+        
         if (ghost.IsAlive() && _hasPower)
         {
             ghost.Die();
@@ -136,7 +134,7 @@ public class PlayerBehavior : AgentBehaviour
         _grabbedPowerTime = Time.time;
         foreach (GhostBehavior ghost in GameManager.Instance.Ghosts())
         {
-            ghost.FleePlayer();
+            ghost.FleePlayer(false);
         }
     }
 

@@ -21,7 +21,7 @@ public class GhostBehavior : AgentBehaviour
     private Color _color;
     private Color _currentColor;
     private Pathfinder _pathfinder;
-    private CircularMap _map;  //TODO : Change this
+    private CircularMap _map; 
     private PlayerBehavior _player;
     private Vector2 _fleeingTarget = NO_TARGET;
     private bool _isFleeing;
@@ -54,17 +54,7 @@ public class GhostBehavior : AgentBehaviour
         _isFleeing = false;
         _audioSource = (gameObject.GetComponent<AudioSource>() != null) ? gameObject.GetComponent<AudioSource>() : gameObject.AddComponent<AudioSource>();
         _audioSource.playOnAwake = false;
-
-        /*
-        if (!_player.GetComponent<PlayerBehavior>().HasPower())
-        {
-            _pathfinder.SetTarget(ToVector2(transform.localPosition),ToVector2(_player.transform.localPosition), false);
-        }
-        else
-        {
-            FleePlayer();
-        }
-        */
+        
     }
     
     // Update is called once per frame
@@ -78,16 +68,7 @@ public class GhostBehavior : AgentBehaviour
         // ---------------------------------------
         
         // TODO : Remove all this, used only for debugging purposes
-
-        if (Input.GetKeyDown("q"))
-        {
-            foreach (GameObject ghost in GameObject.FindGameObjectsWithTag("Ghost"))
-            {
-                ghost.GetComponent<GhostBehavior>().Start();
-            }
-            Debug.Log($"Ghosts are now NOT blocking!");
-        }
-
+        
         if (Input.GetKeyDown("p"))
         {
             _player.GrabPowerUp();
@@ -108,25 +89,15 @@ public class GhostBehavior : AgentBehaviour
         _audioSource.Play();
         SetColor(DEAD_COLOR);
         
-        /*
-        if (GameManager.Instance.AllGhostsDead())
-        {
-            _player.LosePowerUp();
-            foreach (GhostBehavior ghost in GameManager.Instance.Ghosts())
-            {
-                ghost.Relive();
-            }
-        }
-        */
     }
-
+    
     public void Revive()
     {
         _isDead = false;
         SetColor(_color);
         if (_player.HasPower())
         {
-            FleePlayer();
+            FleePlayer(false);
             return;
         }
         if (_player.IsHurt())
@@ -175,10 +146,15 @@ public class GhostBehavior : AgentBehaviour
         return _fleeingTarget;
     }
 
-    /// Makes the ghost flee the player (i.e when the player has a power-up)
-    public Vector2 FleePlayer()
+    /// <summary>
+    ///     Makes the ghost flee the player (i.e when the player has a power-up). This is not an optimal solution, but
+    /// it works so it will stay for now
+    /// </summary>
+    /// <param name="calledFromPathfinder">True ONLY if used from the pathfinder</param>
+    /// <returns>The fleeing target</returns>
+    public Vector2 FleePlayer(bool calledFromPathfinder)
     {
-        SetColor(FLEEING_COLOR);
+        if (!calledFromPathfinder) SetColor(FLEEING_COLOR);
         _isFleeing = true;
         _pathfinder.ChangeBlockingRules(true, true);
         _fleeingTarget = _pathfinder.GenerateFleeingTarget(Position2());
@@ -190,6 +166,7 @@ public class GhostBehavior : AgentBehaviour
 
     public override Steering GetSteering()
     {
+        // The cellulo doesn't move if it is dead
         if (!IsAlive())
         {
             Steering newSteering = new Steering();
@@ -197,26 +174,25 @@ public class GhostBehavior : AgentBehaviour
             return newSteering;
         }
 
+        // Sets the fleeing target if there is none
         if (_isFleeing && _fleeingTarget.Equals(NO_TARGET))
         {
-            FleePlayer();
+            _fleeingTarget = _pathfinder.GenerateFleeingTarget(Position2());
         }
+        
         if (_isFleeing)
         {
-            //_fleeingTarget = _pathfinder.GenerateFleeingTarget(Position2());
             _pathfinder.ChangeBlockingRules(true, true);
             _pathfinder.SetTarget(Position2(), _fleeingTarget, true);
-            //_pathfinder.SetFleeing(Position2(), _previousDirection, _previousPos);
-        } else
-        {
+        } else {
             _fleeingTarget = NO_TARGET;
             _pathfinder.SetTarget(Position2(), ToVector2(_player.transform.localPosition), false);
         }
         
+        // If the celluo reached its fleeing target
         if (_isFleeing && Vector2.Distance(Position2(), _fleeingTarget) < Pathfinder.TRIGGER_DIST)
         {
             _fleeingTarget = _pathfinder.GenerateFleeingTarget(Position2());
-            //Debug.Log($"New fleeing target is {_fleeingTarget}");
         }
         
         
@@ -225,10 +201,8 @@ public class GhostBehavior : AgentBehaviour
         
         
         Vector3 direction = ToVector3(_pathfinder.Orientation(ToVector2(transform.localPosition), _isFleeing), HEIGHT);
-        
         Steering steering = new Steering();
 
-        
         /**************************************************************** /
         /       THE HOLY FORMULA : *DO* *NOT* *TOUCH* *THIS*              /
         /    Also please don't ask how it works because we have no clue   /
@@ -242,41 +216,6 @@ public class GhostBehavior : AgentBehaviour
 
     [Obsolete("---- Don't use this ----")]
     public Pathfinder GetPathfinder() => _pathfinder;
-    
-    /*
-    private void Blink(float timeLeft) {
-        float timeRatio = 1 - (timeLeft / GameRules.POWERUP_DURATION);
-        
-        const float startSpeed = 40;    // Blinking speed of the lights in the beginning, >=0
-        const float endSpeed = 200;   // Blinking speed of the lights in end, >=0
-        //const float offSet = 2.27f;     // The higher the later the speed starts increasing, >=0
-        const float offSet = 5f;     // The higher the later the speed starts increasing, >=0
 
-        // Function of type f(x) = ax^k + bx that decides which color to display when the cellulo is blinking
-        float colorID = ((endSpeed - startSpeed)/offSet*Mathf.Pow(timeRatio, offSet) + startSpeed*timeRatio) % 2; 
-        _currentColor = (colorID > 1) ? _blinkingColor : _color;
-        if (_currentColor != _previousColor) agent.SetVisualEffect(VisualEffect.VisualEffectConstAll, _currentColor, 0);
-        _previousColor = _currentColor;
-    }
-    */
-
-    /*
-    private CircularMap GenerateMap()
-    {
-        //DEBUGGING : Ghost position = (9.14, 0, -6)
-        //          : Target position = (6.94, 0, -4.50)
-        CircularMap map = new CircularMap(new Vector2(7.18f, -5.16f));
-        map.AddRing(new Vector2(7.88f, -5.16f));
-        map.AddRing(new Vector2(9.3f, -5.16f));
-        //map.AddRing(new Vector2(9.25f, -5.16f));
-        map.AddRing(new Vector2(10.87f, -5.16f));
-        map.AddPassage(new Vector2(9.72f, -3.69f));
-        map.AddPassage(new Vector2(4.73f, -3.69f));
-        map.AddPassage(new Vector2(7.19f, -3.9f));
-        map.AddPassage(new Vector2(7.19f, -6.45f));
-        map.AddPassage(new Vector2(7.19f, -7.94f));
-        return map;
-    }
-    */
 }
 }

@@ -13,7 +13,6 @@ public class GameManager
     //used to make the game manager instance pop in the scenes
     private GameObject gameObject;
     private static readonly PlayerBehavior _player;
-    private Dictionary<GameObject, Color> ghostColors;
     private List<GhostBehavior> _ghosts = new List<GhostBehavior>();
 
     public GameObject GameObject
@@ -25,6 +24,7 @@ public class GameManager
 
     static GameManager()
     {
+        // Representation of the map with the pathfinder. Values found manually
         CircularMap map = new CircularMap(new Vector2(7.18f, -5.16f));
         map.AddRing(new Vector2(7.88f, -5.16f));
         map.AddRing(new Vector2(9.3f, -5.16f));
@@ -76,22 +76,7 @@ public class GameManager
 
         return allDead;
     }
-
-    // Not finished yet
-    public void Update()
-    {
-        // Don't forget to use ToVector2, as implicit casts do not correctly work
-        
-        //if (_map.IsCheating(ToVector2(m_Players.Get(0).gameObject.transform.position))) {
-        if (_map.IsCheating(m_Players.Get(0).gameObject.transform.position)) {
-
-            Debug.Log("The player is cheating!");
-        }
-
-    }
-
-    public Color ghostColor(GameObject ghost) => GetFrom(ghostColors, ghost);
-
+    
     public PlayerBehavior Player() => _player;
 
     private Players m_Players;
