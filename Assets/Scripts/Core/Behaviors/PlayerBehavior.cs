@@ -35,6 +35,7 @@ public class PlayerBehavior : AgentBehaviour
 
     public void Start()
     {
+        this.agent.MoveOnIce();
         SetColor(_color);
 
         // TODO : Used for debugging

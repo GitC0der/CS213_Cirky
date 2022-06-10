@@ -23,7 +23,7 @@ public class CircularMap
     
     public const float MARGIN = 1.0f;    // "Wiggle room" to prevent collision between a Cellulo and map borders or other cellulos
     private const float EPSILON = 1e-4f;   // Tolerance regarding floating point values equality
-    private const float CHEAT_DETECTION = 0.37f;   // Threshold for the cheat detection mechanism
+    private const float CHEAT_DETECTION = 0.45f;   // Threshold for the cheat detection mechanism
 
     private Vector2 _center;
     private IList<MapRing> _rings = new List<MapRing>();

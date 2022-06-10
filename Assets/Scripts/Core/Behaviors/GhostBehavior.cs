@@ -75,6 +75,11 @@ namespace Core.Behaviors
                 _player.GrabPowerUp();
                 Debug.Log($"Player grabbed a power-up!");
             }
+            if (Input.GetKeyDown("c"))
+            {
+                _player.LosePowerUp();
+                Debug.Log($"Player dropped a power-up!");
+            }
         }
 
         public bool IsWaiting() => _pathfinder.IsWaiting();
