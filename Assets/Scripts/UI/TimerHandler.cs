@@ -4,7 +4,7 @@ using UnityEngine.UI;
 /**
 	This class is the implementation of the timer used in the game and how it is handled in it
 */
-public class Timer : MonoBehaviour
+public class TimerHandler : MonoBehaviour
 {
     private float initTimerValue;
     private Text timerText;
@@ -25,16 +25,14 @@ public class Timer : MonoBehaviour
         setTime(gameManager.RoundTime);
     }
 
-
+    
     // FixedUpdate is called 50 times per second
-    public void Update()
-    {
+    public void Update() {
         float t = Time.time - initTimerValue;
 
         DisplayTime(t);
 
-        if (t >= gameManager.RoundTime)
-        {
+        if (t >= gameManager.RoundTime) {
             gameManager.EndGame();
             gameOverMenu.SetActive(true);
         }

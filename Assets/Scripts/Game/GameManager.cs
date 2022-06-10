@@ -26,6 +26,7 @@ public class GameManager
         set => _roundTime = value;
         get => _roundTime;
     }
+    
     private static readonly CircularMap _map;
 
     static GameManager()
