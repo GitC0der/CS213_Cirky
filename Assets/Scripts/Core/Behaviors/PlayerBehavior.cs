@@ -35,16 +35,17 @@ public class PlayerBehavior : AgentBehaviour
 
     public void Start()
     {
-        this.agent.MoveOnIce();
+        agent.MoveOnIce();
         SetColor(_color);
 
-        // TODO : Used for debugging
-        GrabPowerUp(19f);
+        // TODO : Used for debugging and to give a color to the celullos on start-up
+        GrabPowerUp();
+        _grabbedPowerTime = Time.time-19f;
+
         GameManager.Instance.Players.AddPlayer(gameObject, gameObject.name);
         
         _audioSource = (gameObject.GetComponent<AudioSource>() != null) ? gameObject.GetComponent<AudioSource>() : gameObject.AddComponent<AudioSource>();
         _audioSource.playOnAwake = false;
-        agent.MoveOnIce();
     }
 
     public void Update()
@@ -146,18 +147,6 @@ public class PlayerBehavior : AgentBehaviour
             ghost.FleePlayer(false);
         }
     }
-
-    public void GrabPowerUp(float t)
-    {
-        StopImmunity();
-        _hasPower = true;
-        _grabbedPowerTime = Time.time-t;
-        foreach (GhostBehavior ghost in GameManager.Instance.Ghosts())
-        {
-            ghost.FleePlayer(false);
-        }
-    }
-
 
     public bool HasPower() => _hasPower;
 

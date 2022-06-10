@@ -164,7 +164,7 @@ public class Pathfinder
         Edge edge = nodes[0].EdgeTo(nodes[1]);
         if (IsNull(edge) || IsNull(nodes[1].EdgeTo(nodes[0])))
         {
-            // TODO : May prove to cause problems. If true, revert back to resetting the nodes after each frame
+            // May prove to cause problems. If true, revert back to resetting the nodes after each frame
             nodes[0].Connect(nodes[1], path.DistanceBetween(nodes[0].Position(), nodes[1].Position()), path);
             edge = nodes[0].EdgeTo(nodes[1]);
             //Debug.Log($"Warning! {nodes[0]} and {nodes[1]} were not connected. Correction applied... May need to investigate this later on");
@@ -209,7 +209,6 @@ public class Pathfinder
         node.Disconnect(node2);
         _nodes.Remove(node);
         
-        // TODO : Adapt this to allow for custom node cost
         node1.Connect(node2, pathway.DistanceBetween(node1.Position(), node2.Position()), pathway);
     }
 
@@ -278,7 +277,7 @@ public class Pathfinder
     /// <returns>The (normalized) orientation of the cellulo</returns>
     public Vector2 Orientation(Vector2 currentPos, bool isFleeing)
     {
-        // TODO : Might need a better method in case of larger obstacles
+        //Might need a better method in case of larger obstacles
         GhostBehavior _otherGhost = GameManager.Instance.ClosestGhostTo(currentPos, true).GetComponent<GhostBehavior>();
         float groundDistance = DistanceBetween(ToVector2(_otherGhost.transform.localPosition), currentPos, false);
         
@@ -521,7 +520,6 @@ public class Pathfinder
                     float newCost = GetFrom(costSoFar, currentNode) + currentNode.EdgeTo(neighbor).Length();
                     if (!comeFrom.ContainsKey(neighbor) || newCost < GetFrom(costSoFar, neighbor))
                     {
-                        // TODO : Adapt for custom costs
                         if (costSoFar.ContainsKey(neighbor)) costSoFar.Remove(neighbor);
                         costSoFar.Add(neighbor, newCost);
 
@@ -590,7 +588,6 @@ public class Pathfinder
         List<IPathway> lengthPathways = _finalPath.ToList();
         for (int i = 0; i < _finalPath.Count; i++)
         {
-            // TODO : Use edges instead
             length += lengthPathways[i].DistanceBetween(lengthNodes[i].Position(), lengthNodes[i + 1].Position());
         }
         
@@ -686,7 +683,7 @@ public class Pathfinder
         private readonly float _length;
         private readonly float _cost;
         
-        // TODO : Get rid of isOccupied
+        // Should get rid of isOccupied in the future
         private readonly bool _isOccupied;
         private readonly IPathway _pathway;
 
@@ -784,7 +781,7 @@ public class Pathfinder
             if (otherNode == this) throw new ArgumentException("Can't connect a node to itself!");
             if (length < 0) throw new ArgumentException("Length must be greater or equal to zero!");
             
-            // TODO : Modify this such that connecting with an already connected node rewrites the connection
+            // Should modify this later such that connecting with an already connected node rewrites the connection
             if (!_neighbors.Contains(otherNode)) _neighbors.Add(otherNode);
             
             if (IsNull(EdgeTo(otherNode)))

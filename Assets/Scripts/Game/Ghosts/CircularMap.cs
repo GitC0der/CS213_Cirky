@@ -20,8 +20,6 @@ using Vector2 = UnityEngine.Vector2;
 ///
 public class CircularMap
 {
-    // TODO : Make CircularMap immutable and create builder
-    
     public const float MARGIN = 1.0f;    // "Wiggle room" to prevent collision between a Cellulo and map borders or other cellulos
     private const float EPSILON = 1e-4f;   // Tolerance regarding floating point values equality
     private const float CHEAT_DETECTION = 0.45f;   // Threshold for the cheat detection mechanism
@@ -277,7 +275,6 @@ public class CircularMap
         public Vector2 ClosestTo(Vector2 target);
 
         
-        // TODO : Use a default method using the distance to ClosestTo (may need to update Unity)
         /// <summary>
         ///     Computes the distance from a position to the nearest point on the path
         /// </summary>
@@ -496,7 +493,6 @@ public class CircularMap
 
         public Vector2 Orientate(Vector2 position, Vector2 target)
         {
-            // TODO : Account for blocked edges
             bool isClockwise = Vector2.SignedAngle(position - _center, target - _center) < 0;
             
             return Direction(position, isClockwise);
