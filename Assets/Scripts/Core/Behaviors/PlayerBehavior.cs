@@ -36,6 +36,7 @@ public class PlayerBehavior : AgentBehaviour
         
         _audioSource = (gameObject.GetComponent<AudioSource>() != null) ? gameObject.GetComponent<AudioSource>() : gameObject.AddComponent<AudioSource>();
         _audioSource.playOnAwake = false;
+        agent.MoveOnIce();
     }
 
     public void Update()
@@ -71,7 +72,7 @@ public class PlayerBehavior : AgentBehaviour
         _isHurt = true;
         _audioSource.clip = _hurtSound;
         _audioSource.Play();
-        //agent.ActivateDirectionalHapticFeedback();
+        agent.ActivateDirectionalHapticFeedback();
         GameManager.Instance.Players.Get().RemoveScore(GameRules.PLAYER_KILLED_PENALTY);
         foreach (GhostBehavior ghost in GameManager.Instance.Ghosts())
         {

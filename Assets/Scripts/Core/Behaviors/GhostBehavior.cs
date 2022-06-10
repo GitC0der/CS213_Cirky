@@ -197,7 +197,7 @@ public class GhostBehavior : AgentBehaviour
         
         
         // This is necessary since the cellulo is going upwards for no discernible reason
-        transform.localPosition = new Vector3(transform.localPosition.x, HEIGHT, transform.localPosition.z);
+        //transform.localPosition = new Vector3(transform.localPosition.x, HEIGHT, transform.localPosition.z);
         
         
         Vector3 direction = ToVector3(_pathfinder.Orientation(ToVector2(transform.localPosition), _isFleeing), HEIGHT);
