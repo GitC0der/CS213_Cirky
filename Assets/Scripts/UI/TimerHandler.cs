@@ -42,7 +42,7 @@ public class TimerHandler : MonoBehaviour
     {
         Debug.Log(max);
         gameManager.RoundTime = max;
-        foreach (Button b in GameObject.Find("Game Duration Panel").GetComponentsInChildren<Button>())
+        foreach (Button b in GameObject.Find("Game Duration UI").GetComponentsInChildren<Button>())
             b.interactable = true;
         GameObject.Find(string.Format("{0} Minutes", max / 60)).GetComponent<Button>().interactable = false;
         DisplayTime(Time.time - initTimerValue);
