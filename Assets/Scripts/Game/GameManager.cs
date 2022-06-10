@@ -13,6 +13,7 @@ public class GameManager
     //used to make the game manager instance pop in the scenes
     private GameObject gameObject;
     private static readonly PlayerBehavior _player;
+    private static float _roundTime;
     private List<GhostBehavior> _ghosts = new List<GhostBehavior>();
 
     public GameObject GameObject
@@ -20,6 +21,11 @@ public class GameManager
         set => gameObject = value;
     }
 
+    public float RoundTime
+    {
+        set => _roundTime = value;
+        get => _roundTime;
+    }
     private static readonly CircularMap _map;
 
     static GameManager()
@@ -36,6 +42,7 @@ public class GameManager
         map.AddPassage(new Vector2(7.19f, -7.94f));
         _map = map;
         _player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerBehavior>();
+        _roundTime = 300f;
     }
 
     //Singleton system with an instance of this Game Manager
