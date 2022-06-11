@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Game.Ghosts;
@@ -17,6 +18,7 @@ public class GhostBehavior : AgentBehaviour
     
     private AudioSource _audioSource;
     public AudioClip _eatenSound;
+    public AudioClip _doubleKillSound;
 
     private Color _color;
     private Color _currentColor;
@@ -49,7 +51,7 @@ public class GhostBehavior : AgentBehaviour
             otherGhost.GetComponent<GhostBehavior>().SetColor(Color.blue);
         }
 
-        _deathTime = -2 * GameRules.GHOST_DEATH_DURATION;
+        _deathTime = -2 * GameRules.GHOST_DEATH_MIN_DURATION;
         _isDead = false;
         _isFleeing = false;
         _audioSource = (gameObject.GetComponent<AudioSource>() != null) ? gameObject.GetComponent<AudioSource>() : gameObject.AddComponent<AudioSource>();
@@ -60,20 +62,8 @@ public class GhostBehavior : AgentBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (_isDead && Time.time - _deathTime > GameRules.GHOST_DEATH_DURATION)
-        {
-            Revive();
-        }
+        if (_isDead && Time.time - _deathTime > GameRules.GHOST_DEATH_MIN_DURATION && !_player.HasPower()) Revive();
         
-        // ---------------------------------------
-        
-        // TODO : Remove all this, used only for debugging purposes
-        
-        if (Input.GetKeyDown("p"))
-        {
-            _player.GrabPowerUp();
-            Debug.Log($"Player grabbed a power-up!");
-        }
     }
 
     public bool IsWaiting() => _pathfinder.IsWaiting();
@@ -88,13 +78,15 @@ public class GhostBehavior : AgentBehaviour
         _audioSource.clip = _eatenSound;
         _audioSource.Play();
         SetColor(DEAD_COLOR);
-        
+        if (GameManager.Instance.AllGhostsDead())
+        {
+            Invoke(nameof(DoubleKill), 2.5f);
+        }
     }
-    
-    public void Revive()
+
+    public void UpdateBehavior()
     {
-        _isDead = false;
-        SetColor(_color);
+        if (!IsAlive()) return;
         if (_player.HasPower())
         {
             FleePlayer(false);
@@ -106,10 +98,12 @@ public class GhostBehavior : AgentBehaviour
             return;
         }
         GoToPlayer();
-        
-        //_pathfinder.SetTarget(Position2(), ToVector2(_player.transform.localPosition), false);
-        
-        
+    }
+    public void Revive()
+    {
+        _isDead = false;
+        SetColor(_color);
+        UpdateBehavior();
     }
 
     public void SetColor(Color newColor)
@@ -216,6 +210,18 @@ public class GhostBehavior : AgentBehaviour
 
     [Obsolete("---- Don't use this ----")]
     public Pathfinder GetPathfinder() => _pathfinder;
+
+    private void DoubleKill()
+    {
+        _player.LosePowerUp();
+        _audioSource.clip = _doubleKillSound;
+        _audioSource.Play();
+        GameManager.Instance.Players.Get().AddScore(GameRules.DOUBLE_KILL_BONUS);
+        foreach (GhostBehavior ghost in GameManager.Instance.Ghosts())
+        {
+            ghost.Revive();
+        }
+    }
 
 }
 }

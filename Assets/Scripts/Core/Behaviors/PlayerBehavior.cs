@@ -39,7 +39,14 @@ public class PlayerBehavior : AgentBehaviour
         SetColor(_color);
 
         // TODO : Used for debugging and to give a color to the celullos on start-up
-        GrabPowerUp();
+        //GrabPowerUp();
+        _hurtTime = Time.time;
+        _isHurt = true;
+        foreach (GhostBehavior ghost in GameManager.Instance.Ghosts())
+        {
+            ghost.MoveAway();
+        }
+        
         _grabbedPowerTime = Time.time-19f;
 
         GameManager.Instance.Players.AddPlayer(gameObject, gameObject.name);
@@ -50,6 +57,15 @@ public class PlayerBehavior : AgentBehaviour
 
     public void Update()
     {
+        // TODO : Remove all this, used only for debugging purposes
+        if (Input.GetKeyDown("p"))
+        {
+            GrabPowerUp();
+            Debug.Log($"Player grabbed a power-up!");
+        }
+        
+        // ---------------------------------------
+
         if (_isHurt && Time.time - _hurtTime > GameRules.PLAYER_IMMUNITY_DURATION)
         {
             StopImmunity();
@@ -81,7 +97,6 @@ public class PlayerBehavior : AgentBehaviour
         _isHurt = true;
         _audioSource.clip = _hurtSound;
         _audioSource.Play();
-        agent.ActivateDirectionalHapticFeedback();
         GameManager.Instance.Players.Get().RemoveScore(GameRules.PLAYER_KILLED_PENALTY);
         foreach (GhostBehavior ghost in GameManager.Instance.Ghosts())
         {
@@ -133,7 +148,7 @@ public class PlayerBehavior : AgentBehaviour
         _grabbedPowerTime = Time.time - 2 * GameRules.POWERUP_DURATION;
         foreach (GhostBehavior ghost in GameManager.Instance.Ghosts())
         {
-            ghost.GoToPlayer();
+            ghost.UpdateBehavior();
         }
     }
 
@@ -142,6 +157,7 @@ public class PlayerBehavior : AgentBehaviour
         StopImmunity();
         _hasPower = true;
         _grabbedPowerTime = Time.time;
+        GameManager.Instance.Players.Get().AddScore(GameRules.POWERUP_BONUS);
         foreach (GhostBehavior ghost in GameManager.Instance.Ghosts())
         {
             ghost.FleePlayer(false);

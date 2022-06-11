@@ -554,34 +554,52 @@ public class Pathfinder
         _finalNodes = new Queue<Node>(reversePath);
 
         // Builds the final path
-        if (_finalNodes.Count > 1)
+        try
         {
-            List<IPathway> pathways = new List<IPathway>();
-            List<Node> tempNodes = _finalNodes.ToList();
-            for (var i = 0; i < _finalNodes.Count - 1; i++)
-            { 
-                pathways.Add(tempNodes[i].EdgeTo(tempNodes[i + 1]).Pathway());
+            if (_finalNodes.Count > 1)
+            {
+                List<IPathway> pathways = new List<IPathway>();
+                List<Node> tempNodes = _finalNodes.ToList();
+                for (var i = 0; i < _finalNodes.Count - 1; i++)
+                { 
+                    pathways.Add(tempNodes[i].EdgeTo(tempNodes[i + 1]).Pathway());
+                }
+                _finalPath = new Queue<IPathway>(pathways);
+                _endNode = endNode;
             }
-            _finalPath = new Queue<IPathway>(pathways);
-            _endNode = endNode;
+            else
+            {
+                _endNode = _finalNodes.Peek();
+                IPathway pathway = startNode.EdgeTo(_endNode).Pathway();
+                _finalPath = new Queue<IPathway>(new List<IPathway> { pathway });
+            }
         }
-        else
+        catch (Exception e)
         {
             _endNode = _finalNodes.Peek();
-            IPathway pathway = startNode.EdgeTo(_endNode).Pathway();
-            _finalPath = new Queue<IPathway>(new List<IPathway> { pathway });
+            if (_finalPath.Count == 0) _finalPath = new Queue<IPathway>();
+            Debug.Log("Error final path generation. Correction applied...");
+            Console.WriteLine(e);
         }
         
-
         // Removes the added start, end nodes, and obstacle nodes from the graph
-        if (isStartNodeNew) RemoveNode(startNode);
-        if (isEndNodeNew) RemoveNode(endNode);
-        foreach (Node obstacleNode in _obstacleNodes)
+        try
         {
-            RemoveNode(obstacleNode);
+            if (isStartNodeNew) RemoveNode(startNode);
+            if (isEndNodeNew) RemoveNode(endNode);
+            foreach (Node obstacleNode in _obstacleNodes)
+            {
+                RemoveNode(obstacleNode);
+            }
+            if (avoidPlayer) _obstacles.Remove(GameManager.Instance.Player().gameObject);
         }
-        if (avoidPlayer) _obstacles.Remove(GameManager.Instance.Player().gameObject);
-
+        catch (Exception e)
+        {
+            ResetNodes();
+            Debug.Log("Error with nodes removal. Nodes reinitialized as a correction...");
+            Console.WriteLine(e);
+        }
+        
         // Computes the length of the path
         float length = 0;
         List<Node> lengthNodes = _finalNodes.ToList();
