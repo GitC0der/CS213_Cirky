@@ -22,10 +22,7 @@ public class StartMenu : MonoBehaviour
         {
             if (gameStarted == false)
             {
-                Time.timeScale = 1;
-                gameStarted = true;
-                Cursor.visible = false;
-                startMenu.SetActive(false);
+                startGame();
             }
         }
     }
