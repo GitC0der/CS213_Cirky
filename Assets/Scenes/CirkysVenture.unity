@@ -3621,7 +3621,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   _eatenSound: {fileID: 8300000, guid: 817842f1367d7f941af0c1b8249e31e9, type: 3}
-  _doubleKillSound: {fileID: 0}
+  _doubleKillSound: {fileID: 8300000, guid: 29691fbe51673f14bb36b2488b0b016e, type: 3}
 --- !u!1 &946055080
 GameObject:
   m_ObjectHideFlags: 0
@@ -4699,7 +4699,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   _eatenSound: {fileID: 8300000, guid: 817842f1367d7f941af0c1b8249e31e9, type: 3}
-  _doubleKillSound: {fileID: 0}
+  _doubleKillSound: {fileID: 8300000, guid: 29691fbe51673f14bb36b2488b0b016e, type: 3}
 --- !u!1001 &1333136709
 PrefabInstance:
   m_ObjectHideFlags: 0

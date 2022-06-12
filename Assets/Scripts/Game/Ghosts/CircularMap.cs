@@ -182,7 +182,7 @@ public class CircularMap
             float number = Random.Range(0, totalLength);
             for (int i = 0; i < pathways.Count; i++)
             {
-                if (endDistances[i] >= number) return pathways[i].RandomPosition();
+                if (endDistances[i] >= number) return pathways[i].RandomPosition() + (Center()/2) + 3*Vector2.up / 10 + 3*Vector2.right / 10;
             }
             Vector2 position = pathways[pathways.Count - 1].RandomPosition();
             bool alreadyOccupied = false;
@@ -191,7 +191,7 @@ public class CircularMap
                 alreadyOccupied = alreadyOccupied || Vector2.Distance(position, ToVector2(ghost.transform.localPosition)) < minDistanceToCellulo;
             }
             alreadyOccupied = alreadyOccupied || Vector2.Distance(position, ToVector2(GameManager.Instance.Player().transform.localPosition)) < minDistanceToCellulo;
-            if (!alreadyOccupied) return position;
+            if (!alreadyOccupied) return position+(Center()/2) + 3*Vector2.up/10 + 3*Vector2.right/10;
         } 
     }
 
