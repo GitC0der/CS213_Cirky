@@ -13,6 +13,9 @@ public class PlayerBehavior : AgentBehaviour
     private AudioSource _audioSource;
     public AudioClip _hurtSound;
     public AudioClip _hitMetalSound;
+    public AudioClip GemSpawn;
+    public AudioClip GemTake;
+    public AudioClip GemDespawn;
 
     private readonly Color _color = Color.green;
     private Color _currentColor = Color.green;
@@ -64,13 +67,14 @@ public class PlayerBehavior : AgentBehaviour
     private void SpawnPowerUp()
     {
         Invoke("SpawnPowerUp", repeatRate = Random.Range(20f, 50f));
-        //GrabPowerUp();
+        _audioSource.clip = GemSpawn;
+        _audioSource.Play();
         GameObject.Instantiate(GameObject.Find("Gem"), Utils.ToVector3(2 * GameManager.Instance.Map.RandomGemPosition(MIN_SPAWN_DISTANCE) + (9 * Vector2.left / 2) + (3 * Vector2.up / 2), this.transform.position.y), Quaternion.identity);
     }
     private void SpawnPowerUpDEBUG()
     {
-        //Invoke("SpawnPowerUp", repeatRate = Random.Range(5f, 10f));
-        //GrabPowerUp();
+        _audioSource.clip = GemSpawn;
+        _audioSource.Play();
         GameObject.Instantiate(GameObject.Find("Gem"), Utils.ToVector3((2 * GameManager.Instance.Map.RandomGemPosition(MIN_SPAWN_DISTANCE)) + (9 * Vector2.left / 2) + (3 * Vector2.up / 2), this.transform.position.y), Quaternion.identity);
     }
 
@@ -80,6 +84,8 @@ public class PlayerBehavior : AgentBehaviour
         if (other.tag == "Gem")
         {
             GrabPowerUp();
+            _audioSource.clip = GemTake;
+            _audioSource.Play();
             GameObject.Destroy(other.gameObject);
         }
     }
