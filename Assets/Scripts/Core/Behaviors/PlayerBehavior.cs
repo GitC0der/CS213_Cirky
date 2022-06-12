@@ -1,4 +1,5 @@
-﻿using Core.Behaviors;
+﻿using System.Linq;
+using Core.Behaviors;
 using UnityEngine;
 
 //Input Keys
@@ -55,7 +56,6 @@ public class PlayerBehavior : AgentBehaviour
 
         repeatRate = Random.Range(2f, 5f);
         Invoke("SpawnPowerUp", repeatRate);
-
     }
 
     private void SpawnPowerUp()
@@ -84,11 +84,11 @@ public class PlayerBehavior : AgentBehaviour
     public void Update()
     {
         // TODO : Remove all this, used only for debugging purposes
-        if (Input.GetKeyDown("p"))
+        if (Input.GetKeyDown("g"))
         {
-            //GrabPowerUp();
-            SpawnPowerUpDEBUG();
-            Debug.Log($"Player spawned a power-up!");
+            Vector2 localMapPos = GameManager.Instance.Map.RandomPosition(5);
+            Vector3 worldPos = GameManager.Instance.Map.FromMapToEnvironment(localMapPos);
+            Instantiate(GameObject.Find("Gem"), worldPos, Quaternion.identity);
         }
 
         // ---------------------------------------

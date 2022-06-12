@@ -10,4 +10,8 @@
     public const float POWERUP_DURATION = 17f;
     public const float GHOST_DEATH_MIN_DURATION = 10f;
     public const float PLAYER_IMMUNITY_DURATION = 5;
+
+    public const float GEM_SPAWN_DURATION = 20;
+    public const float MIN_GEM_INTERVAL = POWERUP_DURATION + GEM_SPAWN_DURATION + 5;
+    public const float MAX_GEM_INTERVAL = MIN_GEM_INTERVAL + 30;
 }

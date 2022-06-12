@@ -128,6 +128,17 @@ public class CircularMap
         _passages.Add(passage);
         return passage;
     }
+
+    /// <summary>
+    ///     Transforms the coordinates obtained by RandomPosition() or other method to actual world coordinates.
+    /// </summary>
+    public Vector3 FromMapToEnvironment(Vector2 positionOnMap)
+    {
+        Vector3 localMapPos = ToVector3(positionOnMap, 0);
+        Vector3 worldMapPos = GameManager.Instance.Player().transform.TransformPoint(localMapPos);
+        Vector3 localGemPos = GameObject.Find("Gem").transform.InverseTransformPoint(worldMapPos);
+        return localGemPos + new Vector3(10.17f, 0, -5.1f);
+    }
     
     /// <summary>
     ///     Use this to detect if the player is cheating, and then take appropriate actions
