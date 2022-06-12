@@ -54,13 +54,13 @@ public class PlayerBehavior : AgentBehaviour
         _audioSource = (gameObject.GetComponent<AudioSource>() != null) ? gameObject.GetComponent<AudioSource>() : gameObject.AddComponent<AudioSource>();
         _audioSource.playOnAwake = false;
 
-        repeatRate = Random.Range(2f, 5f);
+        repeatRate = Random.Range(5f, 20f);
         Invoke("SpawnPowerUp", repeatRate);
     }
 
     private void SpawnPowerUp()
     {
-        Invoke("SpawnPowerUp", repeatRate = Random.Range(5f, 10f));
+        Invoke("SpawnPowerUp", repeatRate = Random.Range(20f, 50f));
         //GrabPowerUp();
         GameObject.Instantiate(GameObject.Find("Gem"), Utils.ToVector3(GameManager.Instance.Map.RandomPosition(), this.transform.position.y), Quaternion.identity);
     }
