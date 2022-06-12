@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using Core.Behaviors;
+﻿using Core.Behaviors;
 using UnityEngine;
 
 //Input Keys
@@ -26,6 +23,8 @@ public class PlayerBehavior : AgentBehaviour
 
     private float _grabbedPowerTime;
     private bool _hasPower;
+
+    private float repeatRate = 0f;
 
     private int _score = 0;
     public int Score
@@ -53,6 +52,15 @@ public class PlayerBehavior : AgentBehaviour
         
         _audioSource = (gameObject.GetComponent<AudioSource>() != null) ? gameObject.GetComponent<AudioSource>() : gameObject.AddComponent<AudioSource>();
         _audioSource.playOnAwake = false;
+
+        repeatRate = Random.Range(5f, 10f);
+        Invoke("SpawnPowerUp", repeatRate);
+    }
+
+    private void SpawnPowerUp()
+    {
+        Invoke("SpawnPowerUp", repeatRate = Random.Range(1f, 5f));
+        GrabPowerUp();
     }
 
     public void Update()
