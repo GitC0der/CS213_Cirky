@@ -333,7 +333,7 @@ public class Pathfinder
         do
         {
             isOccupied = false;
-            position = _map.RandomPosition();
+            position = _map.RandomPosition(0);
             foreach (GameObject ghost in objects)
             {
                 isOccupied = isOccupied || position.Equals(ToVector2(ghost.transform.localPosition));

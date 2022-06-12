@@ -12,6 +12,7 @@ public class PlayerBehavior : AgentBehaviour
     private AudioSource _audioSource;
     public AudioClip _hurtSound;
     public AudioClip _hitMetalSound;
+    public const float MIN_SPAWN_DISTANCE = 5;
     
     private readonly Color _color = Color.green;
     private Color _currentColor = Color.green;
@@ -54,21 +55,21 @@ public class PlayerBehavior : AgentBehaviour
         _audioSource = (gameObject.GetComponent<AudioSource>() != null) ? gameObject.GetComponent<AudioSource>() : gameObject.AddComponent<AudioSource>();
         _audioSource.playOnAwake = false;
 
-        repeatRate = Random.Range(5f, 20f);
-        Invoke("SpawnPowerUp", repeatRate);
+        //repeatRate = Random.Range(5f, 20f);
+        //Invoke("SpawnPowerUp", repeatRate);
     }
 
     private void SpawnPowerUp()
     {
         Invoke("SpawnPowerUp", repeatRate = Random.Range(20f, 50f));
         //GrabPowerUp();
-        GameObject.Instantiate(GameObject.Find("Gem"), Utils.ToVector3(GameManager.Instance.Map.RandomPosition(), this.transform.position.y), Quaternion.identity);
+        GameObject.Instantiate(GameObject.Find("Gem"), Utils.ToVector3(GameManager.Instance.Map.RandomPosition(MIN_SPAWN_DISTANCE), this.transform.position.y), Quaternion.identity);
     }
     private void SpawnPowerUpDEBUG()
     {
         //Invoke("SpawnPowerUp", repeatRate = Random.Range(5f, 10f));
         //GrabPowerUp();
-        GameObject.Instantiate(GameObject.Find("Gem"), Utils.ToVector3(GameManager.Instance.Map.RandomPosition(), this.transform.position.y), Quaternion.identity);
+        GameObject.Instantiate(GameObject.Find("Gem"), Utils.ToVector3(GameManager.Instance.Map.RandomPosition(MIN_SPAWN_DISTANCE), this.transform.position.y), Quaternion.identity);
     }
 
 
@@ -86,7 +87,7 @@ public class PlayerBehavior : AgentBehaviour
         // TODO : Remove all this, used only for debugging purposes
         if (Input.GetKeyDown("g"))
         {
-            Vector2 localMapPos = GameManager.Instance.Map.RandomPosition(5);
+            Vector2 localMapPos = GameManager.Instance.Map.RandomPosition(MIN_SPAWN_DISTANCE);
             Vector3 worldPos = GameManager.Instance.Map.FromMapToEnvironment(localMapPos);
             Instantiate(GameObject.Find("Gem"), worldPos, Quaternion.identity);
         }

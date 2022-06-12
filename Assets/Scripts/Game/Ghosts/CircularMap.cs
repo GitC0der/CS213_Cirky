@@ -182,7 +182,7 @@ public class CircularMap
             float number = Random.Range(0, totalLength);
             for (int i = 0; i < pathways.Count; i++)
             {
-                if (endDistances[i] >= number) return pathways[i].RandomPosition() + (Center()/2) + 3*Vector2.up / 10 + 3*Vector2.right / 10;
+                if (endDistances[i] >= number) return pathways[i].RandomPosition();
             }
             Vector2 position = pathways[pathways.Count - 1].RandomPosition();
             bool alreadyOccupied = false;
