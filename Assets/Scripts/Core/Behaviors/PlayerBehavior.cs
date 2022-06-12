@@ -63,6 +63,13 @@ public class PlayerBehavior : AgentBehaviour
         //GrabPowerUp();
         GameObject.Instantiate(GameObject.Find("Gem"), Utils.ToVector3(GameManager.Instance.Map.RandomPosition(), this.transform.position.y), Quaternion.identity);
     }
+    private void SpawnPowerUpDEBUG()
+    {
+        //Invoke("SpawnPowerUp", repeatRate = Random.Range(5f, 10f));
+        //GrabPowerUp();
+        GameObject.Instantiate(GameObject.Find("Gem"), Utils.ToVector3(GameManager.Instance.Map.RandomPosition(), this.transform.position.y), Quaternion.identity);
+    }
+
 
     private void OnTriggerEnter(Collider other)
     {
@@ -79,7 +86,7 @@ public class PlayerBehavior : AgentBehaviour
         if (Input.GetKeyDown("p"))
         {
             //GrabPowerUp();
-            SpawnPowerUp();
+            SpawnPowerUpDEBUG();
             Debug.Log($"Player spawned a power-up!");
         }
         
