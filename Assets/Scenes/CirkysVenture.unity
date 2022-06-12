@@ -6065,6 +6065,9 @@ MonoBehaviour:
     m_Bits: 1
   _hurtSound: {fileID: 8300000, guid: 648f42f286bc8404ba8442db7371c181, type: 3}
   _hitMetalSound: {fileID: 8300000, guid: cb339989c73b7714e9d15ce1f4b2aa1c, type: 3}
+  GemSpawn: {fileID: 8300000, guid: e33bffb8c90bcee4095a09647abf4cbc, type: 3}
+  GemTake: {fileID: 8300000, guid: 5dbf536b7495b97479e141093e227c63, type: 3}
+  GemDespawn: {fileID: 8300000, guid: cb339989c73b7714e9d15ce1f4b2aa1c, type: 3}
   inputKeyboard: 0
 --- !u!1 &1744614362
 GameObject:
