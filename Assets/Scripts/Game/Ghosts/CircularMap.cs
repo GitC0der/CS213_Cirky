@@ -139,8 +139,12 @@ public class CircularMap
         return Vector2.Distance(FindClosestPoint(position), position) > CHEAT_DETECTION;
     }
 
-    /// Randomly selects a position on the map
-    public Vector2 RandomPosition()
+    /// <summary>
+    ///     Randomly selects a point on the map
+    /// </summary>
+    /// <param name="minDistanceToCellulo">The minimum distance between that point and each cellulo, 0 by default</param>
+    /// <returns>A position on the map</returns>
+    public Vector2 RandomPosition(float minDistanceToCellulo = 0)
     {
         while (true) {
             // Randomly selects a pathway, with a probability of being selected that is equal to its length, i.e longer
@@ -173,9 +177,9 @@ public class CircularMap
             bool alreadyOccupied = false;
             foreach (GhostBehavior ghost in GameManager.Instance.Ghosts())
             {
-                alreadyOccupied = alreadyOccupied || Vector2.Distance(position, ToVector2(ghost.transform.localPosition)) < MARGIN;
+                alreadyOccupied = alreadyOccupied || Vector2.Distance(position, ToVector2(ghost.transform.localPosition)) < minDistanceToCellulo;
             }
-            alreadyOccupied = alreadyOccupied || Vector2.Distance(position, ToVector2(GameManager.Instance.Player().transform.localPosition)) < MARGIN;
+            alreadyOccupied = alreadyOccupied || Vector2.Distance(position, ToVector2(GameManager.Instance.Player().transform.localPosition)) < minDistanceToCellulo;
             if (!alreadyOccupied) return position;
         } 
     }

@@ -55,6 +55,7 @@ public class PlayerBehavior : AgentBehaviour
 
         repeatRate = Random.Range(2f, 5f);
         Invoke("SpawnPowerUp", repeatRate);
+
     }
 
     private void SpawnPowerUp()
@@ -71,7 +72,7 @@ public class PlayerBehavior : AgentBehaviour
             GrabPowerUp();
             Debug.Log($"Player grabbed a power-up!");
         }
-        
+
         // ---------------------------------------
 
         if (_isHurt && Time.time - _hurtTime > GameRules.PLAYER_IMMUNITY_DURATION)

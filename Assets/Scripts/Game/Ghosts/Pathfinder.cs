@@ -556,28 +556,19 @@ public class Pathfinder
         // Builds the final path
         try
         {
-            if (_finalNodes.Count > 1)
-            {
-                List<IPathway> pathways = new List<IPathway>();
-                List<Node> tempNodes = _finalNodes.ToList();
-                for (var i = 0; i < _finalNodes.Count - 1; i++)
-                { 
-                    pathways.Add(tempNodes[i].EdgeTo(tempNodes[i + 1]).Pathway());
-                }
-                _finalPath = new Queue<IPathway>(pathways);
-                _endNode = endNode;
+            List<IPathway> pathways = new List<IPathway>();
+            List<Node> tempNodes = _finalNodes.ToList();
+            for (var i = 0; i < _finalNodes.Count - 1; i++)
+            { 
+                pathways.Add(tempNodes[i].EdgeTo(tempNodes[i + 1]).Pathway());
             }
-            else
-            {
-                _endNode = _finalNodes.Peek();
-                IPathway pathway = startNode.EdgeTo(_endNode).Pathway();
-                _finalPath = new Queue<IPathway>(new List<IPathway> { pathway });
-            }
+            _finalPath = new Queue<IPathway>(pathways);
+            _endNode = endNode;
         }
         catch (Exception e)
         {
             _endNode = _finalNodes.Peek();
-            if (_finalPath.Count == 0) _finalPath = new Queue<IPathway>();
+            _finalPath = new Queue<IPathway>(new List<IPathway> {_map.FindClosestPathway(currentPos)});
             Debug.Log("Error final path generation. Correction applied...");
             Console.WriteLine(e);
         }
