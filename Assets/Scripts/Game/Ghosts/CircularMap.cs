@@ -40,7 +40,7 @@ public class CircularMap
         _rings = new List<MapRing>(rings);
         _passages = new HashSet<Passageway>(passages);
     }
-    
+
     /// <summary> Creates a circular map with evenly space rings. <br/>
     /// ---- Not for the current map layout ---- <br/>
     /// </summary>
@@ -50,13 +50,13 @@ public class CircularMap
         _center = center;
         for (int i = 0; i < ringsCount; ++i)
         {
-            _rings.Add(new MapRing(2*(i+1)*MARGIN, center));
+            _rings.Add(new MapRing(2 * (i + 1) * MARGIN, center));
         }
     }
-    
+
     /// Generates a map with evenly spaces rings
     [Obsolete("---- May be deleted later ----")]
-    public CircularMap(Vector2 center, float smallestRadius) : this(center, smallestRadius, new HashSet<Passageway>()) {}
+    public CircularMap(Vector2 center, float smallestRadius) : this(center, smallestRadius, new HashSet<Passageway>()) { }
 
     /// Generates a map with evenly spaces rings
     [Obsolete("---- May be deleted later ----")]
@@ -105,9 +105,9 @@ public class CircularMap
     public Passageway AddPassage(int firstRingIndex, Vector2 orientation)
     {
         //_passages.Add(Passageway.FromMap(this, firstRingIndex, direction));
-        return AddPassage(_center + (MARGIN + 2*MARGIN*(firstRingIndex + 1))*orientation.normalized);
+        return AddPassage(_center + (MARGIN + 2 * MARGIN * (firstRingIndex + 1)) * orientation.normalized);
     }
-    
+
     /// <summary>
     ///     Adds a passage that will go through a specified point. Will automatically connect to the closest rings
     /// </summary>
@@ -135,11 +135,11 @@ public class CircularMap
     public Vector3 FromMapToEnvironment(Vector2 positionOnMap)
     {
         Vector3 localMapPos = ToVector3(positionOnMap, 0);
-        Vector3 worldMapPos = GameManager.Instance.Player().transform.parent.TransformPoint(localMapPos);
-        Vector3 localGemPos = GameObject.Find("Gem").transform.parent.InverseTransformPoint(worldMapPos);
+        Vector3 worldMapPos = GameManager.Instance.Player().transform.TransformPoint(localMapPos);
+        Vector3 localGemPos = GameObject.Find("Gem").transform.InverseTransformPoint(worldMapPos);
         return localGemPos + new Vector3(10.17f, 0, -5.1f);
     }
-    
+
     /// <summary>
     ///     Use this to detect if the player is cheating, and then take appropriate actions
     /// </summary>
@@ -157,7 +157,8 @@ public class CircularMap
     /// <returns>A position on the map</returns>
     public Vector2 RandomPosition(float minDistanceToCellulo = 0)
     {
-        while (true) {
+        while (true)
+        {
             // Randomly selects a pathway, with a probability of being selected that is equal to its length, i.e longer
             // pathways are more likely to be chosen than shorter ones
             List<IPathway> pathways = new List<IPathway>();
@@ -191,8 +192,54 @@ public class CircularMap
                 alreadyOccupied = alreadyOccupied || Vector2.Distance(position, ToVector2(ghost.transform.localPosition)) < minDistanceToCellulo;
             }
             alreadyOccupied = alreadyOccupied || Vector2.Distance(position, ToVector2(GameManager.Instance.Player().transform.localPosition)) < minDistanceToCellulo;
-            if (!alreadyOccupied) return position+(Center()/2) + 3*Vector2.up/10 + 3*Vector2.right/10;
-        } 
+            if (!alreadyOccupied) return position;
+        }
+    }
+
+    /// <summary>
+    ///     Randomly selects a point on the map
+    /// </summary>
+    /// <param name="minDistanceToCellulo">The minimum distance between that point and each cellulo, 0 by default</param>
+    /// <returns>A position on the map</returns>
+    public Vector2 RandomGemPosition(float minDistanceToCellulo = 0)
+    {
+        while (true)
+        {
+            // Randomly selects a pathway, with a probability of being selected that is equal to its length, i.e longer
+            // pathways are more likely to be chosen than shorter ones
+            List<IPathway> pathways = new List<IPathway>();
+            List<float> endDistances = new List<float>();
+            float totalLength = 0;
+            foreach (Passageway passage in _passages)
+            {
+                float length = passage.Length();
+                pathways.Add(passage);
+                totalLength += length;
+                endDistances.Add(totalLength);
+            }
+
+            foreach (MapRing ring in _rings)
+            {
+                float length = 2 * Mathf.PI * ring.Radius();
+                pathways.Add(ring);
+                totalLength += length;
+                endDistances.Add(totalLength);
+            }
+
+            float number = Random.Range(0, totalLength);
+            for (int i = 0; i < pathways.Count; i++)
+            {
+                if (endDistances[i] >= number) return pathways[i].RandomPosition() + (Center() / 4) + 3 * Vector2.up / 5 + 3 * Vector2.right / 5;
+            }
+            Vector2 position = pathways[pathways.Count - 1].RandomPosition();
+            bool alreadyOccupied = false;
+            foreach (GhostBehavior ghost in GameManager.Instance.Ghosts())
+            {
+                alreadyOccupied = alreadyOccupied || Vector2.Distance(position, ToVector2(ghost.transform.localPosition)) < minDistanceToCellulo;
+            }
+            alreadyOccupied = alreadyOccupied || Vector2.Distance(position, ToVector2(GameManager.Instance.Player().transform.localPosition)) < minDistanceToCellulo;
+            if (!alreadyOccupied) return position + (Center() / 4) + 3 * Vector2.up / 5 + 3 * Vector2.right / 5;
+        }
     }
 
     /// Finds the closest point on the map from a specified target
@@ -216,18 +263,18 @@ public class CircularMap
             {
                 closest = passage.ClosestTo(target);
                 distance = newDistance;
-            } 
+            }
         }
 
         return closest;
     }
-    
+
     protected internal IPathway FindClosestPathway(Vector2 target)
     {
         Func<IPathway, float> sorter = p => p.DistanceFromPath(target);
         IPathway closestRing = MinElement(_rings, sorter);
         IPathway closestPassage = MinElement(_passages, sorter);
-        
+
         return MinElement(closestRing, closestPassage, sorter);
     }
 
@@ -236,14 +283,14 @@ public class CircularMap
         if (_rings.Count <= 1)
         {
             return new List<MapRing> { _rings[0] };
-        }  
+        }
         if (_rings.Count == 2)
         {
             return _rings[0].Radius() < _rings[1].Radius() ? new List<MapRing> { _rings[0], _rings[1] } : new List<MapRing> { _rings[1], _rings[0] };
         }
-        
+
         List<MapRing> sorted = _rings.OrderBy(r => Math.Abs(r.DistanceFromPath(position))).ToList();
-        return new List<MapRing> {sorted[0], sorted[1]};
+        return new List<MapRing> { sorted[0], sorted[1] };
     }
 
     protected internal IList<Vector2> PassagesPointsOnRing(MapRing ring)
@@ -279,7 +326,7 @@ public class CircularMap
     {
         return $"CircularMap [rings = {ListToString(_rings)}, \npassages = {ListToString(_passages)}";
     }
-    
+
     public interface IPathway
     {
         /// <summary>
@@ -289,14 +336,14 @@ public class CircularMap
         /// <returns>The closest point on the path</returns>
         public Vector2 ClosestTo(Vector2 target);
 
-        
+
         /// <summary>
         ///     Computes the distance from a position to the nearest point on the path
         /// </summary>
         /// <param name="target">The point to find the distance to the path</param>
         /// <returns>The distance to the path form a specified point</returns>
         public float DistanceFromPath(Vector2 target);
-        
+
         /// <summary>
         ///     Returns the distance between 2 points on the path, with a different behavior if part of the path is blocked
         /// </summary>
@@ -313,9 +360,9 @@ public class CircularMap
         public Vector2 RandomPosition();
 
         public bool IsOn(Vector2 point);
-        
+
     }
-    
+
     public class Passageway : IPathway
     {
         private readonly MapRing _smallRing;
@@ -331,7 +378,7 @@ public class CircularMap
             if (!(0 <= firstRingIndex && firstRingIndex < map.Rings().Count)) throw new ArgumentException($"Index must be between 0 and {map.Rings().Count} (number of rings - 1)");
             return new Passageway(map.Rings()[firstRingIndex], map.Rings()[firstRingIndex + 1], map._center + direction);
         }
-        
+
         /// The passageway is assumed to radiate from the center of the rings
         public Passageway(MapRing ring1, MapRing ring2, Vector2 position)
         {
@@ -341,8 +388,8 @@ public class CircularMap
             {
                 throw new ArgumentException("Position too close to the rings. Try to find another position");
             }
-            
-            if (ring1.Radius() < ring2.Radius()) 
+
+            if (ring1.Radius() < ring2.Radius())
             {
                 _smallRing = ring1;
                 _largeRing = ring2;
@@ -363,13 +410,13 @@ public class CircularMap
         public ISet<Vector2> Points() => new HashSet<Vector2> { _smallPoint, _largePoint };
 
         internal MapRing SmallRing() => _smallRing;
-        
+
         internal MapRing LargeRing() => _largeRing;
-        
+
         public Vector2 SmallPoint() => _smallPoint;
-        
+
         public Vector2 LargePoint() => _largePoint;
-        
+
 
         public float Length() => Vector2.Distance(_smallPoint, _largePoint);
 
@@ -386,7 +433,7 @@ public class CircularMap
             return projected;
 
         }
-        
+
         public float DistanceBetween(Vector2 pointA, Vector2 pointB, bool forceDetour = false)
         {
             return Vector2.Distance(ClosestTo(pointA), ClosestTo(pointB));
@@ -408,7 +455,7 @@ public class CircularMap
 
         public bool IsOn(Vector2 position)
         {
-            return Mathf.Abs(Vector2.Distance(position, _smallPoint) + Vector2.Distance(position, _largePoint) 
+            return Mathf.Abs(Vector2.Distance(position, _smallPoint) + Vector2.Distance(position, _largePoint)
                             - Length()) < EPSILON;
         }
 
@@ -432,13 +479,13 @@ public class CircularMap
         private Vector2 Projection(Vector2 vector, Vector2 axis)
         {
             //return Vector2.Dot(axis.normalized, vector)*axis;
-            return Vector2.Dot(axis.normalized, vector)*axis.normalized;
+            return Vector2.Dot(axis.normalized, vector) * axis.normalized;
             //return axis * (float)(vector.magnitude * Math.Cos(Vector2.Angle(axis, vector)));
         }
-        
+
         public override bool Equals(object obj)
         {
-        
+
             if (obj == null || GetType() != obj.GetType()) return false;
             var other = (Passageway)obj;
 
@@ -450,7 +497,7 @@ public class CircularMap
         {
             return $"Passageway [From {_smallPoint}, to {_largePoint}]";
         }
-        
+
     }
 
     public class MapRing : IPathway
@@ -462,12 +509,12 @@ public class CircularMap
         {
             if (!(0 <= ringIndex && ringIndex < map.Rings().Count)) throw new ArgumentException($"Index must be between 0 and {map.Rings().Count} (number of rings - 1)");
             _radius = map.Rings().OrderBy(r => r._radius).ToList()[ringIndex]._radius;
-      
+
             if (_radius <= 0) throw new ArgumentException($"Negative radius. There is something deeply wrong with {map.Rings()[ringIndex]}. It should be check ASAP!");
             _center = map.Rings()[0]._center;
         }
-        
-        
+
+
         public MapRing(float radius, Vector2 center)
         {
             if (radius <= 0) throw new ArgumentException("Radius can't be null or negative!");
@@ -501,7 +548,7 @@ public class CircularMap
             //return _center + _radius * new Vector2((float)Math.Cos(ToRadians(angle)), (float)Math.Sin(ToRadians(angle)));
             return new Vector2(_center.x + _radius * Mathf.Cos(ToRadians(angle)), _center.y + _radius * Mathf.Sin(ToRadians(angle)));
         }
-        
+
         public float Radius() => _radius;
 
         public Vector2 Center() => _center;
@@ -509,7 +556,7 @@ public class CircularMap
         public Vector2 Orientate(Vector2 position, Vector2 target)
         {
             bool isClockwise = Vector2.SignedAngle(position - _center, target - _center) < 0;
-            
+
             return Direction(position, isClockwise);
         }
 
@@ -523,11 +570,11 @@ public class CircularMap
             Vector3 cross = Vector3.Cross(w, r);
             Vector3 direction3 = new Vector3(cross.x, 0, cross.y);
             Vector2 direction = ToVector2(direction3);   
-            */   
-            
+            */
+
             Vector2 direction = Vector2.Perpendicular(currentPos - _center).normalized;
-            
-            return isClockWise ? -direction: direction;
+
+            return isClockWise ? -direction : direction;
         }
 
         public Vector2 ClosestTo(Vector2 target)
@@ -543,10 +590,10 @@ public class CircularMap
             //return Vector2.Distance(ClosestTo(target), target);
             return Mathf.Abs(DistanceFromCenter(target) - _radius);
         }
-        
+
         public override bool Equals(object obj)
         {
-        
+
             if (obj == null || GetType() != obj.GetType()) return false;
             var other = (MapRing)obj;
 
@@ -557,9 +604,9 @@ public class CircularMap
         {
             return $"MapRing [center = {_center}, radius = {_radius,1:F2}]";
         }
-        
+
     }
-    
+
 }
 
 

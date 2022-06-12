@@ -3,8 +3,9 @@ using Core.Behaviors;
 using UnityEngine;
 
 //Input Keys
-public enum InputKeyboard{
-    Arrows, 
+public enum InputKeyboard
+{
+    Arrows,
     WASD
 }
 public class PlayerBehavior : AgentBehaviour
@@ -12,12 +13,11 @@ public class PlayerBehavior : AgentBehaviour
     private AudioSource _audioSource;
     public AudioClip _hurtSound;
     public AudioClip _hitMetalSound;
-    public const float MIN_SPAWN_DISTANCE = 5;
-    
+
     private readonly Color _color = Color.green;
     private Color _currentColor = Color.green;
     private readonly Color _blinkingColor = Color.blue;
-    
+
     public InputKeyboard inputKeyboard;
 
     private bool _isHurt;
@@ -34,6 +34,8 @@ public class PlayerBehavior : AgentBehaviour
         get => _score;
     }
 
+    public const float MIN_SPAWN_DISTANCE = 5;
+
     public void Start()
     {
         agent.MoveOnIce();
@@ -47,35 +49,35 @@ public class PlayerBehavior : AgentBehaviour
         {
             ghost.MoveAway();
         }
-        
-        _grabbedPowerTime = Time.time-19f;
+
+        _grabbedPowerTime = Time.time - 19f;
 
         GameManager.Instance.Players.AddPlayer(gameObject, gameObject.name);
-        
+
         _audioSource = (gameObject.GetComponent<AudioSource>() != null) ? gameObject.GetComponent<AudioSource>() : gameObject.AddComponent<AudioSource>();
         _audioSource.playOnAwake = false;
 
-        //repeatRate = Random.Range(5f, 20f);
-        //Invoke("SpawnPowerUp", repeatRate);
+        repeatRate = Random.Range(5f, 20f);
+        Invoke("SpawnPowerUp", repeatRate);
     }
 
     private void SpawnPowerUp()
     {
         Invoke("SpawnPowerUp", repeatRate = Random.Range(20f, 50f));
         //GrabPowerUp();
-        GameObject.Instantiate(GameObject.Find("Gem"), Utils.ToVector3(GameManager.Instance.Map.RandomPosition(MIN_SPAWN_DISTANCE), this.transform.position.y), Quaternion.identity);
+        GameObject.Instantiate(GameObject.Find("Gem"), Utils.ToVector3(2 * GameManager.Instance.Map.RandomGemPosition(MIN_SPAWN_DISTANCE) + (9 * Vector2.left / 2) + (3 * Vector2.up / 2), this.transform.position.y), Quaternion.identity);
     }
     private void SpawnPowerUpDEBUG()
     {
         //Invoke("SpawnPowerUp", repeatRate = Random.Range(5f, 10f));
         //GrabPowerUp();
-        GameObject.Instantiate(GameObject.Find("Gem"), Utils.ToVector3(GameManager.Instance.Map.RandomPosition(MIN_SPAWN_DISTANCE), this.transform.position.y), Quaternion.identity);
+        GameObject.Instantiate(GameObject.Find("Gem"), Utils.ToVector3((2 * GameManager.Instance.Map.RandomGemPosition(MIN_SPAWN_DISTANCE)) + (9 * Vector2.left / 2) + (3 * Vector2.up / 2), this.transform.position.y), Quaternion.identity);
     }
 
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.tag == "Gem")
+        if (other.tag == "Gem")
         {
             GrabPowerUp();
             GameObject.Destroy(other.gameObject);
@@ -87,9 +89,7 @@ public class PlayerBehavior : AgentBehaviour
         // TODO : Remove all this, used only for debugging purposes
         if (Input.GetKeyDown("g"))
         {
-            Vector2 localMapPos = GameManager.Instance.Map.RandomPosition(MIN_SPAWN_DISTANCE);
-            Vector3 worldPos = GameManager.Instance.Map.FromMapToEnvironment(localMapPos);
-            Instantiate(GameObject.Find("Gem"), worldPos, Quaternion.identity);
+            SpawnPowerUpDEBUG();
         }
 
         // ---------------------------------------
@@ -140,14 +140,14 @@ public class PlayerBehavior : AgentBehaviour
             ghost.GoToPlayer();
         }
     }
-    
+
 
     //private void OnCollisionStay(Collision other)
     void OnCollisionEnter(Collision other)
     {
         if (!other.gameObject.CompareTag("Ghost")) return;
         GhostBehavior ghost = other.gameObject.GetComponent<GhostBehavior>();
-        
+
         if (ghost.IsAlive() && _hasPower)
         {
             ghost.Die();
@@ -167,7 +167,7 @@ public class PlayerBehavior : AgentBehaviour
             _audioSource.Play();
             return;
         }
-        
+
     }
 
     public void LosePowerUp()
@@ -204,7 +204,7 @@ public class PlayerBehavior : AgentBehaviour
         float horizontal = Input.GetAxis("Horizontal" + inputKeyboard);
         float vertical = Input.GetAxis("Vertical" + inputKeyboard);
 
-        steering.linear = new Vector3(horizontal, 0, vertical)* agent.maxAccel;
+        steering.linear = new Vector3(horizontal, 0, vertical) * agent.maxAccel;
         steering.linear = transform.parent.TransformDirection(Vector3.ClampMagnitude(steering.
             linear, agent.maxAccel));
         return steering;
@@ -212,7 +212,7 @@ public class PlayerBehavior : AgentBehaviour
 
     public void ChangeControls(int idx)
     {
-        inputKeyboard = (InputKeyboard) idx;
+        inputKeyboard = (InputKeyboard)idx;
     }
 
     private void BlinkPowerUp()
@@ -235,15 +235,16 @@ public class PlayerBehavior : AgentBehaviour
     /// <param name="offSet">The higher the later the speed starts increasing, >=0</param>
     /// <param name="color1">One of the blinking colors</param>
     /// <param name="color2">The other blinking color</param>
-    private void Blink(float timeLeft, float totalTime, float startSpeed, float endSpeed, float offSet, Color color1, Color color2) {
+    private void Blink(float timeLeft, float totalTime, float startSpeed, float endSpeed, float offSet, Color color1, Color color2)
+    {
         float timeRatio = 1 - (timeLeft / totalTime);
 
         // Function of type f(x) = ax^k + bx that decides which color to display when the cellulo is blinking
-        float colorID = ((endSpeed - startSpeed)/offSet*Mathf.Pow(timeRatio, offSet) + startSpeed*timeRatio) % 2; 
+        float colorID = ((endSpeed - startSpeed) / offSet * Mathf.Pow(timeRatio, offSet) + startSpeed * timeRatio) % 2;
         Color newColor = (colorID > 1) ? color1 : color2;
         SetColor(newColor);
     }
-    
+
     public void SetColor(Color newColor)
     {
         if (_currentColor != newColor)
