@@ -17,7 +17,7 @@ public class CheatingDetector : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _map = GameManager.Instance.Map();
+        _map = GameManager.Instance.Map;
         _player = GameObject.FindGameObjectWithTag("Player");
 
         audioSource = (gameObject.GetComponent<AudioSource>() != null) ? gameObject.GetComponent<AudioSource>() : gameObject.AddComponent<AudioSource>();

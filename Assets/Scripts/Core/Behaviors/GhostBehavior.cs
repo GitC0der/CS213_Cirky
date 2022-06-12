@@ -40,7 +40,7 @@ public class GhostBehavior : AgentBehaviour
     {
         tag = "Ghost";
         _player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerBehavior>();
-        _map = GameManager.Instance.Map();
+        _map = GameManager.Instance.Map;
         _pathfinder = new Pathfinder(_map, this);
         GameObject otherGhost = GameManager.Instance.OtherGhost(gameObject);
         if (_color == default)

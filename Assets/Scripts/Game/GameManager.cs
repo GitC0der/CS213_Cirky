@@ -1,12 +1,8 @@
-using System;
 using static Utils;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Core.Behaviors;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using TMPro;
 
 public class GameManager
 {
@@ -15,6 +11,7 @@ public class GameManager
     private static readonly PlayerBehavior _player;
     private static float _roundTime;
     private List<GhostBehavior> _ghosts = new List<GhostBehavior>();
+
 
     public GameObject GameObject
     {
@@ -27,7 +24,12 @@ public class GameManager
         get => _roundTime;
     }
     
-    private static readonly CircularMap _map;
+    private static CircularMap _map;
+    public CircularMap Map
+    {
+        private set => _map = value;
+        get => _map;
+    }
 
     static GameManager()
     {
@@ -44,6 +46,7 @@ public class GameManager
         _map = map;
         _player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerBehavior>();
         _roundTime = 300f;
+
     }
 
     //Singleton system with an instance of this Game Manager
@@ -104,7 +107,6 @@ public class GameManager
         Debug.Log("Game Over");
     }
 
-    public CircularMap Map() => _map;
 
     public GameObject ClosestGhostTo(Vector2 position, bool isGhost)
     {
@@ -143,9 +145,9 @@ public class Players : MonoBehaviour {
 
     private void Start()
     {
-        
     }
-    
+
+
     public class Player {
 
         private string _name = "Player ";
