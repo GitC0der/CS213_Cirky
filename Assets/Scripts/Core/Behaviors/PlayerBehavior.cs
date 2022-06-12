@@ -54,8 +54,8 @@ public class PlayerBehavior : AgentBehaviour
         _audioSource = (gameObject.GetComponent<AudioSource>() != null) ? gameObject.GetComponent<AudioSource>() : gameObject.AddComponent<AudioSource>();
         _audioSource.playOnAwake = false;
 
-        repeatRate = Random.Range(2f, 5f);
-        Invoke("SpawnPowerUp", repeatRate);
+        //repeatRate = Random.Range(2f, 5f);
+        //Invoke("SpawnPowerUp", repeatRate);
     }
 
     private void SpawnPowerUp()

@@ -135,8 +135,8 @@ public class CircularMap
     public Vector3 FromMapToEnvironment(Vector2 positionOnMap)
     {
         Vector3 localMapPos = ToVector3(positionOnMap, 0);
-        Vector3 worldMapPos = GameManager.Instance.Player().transform.TransformPoint(localMapPos);
-        Vector3 localGemPos = GameObject.Find("Gem").transform.InverseTransformPoint(worldMapPos);
+        Vector3 worldMapPos = GameManager.Instance.Player().transform.parent.TransformPoint(localMapPos);
+        Vector3 localGemPos = GameObject.Find("Gem").transform.parent.InverseTransformPoint(worldMapPos);
         return localGemPos + new Vector3(10.17f, 0, -5.1f);
     }
     
